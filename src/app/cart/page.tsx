@@ -19,7 +19,8 @@ import { GetCountries, GetState } from "react-country-state-city";
 
 export const getCart = () => {
   if (typeof window === "undefined") return [];
-  return JSON.parse(localStorage.getItem("cart") || "[]");
+  const items = localStorage.getItem("cart") || "[]";
+  return JSON.parse(items);
 };
 
 const Cart = () => {
