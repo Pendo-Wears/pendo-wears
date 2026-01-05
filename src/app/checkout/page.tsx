@@ -134,7 +134,7 @@ const Checkout = () => {
           expiry_month: expiryMonth,
           expiry_year: expiryYear,
         },
-        redirect: `${window.location.origin}/order-confirmation?order=${order.data.id}`,
+        redirect: typeof window !== "undefined" ? `${window.location.origin}/order-confirmation?order=${order.data.id}` : '',
         user: {
           email: user.email,
           phone_number: user?.billing?.phone || "",
@@ -147,7 +147,7 @@ const Checkout = () => {
       if (response.data.data.status === "pending") {
         const auth = response.data?.meta?.authorization;
 
-        if (auth?.mode === "redirect") {
+        if (auth?.mode === "redirect" && typeof window !== "undefined") {
           // Redirect to bank-hosted 3DS page
           window.location.href = auth.redirect;
         } else if (auth?.mode === "otp") {

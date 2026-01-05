@@ -165,8 +165,8 @@ const Navbar = () => {
                 style={{
                   textDecoration: "none",
                   display:
-                    window.location.pathname === "/register" ||
-                    window.location.pathname === "/login"
+                    typeof window !== "undefined" && window.location.pathname === "/register" ||
+                    typeof window !== "undefined" && window.location.pathname === "/login"
                       ? "none"
                       : "block",
                 }}

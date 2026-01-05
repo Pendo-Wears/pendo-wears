@@ -2,7 +2,7 @@ import { count } from "console";
 import { GetCountries } from "react-country-state-city";
 import { Country } from "react-country-state-city/dist/esm/types";
 
-const countryCode = JSON.parse(localStorage.getItem("user") || "null")?.billing
+const countryCode = JSON.parse(localStorage?.getItem("user") || "null")?.billing
   ?.country;
 
 let country: Country | undefined = undefined;
