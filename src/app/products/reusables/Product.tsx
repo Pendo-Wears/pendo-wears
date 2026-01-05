@@ -59,7 +59,7 @@ const Product = ({
       size={{ xs: 12, sm: 6, md: 4 }}
       borderRadius={"10px"}
       sx={{ cursor: "pointer" }}
-      bgcolor="#fff"
+      bgcolor="#ffffff"
       boxShadow={"10px 0px 30px 10px rgba(0, 0, 0, 0.1)"}
     >
       <Box
