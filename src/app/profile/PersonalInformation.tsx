@@ -25,7 +25,8 @@ const PersonalInformation = () => {
   const [loading, setLoading] = useState(false);
 
   const getUser = async () => {
-    const thisUser: User = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw = localStorage.getItem("user") ?? "";
+    const thisUser: User = JSON.parse(raw);
     setUser(thisUser);
     setFirstName(thisUser.first_name);
     setLastName(thisUser.last_name);

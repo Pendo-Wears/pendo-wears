@@ -14,7 +14,8 @@ const UserTag = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
-    const thisUser = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw = localStorage.getItem("user") ?? "";
+    const thisUser = JSON.parse(raw);
     setUser(thisUser);
     setLoading(true);
     try {

@@ -14,7 +14,8 @@ const RecentOrders = () => {
   const router = useRouter();
 
   const getUserOrders = async () => {
-    const thisUser = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw = localStorage.getItem("user") ?? "";
+    const thisUser = JSON.parse(raw);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
@@ -69,8 +70,16 @@ const RecentOrders = () => {
           ))}
         </Activity>
         <Activity mode={loading ? "visible" : "hidden"}>
-          <Box display="flex" flexDirection={"column"} width='100%' height='400px' alignItems={'center'} justifyContent={'center'} m="auto">
-            <CircularProgress sx={{color: '#000'}} />
+          <Box
+            display="flex"
+            flexDirection={"column"}
+            width="100%"
+            height="400px"
+            alignItems={"center"}
+            justifyContent={"center"}
+            m="auto"
+          >
+            <CircularProgress sx={{ color: "#000" }} />
           </Box>
         </Activity>
         <Activity

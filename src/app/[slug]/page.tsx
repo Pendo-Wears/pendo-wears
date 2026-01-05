@@ -36,7 +36,8 @@ const ProductDetails = ({
 
   const saveRecentlyViewed = (data: any) => {
     let recents = [];
-    recents = JSON.parse(localStorage.getItem("recent") || "[]");
+    const raw = localStorage.getItem("recent") || "[]";
+    recents = JSON.parse(raw);
     setRecentlyViewed(
       recents.filter((recent: SyncProduct) => recent?.id !== Number(slug))
     );

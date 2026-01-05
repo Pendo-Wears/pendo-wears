@@ -13,7 +13,8 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserOrders = async () => {
-    const thisUser = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw = localStorage.getItem("user") ?? "";
+    const thisUser = JSON.parse(raw);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();

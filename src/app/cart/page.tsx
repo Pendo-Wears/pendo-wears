@@ -113,11 +113,16 @@ const Cart = () => {
     }
   };
 
+  const getUser = () => {
+    const profile = localStorage.getItem("user") || "null";
+    setUser(JSON.parse(profile));
+  };
+
   useEffect(() => {
     getAllCart();
     fetchCountryData();
     fetchCountries();
-    setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    getUser();
   }, []);
 
   useEffect(() => {

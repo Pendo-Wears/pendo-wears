@@ -49,7 +49,8 @@ export default function CheckoutForm({ amount }: Props) {
 
     if (!amount) throw new Error("Invalid amount.");
 
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
+    const profile = localStorage.getItem("user") || "null";
+    const userData = JSON.parse(profile);
     const allCart = getCart();
     const userCountry = await getCountryData();
 

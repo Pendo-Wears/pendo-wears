@@ -28,7 +28,6 @@ const OrderConfirmation = () => {
   };
 
   // const createOrder = async () => {
-  //   const userData = JSON.parse(localStorage.getItem("user") || "null");
   //   const allCart = getCart();
   //   const userCountry = await getCountryData();
 

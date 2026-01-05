@@ -48,9 +48,14 @@ const Navbar = () => {
     }
   };
 
+  const getUser = () => {
+    const profile = localStorage.getItem("user") || "null";
+    setUser(JSON.parse(profile));
+  };
+
   useEffect(() => {
     getCategories();
-    setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    getUser();
   }, []);
 
   const collections = [
@@ -165,8 +170,10 @@ const Navbar = () => {
                 style={{
                   textDecoration: "none",
                   display:
-                    typeof window !== "undefined" && window.location.pathname === "/register" ||
-                    typeof window !== "undefined" && window.location.pathname === "/login"
+                    (typeof window !== "undefined" &&
+                      window.location.pathname === "/register") ||
+                    (typeof window !== "undefined" &&
+                      window.location.pathname === "/login")
                       ? "none"
                       : "block",
                 }}

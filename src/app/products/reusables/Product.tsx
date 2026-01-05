@@ -27,7 +27,8 @@ const Product = ({
     useState<WooProductDetails | null>(null);
 
   const addToWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const raw = localStorage.getItem("wishlist") || "[]";
+    const wishlist = JSON.parse(raw);
 
     if (!wishlist.find((p: any) => p.id === product.id)) {
       wishlist.push({ ...product, inWishlist: true });

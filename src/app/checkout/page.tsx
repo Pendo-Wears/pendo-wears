@@ -59,47 +59,47 @@ const Checkout = () => {
   //   console.log(response);
   // };
 
-  const createOrder = async () => {
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
-    const allCart = getCart();
-    const userCountry = await getCountryData();
+  // const createOrder = async () => {
+  //   const allCart = getCart();
+  //   const userCountry = await getCountryData();
 
-    if (!userData.id || allCart.length === 0) return;
+  //   if (!userData.id || allCart.length === 0) return;
 
-    try {
-      setLoading(true);
-      const orderPayload = {
-        userId: userData.id,
-        recipient: {
-          name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-          address1: userData?.billing?.address_1 || "",
-          state_name: userData?.billing?.state || "",
-          city: userData?.billing?.state || "",
-          country_code: userCountry?.iso2 || "",
-          country_name: userCountry?.name || "",
-          zip: userData?.billing?.postcode || "",
-          phone: userCountry?.phone_code + userData?.billing?.phone || "",
-          email: userData?.email || "",
-        },
-        items: allCart,
-      };
+  //   try {
+  //     setLoading(true);
+  //     const orderPayload = {
+  //       userId: userData.id,
+  //       recipient: {
+  //         name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
+  //         address1: userData?.billing?.address_1 || "",
+  //         state_name: userData?.billing?.state || "",
+  //         city: userData?.billing?.state || "",
+  //         country_code: userCountry?.iso2 || "",
+  //         country_name: userCountry?.name || "",
+  //         zip: userData?.billing?.postcode || "",
+  //         phone: userCountry?.phone_code + userData?.billing?.phone || "",
+  //         email: userData?.email || "",
+  //       },
+  //       items: allCart,
+  //     };
 
-      const order: any = await productsEndpoint.createOrder(orderPayload);
-      console.log("Order created successfully:", order);
-      if (order.success) {
-        fireAlert(order.message, "success");
-        localStorage.removeItem("cart");
-      }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      fireAlert("Failed to create order", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const order: any = await productsEndpoint.createOrder(orderPayload);
+  //     console.log("Order created successfully:", order);
+  //     if (order.success) {
+  //       fireAlert(order.message, "success");
+  //       localStorage.removeItem("cart");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating order:", error);
+  //     fireAlert("Failed to create order", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const payWithFlutterwave = async () => {
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
+    const profile = localStorage.getItem("user") || "null";
+    const userData = JSON.parse(profile);
     const allCart = getCart();
     const userCountry = await getCountryData();
 
@@ -134,7 +134,10 @@ const Checkout = () => {
           expiry_month: expiryMonth,
           expiry_year: expiryYear,
         },
-        redirect: typeof window !== "undefined" ? `${window.location.origin}/order-confirmation?order=${order.data.id}` : '',
+        redirect:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/order-confirmation?order=${order.data.id}`
+            : "",
         user: {
           email: user.email,
           phone_number: user?.billing?.phone || "",
@@ -201,15 +204,19 @@ const Checkout = () => {
     }
   };
   // useEffect(() => {
-  //   setUser(JSON.parse(localStorage.getItem("user") || "null"));
   //   getAllCart();
   //   fetchCountryData();
   //   veriFyTransaction();
   //   createOrder();
   // }, [params]);
 
+  const getUser = () => {
+    const profile = localStorage.getItem("user") || "null";
+    setUser(JSON.parse(profile));
+  };
+
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    getUser();
     fetchCountryData();
     getAllCart();
   }, []);

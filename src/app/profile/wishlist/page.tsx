@@ -8,7 +8,8 @@ const Wishlist = () => {
   const [wishlist, setWishlist] = useState<any[]>([]);
 
   const getWishlist = () => {
-    const list = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const raw = localStorage.getItem("wishlist") || "[]";
+    const list = JSON.parse(raw);
     setWishlist(list);
   };
 
