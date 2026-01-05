@@ -2,8 +2,12 @@ import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import "@fontsource/montserrat"
+import "@fontsource/montserrat";
 import "@fontsource/cormorant-garamond";
+import { AuthProvider } from "../context/AuthContext";
+import AlertUI from "../components/AlertUI";
+import "@/src/assets/css/App.css";
+import ThemeRegistry from "../ThemeRegistry";
 
 export const metadata: Metadata = {
   title: {
@@ -20,12 +24,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning>
-        <Box component={'div'} sx={{ maxWidth: "1512px", margin: "0 auto " }}>
-          <Navbar />
-          <Box mt='100px'>{children}</Box>
-          <Footer />
-        </Box>
+      <body suppressHydrationWarning style={{ background: "#fff" }}>
+        {/* <ThemeRegistry> */}
+          <AuthProvider>
+            <Box sx={{ maxWidth: "1512px", margin: "0 auto " }}>
+              <Navbar />
+              <Box mt="130px">{children}</Box>
+              <Footer />
+            </Box>
+            <AlertUI />
+          </AuthProvider>
+        {/* </ThemeRegistry> */}
       </body>
     </html>
   );

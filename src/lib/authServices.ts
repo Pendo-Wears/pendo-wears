@@ -1,6 +1,11 @@
-import api from "./woocommerce";
+import { productsEndpoint } from "./endpoints";
+import userEndpoints from "./userServices";
+import { privateApi } from "./woocommerce";
 
 const AUTH_KEY = process.env.NEXT_PUBLIC_AUTH_KEY!;
+
+let token: string = "";
+let user: any = null;
 
 export async function signup({
   firstName,
@@ -25,15 +30,23 @@ export async function signup({
       email,
       password,
       auth_key: AUTH_KEY,
-      user_meta: {
-        "country": country || "",
-        "avatar": avatar || "",
-      }
+      country,
+      photoUrl: avatar,
+      avatar: avatar,
+      simple_local_avatar: {
+        full: avatar, // required by Simple Local Avatar
+      },
+      isVerified: false,
+      // user_meta: [
+      //   {
+      //     key: "isVerified",
+      //     value: false,
+      //   },
+      // ],
     };
 
-
     // REGISTER + AUTO LOGIN
-    const res = await api.post("/users", body);
+    const res = await privateApi.post("/auth/v1/users", body);
     const data = res.data;
 
     if (!data?.success) {
@@ -42,35 +55,46 @@ export async function signup({
 
     // Token returned automatically because auto-login is enabled
 
-    const user = data?.data?.user;
+    user = data?.user;
+
+    const updateBody = {
+      avatar_url: avatar || "",
+      billing: {
+        country: country || "",
+      },
+    };
+
+    if (user && user.ID) {
+      const updateUser = await userEndpoints.updateUser(user?.ID, updateBody);
+    }
 
     // VALIDATE TOKEN
-    const login = await api.post("/auth", {
-      email,
-      password,
-      auth_key: AUTH_KEY,
-    });
+    // const login = await privateApi.post("/auth/v1/auth", {
+    //   email,
+    //   password,
+    //   auth_key: AUTH_KEY,
+    // });
 
-    if (!login.data?.success) {
-      throw new Error(login?.data?.message || "Login failed");
-    }
+    // if (!login.data?.success) {
+    //   throw new Error(login?.data?.message || "Login failed");
+    // }
 
-    const token = login?.data?.data?.jwt;
+    // token = login?.data?.data?.jwt;
 
-    localStorage.setItem("token", token);
+    // localStorage.setItem("token", token);
 
-    const validate = await api.post("/auth/validate", {
-      jwt: token,
-      auth_key: AUTH_KEY,
-    });
+    // const validate = await privateApi.post("/auth/v1/auth/validate", {
+    //   jwt: token,
+    //   auth_key: AUTH_KEY,
+    // });
 
-    if (!validate.data?.success) {
-      throw new Error("Token validation failed");
-    }
+    // if (!validate.data?.success) {
+    //   throw new Error("Token validation failed");
+    // }
 
-    // SAVE TO LOCAL STORAGE
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("isAuthenticated", JSON.stringify(true));
+    // // SAVE TO LOCAL STORAGE
+    // localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("isAuthenticated", JSON.stringify(true));
 
     return { token, user };
   } catch (err: any) {
@@ -94,20 +118,19 @@ export async function login(identifier: string, password: string) {
     }
 
     // LOGIN
-    const res = await api.post("/auth", body);
+    const res = await privateApi.post("/auth/v1/auth", body);
     const data = res.data;
 
     if (!data?.success) {
       throw new Error(data?.data?.message || "Login failed");
     }
-    
-    const token = data?.data?.jwt;
-   
+
+    token = data?.data?.jwt;
 
     localStorage.setItem("token", token);
-    
+
     // VALIDATE TOKEN
-    const validate = await api.post("/auth/validate", {
+    const validate = await privateApi.post("/auth/v1/auth/validate", {
       jwt: token,
       auth_key: AUTH_KEY,
     });
@@ -116,7 +139,18 @@ export async function login(identifier: string, password: string) {
       throw new Error("Token validation failed");
     }
 
-     const user = validate?.data?.data?.user;
+    user = validate?.data?.data?.user;
+    const result: any = await userEndpoints.getUser(user?.ID);
+
+    user = result?.data?.data;
+
+    const checkIfValid = await privateApi.get(`/wp/v2/users/me`);
+
+    if (user?.meta_data?.[0]?.value === "0") {
+      throw new Error(
+        "Account not verified. Please check your email to verify your account."
+      );
+    }
 
     // SAVE TO LOCAL STORAGE
     localStorage.setItem("user", JSON.stringify(user));

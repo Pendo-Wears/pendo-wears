@@ -1,13 +1,24 @@
 "use client";
 import { icons } from "@/src/assets/icons/icons";
+import { useAuth } from "@/src/context/AuthContext";
+import userEndpoints from "@/src/lib/userServices";
 import { handleSignup } from "@/src/services/authUsage";
-import { Box, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { GetCountries } from "react-country-state-city";
+import { Country } from "react-country-state-city/dist/esm/types";
 
 const Register = () => {
+  const { isAuthenticated, fireAlert } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -17,6 +28,14 @@ const Register = () => {
   const [country, setCountry] = useState("");
   const [avatar, setAvatar] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const [countriesList, setCountriesList] = useState<Country[]>([]);
+  useEffect(() => {
+    GetCountries().then((result) => {
+      setCountriesList(result);
+    });
+  }, []);
 
   console.log(firstName, email, password, country, avatar);
 
@@ -37,23 +56,60 @@ const Register = () => {
     console.log(result, "RESULTTTTT");
 
     if (!result.success) {
-      alert(result.error);
+      fireAlert(result.error, "error");
       return;
     }
 
-    router.replace("/");
+    fireAlert("Account created successfully", "success");
+    setSuccess(true);
+    setLastName("");
+    setFirstName("");
+    setEmail("");
+    setPassword("");
+    setCountry("");
+    setAvatar("");
+    window.scrollTo(0, 0);
   }
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    if (isAuthenticated === "true") {
+    if (isAuthenticated) {
       router.replace("/");
     }
-  }, []);
+  });
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const result: any = await userEndpoints.uploadImage(formData);
+      console.log(result);
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    }
+  };
+
+  const updateAvatar = async (url: string) => {
+    try {
+      const result: any = await userEndpoints.updateAvatar(51, url);
+      console.log(result);
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    // 1️⃣ Upload to WordPress Media Library
+    const avatarUrl = await uploadImage(file);
+
+    // 2️⃣ Update simple_local_avatar meta
+    // const updatedUser = await updateAvatar(avatarUrl);
+
+    // console.log("Updated user avatar:", updatedUser);
+  };
 
   return (
     <Box
-      bgcolor="#f5f5f5"
+      bgcolor="#fff"
       width="100%"
       display="flex"
       flexDirection="column"
@@ -62,6 +118,29 @@ const Register = () => {
       py={"90px"}
     >
       <Box textAlign={"center"} mb="54px">
+        {success && (
+          <Box
+            width="90%"
+            maxWidth="858px"
+            p="12px 24px"
+            borderRadius={"12px"}
+            mb="24px"
+            bgcolor={"#10851cff"}
+          >
+            <Typography
+              textAlign={"left"}
+              color="#fff"
+              fontSize={16}
+              fontWeight={500}
+              fontFamily={"Montserrat"}
+            >
+              Your account was created successfully. We’ve sent you an
+              activation email — please open it and click the verification link
+              to activate your account. After verifying, you’ll need to return
+              and log in to continue.
+            </Typography>
+          </Box>
+        )}
         <Typography
           color="#1A1A1A"
           fontSize={56}
@@ -100,11 +179,12 @@ const Register = () => {
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             sx={{
-              bgcolor: "#fff",
+              bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
+                  borderRadius: "8px",
                   border: "none", // remove border normally
                 },
                 "&:hover fieldset": {
@@ -115,6 +195,7 @@ const Register = () => {
                 },
               },
               input: {
+                fontFamily: "Montserrat",
                 "&::placeholder": {
                   color: "#8D9396", // placeholder color
                   fontFamily: "Montserrat",
@@ -143,11 +224,12 @@ const Register = () => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
             sx={{
-              bgcolor: "#fff",
+              bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
+                  borderRadius: "8px",
                   border: "none", // remove border normally
                 },
                 "&:hover fieldset": {
@@ -158,6 +240,7 @@ const Register = () => {
                 },
               },
               input: {
+                fontFamily: "Montserrat",
                 "&::placeholder": {
                   color: "#8D9396", // placeholder color
                   fontFamily: "Montserrat",
@@ -186,11 +269,12 @@ const Register = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             sx={{
-              bgcolor: "#fff",
+              bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
+                  borderRadius: "8px",
                   border: "none", // remove border normally
                 },
                 "&:hover fieldset": {
@@ -201,6 +285,7 @@ const Register = () => {
                 },
               },
               input: {
+                fontFamily: "Montserrat",
                 "&::placeholder": {
                   color: "#8D9396", // placeholder color
                   fontFamily: "Montserrat",
@@ -242,11 +327,12 @@ const Register = () => {
               ),
             }}
             sx={{
-              bgcolor: "#fff",
+              bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
+                  borderRadius: "8px",
                   border: "none", // remove border normally
                 },
                 "&:hover fieldset": {
@@ -257,6 +343,7 @@ const Register = () => {
                 },
               },
               input: {
+                fontFamily: "Montserrat",
                 "&::placeholder": {
                   color: "#8D9396", // placeholder color
                   fontFamily: "Montserrat",
@@ -284,26 +371,28 @@ const Register = () => {
             placeholder="Please select your country"
             select
             value={country}
-            children={["Nigeria", "United States", "Canada"].map((country) => (
-              <option
+            children={countriesList.map((country) => (
+              <MenuItem
                 style={{
                   fontSize: 16,
                   fontFamily: "Montserrat",
                   padding: "16px",
+                  cursor: "pointer",
                 }}
-                value={country}
-                key={country}
-                onClick={() => setCountry(country)}
+                value={country.iso2}
+                key={country.id}
+                onClick={() => setCountry(country.iso2)}
               >
-                {country}
-              </option>
+                {country.iso2} - {country.name}
+              </MenuItem>
             ))}
             sx={{
-              bgcolor: "#fff",
+              bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
+                  borderRadius: "8px",
                   border: "none", // remove border normally
                 },
                 "&:hover fieldset": {
@@ -314,6 +403,7 @@ const Register = () => {
                 },
               },
               input: {
+                fontFamily: "Montserrat",
                 "&::placeholder": {
                   color: "#8D9396", // placeholder color
                   fontFamily: "Montserrat",
@@ -326,6 +416,15 @@ const Register = () => {
         </Box>
         <Box display="flex" gap="24px" alignItems={"center"} width="100%">
           <Box position={"relative"}>
+            <Box
+              width="100%"
+              height="100%"
+              position={'absolute'}
+              borderRadius={"100%"}
+              component={"input"}
+              type="file"
+              onChange={(e: any) => handleAvatarUpload(e.target.files[0])}
+            ></Box>
             <Image
               src={icons.avatar}
               alt="avatar"
@@ -364,7 +463,7 @@ const Register = () => {
               onChange={(e) => setAvatar(e.target.value)}
               placeholder="Select photo"
               sx={{
-                bgcolor: "#fff",
+                bgcolor: "#f5f5f5",
                 borderRadius: "6px",
                 height: "54px",
                 "& .MuiOutlinedInput-root": {
@@ -410,7 +509,11 @@ const Register = () => {
         alignItems="center"
         borderRadius="6px"
         mb="54px"
-        sx={{ cursor: "pointer" }}
+        sx={{
+          cursor: "pointer",
+          pointerEvents: loading ? "none" : "auto",
+          opacity: loading ? 0.2 : 1,
+        }}
         onClick={loading ? () => {} : submitForm}
       >
         <Typography
@@ -419,7 +522,7 @@ const Register = () => {
           fontFamily={"Montserrat"}
           color="#fff"
         >
-          Sign up
+          {loading ? <CircularProgress size={18} color="inherit" /> : "Sign up"}
         </Typography>
       </Box>
       <Typography

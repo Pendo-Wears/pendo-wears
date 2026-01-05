@@ -1,0 +1,797 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { CartItem, getCart } from "../cart/page";
+import { formatPrice, getCountryData } from "@/src/lib/priceFormatter";
+import { productsEndpoint } from "@/src/lib/endpoints";
+import { useAuth } from "@/src/context/AuthContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import RequireAuth from "@/src/components/RequireAuth";
+import Image from "next/image";
+import { icons } from "@/src/assets/icons/icons";
+
+const OrderConfirmation = () => {
+  const { fireAlert } = useAuth();
+  const router = useRouter();
+
+  const searchParams = useSearchParams();
+  const [responseData, setResponseData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [cartItems, setCartItems] = useState([]);
+  const [orderDetails, setOrderDetails] = useState<any | null>(null);
+
+  const getAllCart = () => {
+    if (typeof window === "undefined") return [];
+    const result = getCart();
+    setCartItems(result);
+  };
+
+  // const createOrder = async () => {
+  //   const userData = JSON.parse(localStorage.getItem("user") || "null");
+  //   const allCart = getCart();
+  //   const userCountry = await getCountryData();
+
+  //   if (!userData.id || allCart.length === 0) return;
+
+  //   try {
+  //     setLoading(true);
+  //     const orderPayload = {
+  //       userId: userData.id,
+  //       recipient: {
+  //         name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
+  //         address1: userData?.billing?.address_1 || "",
+  //         state_name: userData?.billing?.state || "",
+  //         city: userData?.billing?.state || "",
+  //         country_code: userCountry?.iso2 || "",
+  //         country_name: userCountry?.name || "",
+  //         zip: userData?.billing?.postcode || "",
+  //         phone: userCountry?.phone_code + userData?.billing?.phone || "",
+  //         email: userData?.email || "",
+  //       },
+  //       items: allCart,
+  //     };
+
+  //     const order: any = await productsEndpoint.createOrder(orderPayload);
+  //     console.log("Order created successfully:", order);
+  //     if (order.success) {
+  //       fireAlert(order.message, "success");
+  //       setOrderDetails(order.data);
+  //       localStorage.removeItem("cart");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating order:", error);
+  //     fireAlert("Failed to create order", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const getOrderDetails = async (id: string) => {
+    setLoading(true);
+    try {
+      const result: any = await productsEndpoint.getOrderDetails(id);
+      if (result.success) {
+        setOrderDetails(result.data);
+      }
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const orderId = searchParams.get("order");
+    const encoded = searchParams.get("response");
+    if (encoded) {
+      try {
+        const decoded = decodeURIComponent(encoded);
+        const data = JSON.parse(decoded);
+        setResponseData(data);
+        if (data.status === "successful" && data.txRef) {
+          getOrderDetails(data.txRef.split("-")[1]);
+        }
+        console.log(data, "ORDER CONFIRMATION DATA");
+      } catch (error) {
+        console.error("Failed to parse response param:", error);
+      }
+    }
+    if (orderId) {
+      getOrderDetails(orderId);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    getAllCart();
+  }, []);
+  return (
+    <RequireAuth>
+      {loading ? (
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
+          <Box maxWidth={"1200px"} mx="auto">
+            <Box
+              width="100%"
+              display="flex"
+              flexDirection={"column"}
+              alignItems={"center"}
+            >
+              <Image
+                src={icons.success}
+                alt="card image"
+                width="80"
+                height="80"
+              />
+              <Typography
+                textAlign={"center"}
+                fontSize={32}
+                fontFamily={"Montserrat"}
+                color="#1a1a1a"
+                fontWeight={700}
+                mt="40px"
+                mb="12px"
+              >
+                Order Confirmed!
+              </Typography>
+              <Typography
+                textAlign={"center"}
+                fontSize={20}
+                fontFamily={"Montserrat"}
+                color="#656565"
+                fontWeight={400}
+                mb="8px"
+              >
+                Thank you for your purchase,{" "}
+                {orderDetails?.recipient?.name.split(" ")[0]}
+              </Typography>
+              <Typography
+                textAlign={"center"}
+                fontSize={16}
+                fontFamily={"Montserrat"}
+                color="#656565"
+                fontWeight={500}
+                mb="48px"
+              >
+                Your order has been successfully processed and is being prepared
+                for shipment.
+              </Typography>
+            </Box>
+            <Box
+              mb="48px"
+              //   px={{ xs: "16px", sm: "20px", md: "50px" }}
+              display="flex"
+              alignItems={"flex-start"}
+              gap="32px"
+            >
+              <Box flex={1}>
+                <Box
+                  width="100%"
+                  bgcolor={"#F9FAFB"}
+                  borderRadius={"15px"}
+                  py="30px"
+                  px="30px"
+                  border="1px solid #00000010"
+                  mb="24px"
+                >
+                  <Box
+                    mb="24px"
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                  >
+                    <Typography
+                      fontSize={24}
+                      fontFamily={"Montserrat"}
+                      color="#000"
+                      fontWeight={700}
+                    >
+                      Order Details
+                    </Typography>
+                    <Typography
+                      fontSize={14}
+                      fontFamily={"Montserrat"}
+                      color="#5C5C5C"
+                    >
+                      Order #PF{orderDetails?.id}
+                    </Typography>
+                  </Box>
+                  <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
+                    {orderDetails?.items.map((cart: any, id: number) => (
+                      <Box key={id}>
+                        <CartItem
+                          cart={cart}
+                          getAllCart={getAllCart}
+                          isConfirmed
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+                <Box
+                  flex={1}
+                  bgcolor={"#F9FAFB"}
+                  borderRadius={"15px"}
+                  py="30px"
+                  px="30px"
+                  border="1px solid #00000010"
+                >
+                  <Box mb="10px">
+                    <Typography
+                      fontSize={24}
+                      fontFamily={"Montserrat"}
+                      color="#000"
+                      fontWeight={600}
+                    >
+                      Shipping Information
+                    </Typography>
+                  </Box>
+                  <Box
+                    display={"flex"}
+                    alignItems={"flex-start"}
+                    justifyContent={"space-between"}
+                  >
+                    <Box>
+                      <Typography
+                        fontSize={16}
+                        fontWeight={500}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="12px"
+                      >
+                        Delivery Address
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.recipient?.name}
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.recipient?.address1}
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.recipient?.city}
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.recipient?.country_name}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography
+                        fontSize={16}
+                        fontWeight={500}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="12px"
+                      >
+                        Estimated Delivery
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.shipping_service_name}
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        {orderDetails?.shipping} Shipping
+                      </Typography>
+                      <Typography
+                        fontSize={12}
+                        fontWeight={400}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        mb="8px"
+                      >
+                        Tracking will be provided via email
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+              <Box width="270px">
+                <Box
+                  width="100%"
+                  bgcolor={"#F9FAFB"}
+                  borderRadius={"15px"}
+                  py="30px"
+                  px="18px"
+                  border="1px solid #00000010"
+                  mb="24px"
+                >
+                  <Typography
+                    fontSize={24}
+                    fontFamily={"Montserrat"}
+                    color="#1A1A1A"
+                    fontWeight={700}
+                    mb="24px"
+                  >
+                    Order Summary
+                  </Typography>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    mb="18px"
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={500}
+                    >
+                      Subtotal
+                    </Typography>
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={700}
+                    >
+                      {formatPrice(orderDetails?.retail_costs?.subtotal)}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    mb="18px"
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={500}
+                    >
+                      Shipping
+                    </Typography>
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1a1a1a"
+                      fontWeight={700}
+                    >
+                      {formatPrice(orderDetails?.retail_costs?.shipping)}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    mb="18px"
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={500}
+                    >
+                      Tax
+                    </Typography>
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={700}
+                    >
+                      {orderDetails?.retail_costs?.tax ?? 0}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    pb="42px"
+                    mb="18px"
+                    borderBottom={"1px solid #00000010"}
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#16A34A"
+                      fontWeight={500}
+                    >
+                      Discount
+                    </Typography>
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#16A34A"
+                      fontWeight={700}
+                    >
+                      {formatPrice(orderDetails?.retail_costs?.discount)}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                  >
+                    <Typography
+                      fontSize={18}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={700}
+                    >
+                      Total
+                    </Typography>
+                    <Typography
+                      fontSize={18}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={700}
+                    >
+                      {formatPrice(orderDetails?.retail_costs?.total)}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box
+                  width="100%"
+                  bgcolor={"#F9FAFB"}
+                  borderRadius={"15px"}
+                  py="30px"
+                  px="18px"
+                  border="1px solid #00000010"
+                  mb="24px"
+                >
+                  <Typography
+                    fontSize={24}
+                    fontFamily={"Montserrat"}
+                    color="#1A1A1A"
+                    fontWeight={500}
+                    mb="24px"
+                  >
+                    Payment Method
+                  </Typography>
+                  <Box display="flex" alignItems={"center"} gap="12px">
+                    <Image
+                      src={icons.visa}
+                      alt="card image"
+                      width="40"
+                      height="24"
+                    />
+                    <Box>
+                      <Typography
+                        fontSize={16}
+                        fontFamily={"Montserrat"}
+                        color="#1A1A1A"
+                        fontWeight={700}
+                        mb="4px"
+                      >
+                        •••• •••• •••• 4532
+                      </Typography>
+                      <Typography
+                        fontSize={14}
+                        fontFamily={"Montserrat"}
+                        color="#656565"
+                        fontWeight={500}
+                      >
+                        Expires 12/27
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+                <Box
+                  width="100%"
+                  bgcolor={"#D5AC4C1A"}
+                  borderRadius={"15px"}
+                  py="30px"
+                  px="18px"
+                  border="1px solid #D5AC4C33"
+                  mb="24px"
+                >
+                  <Typography
+                    fontSize={24}
+                    fontFamily={"Montserrat"}
+                    color="#1A1A1A"
+                    fontWeight={500}
+                    mb="24px"
+                  >
+                    What's Next?
+                  </Typography>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    gap="12px"
+                    mb="12px"
+                  >
+                    <Image
+                      src={icons.confirm}
+                      alt="card image"
+                      width="17"
+                      height="24"
+                    />
+                    <Typography
+                      fontSize={14}
+                      fontFamily={"Montserrat"}
+                      color="#656565"
+                      fontWeight={400}
+                    >
+                      Order confirmation sent to your email
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    alignItems={"center"}
+                    gap="12px"
+                    mb="12px"
+                  >
+                    <Image
+                      src={icons.ship}
+                      alt="card image"
+                      width="17"
+                      height="24"
+                    />
+                    <Typography
+                      fontSize={14}
+                      fontFamily={"Montserrat"}
+                      color="#656565"
+                      fontWeight={400}
+                    >
+                      Items being prepared for shipment
+                    </Typography>
+                  </Box>
+                  <Box display="flex" alignItems={"center"} gap="12px">
+                    <Image
+                      src={icons.truckWhite}
+                      alt="card image"
+                      width="17"
+                      height="24"
+                    />
+                    <Typography
+                      fontSize={14}
+                      fontFamily={"Montserrat"}
+                      color="#656565"
+                      fontWeight={400}
+                    >
+                      Tracking info will be sent within 24 hours
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              justifyContent={"center"}
+              gap="16px"
+              mb="48px"
+            >
+              <Box
+                py="15px"
+                pl="35px"
+                pr="26px"
+                bgcolor="#000"
+                borderRadius={"8px"}
+                display="flex"
+                alignItems={"center"}
+                gap="15px"
+                sx={{ cursor: "pointer" }}
+              >
+                <Image
+                  src={icons.download}
+                  alt="card image"
+                  width="16"
+                  height="20"
+                />
+                <Typography
+                  fontSize={16}
+                  fontFamily={"Montserrat"}
+                  fontWeight={600}
+                  color="#FFFFFF"
+                  width="fit-content"
+                  sx={{ whiteSpace: "noWrap" }}
+                >
+                  Download Receipt
+                </Typography>
+              </Box>
+              <Box
+                py="15px"
+                pl="35px"
+                pr="26px"
+                border="1px solid #D1D5DB"
+                borderRadius={"8px"}
+                display="flex"
+                alignItems={"center"}
+                gap="15px"
+                sx={{ cursor: "pointer" }}
+              >
+                <Image
+                  src={icons.truckFilled}
+                  alt="card image"
+                  width="20"
+                  height="20"
+                />
+                <Typography
+                  fontSize={16}
+                  fontFamily={"Montserrat"}
+                  fontWeight={600}
+                  color="#1a1a1a"
+                  width="fit-content"
+                  sx={{ whiteSpace: "noWrap" }}
+                >
+                  Track Order
+                </Typography>
+              </Box>
+              <Box
+                py="15px"
+                pl="35px"
+                pr="26px"
+                border="1px solid #D1D5DB"
+                borderRadius={"8px"}
+                display="flex"
+                alignItems={"center"}
+                gap="15px"
+                sx={{ cursor: "pointer" }}
+                onClick={() => router.push("/")}
+              >
+                <Image
+                  src={icons.cartYellow}
+                  alt="card image"
+                  width="14"
+                  height="20"
+                />
+                <Typography
+                  fontSize={16}
+                  fontFamily={"Montserrat"}
+                  fontWeight={600}
+                  color="#1a1a1a"
+                  width="fit-content"
+                  sx={{ whiteSpace: "noWrap" }}
+                >
+                  Continue Shopping
+                </Typography>
+              </Box>
+            </Box>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              flexDirection={"column"}
+              gap="16px"
+              p="25px"
+              border="1px solid #E5E7EB"
+            >
+              <Typography
+                textAlign={"center"}
+                fontSize={18}
+                fontFamily={"Montserrat"}
+                color="#1a1a1a"
+                fontWeight={700}
+              >
+                Need Help?
+              </Typography>
+              <Typography
+                textAlign={"center"}
+                fontSize={16}
+                fontFamily={"Montserrat"}
+                color="#656565"
+                fontWeight={500}
+              >
+                Our customer support team is here to help with any questions
+                about your order.
+              </Typography>
+              <Box
+                width="100%"
+                display="flex"
+                alignItems={"center"}
+                justifyContent={"center"}
+                gap="16px"
+              >
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  gap="15px"
+                  sx={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={icons.email}
+                    alt="card image"
+                    width="16"
+                    height="20"
+                  />
+                  <Typography
+                    fontSize={16}
+                    fontFamily={"Montserrat"}
+                    fontWeight={500}
+                    color="#D0950F"
+                    width="fit-content"
+                    sx={{ whiteSpace: "noWrap" }}
+                  >
+                    Email Support
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  gap="15px"
+                  sx={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={icons.phone}
+                    alt="card image"
+                    width="16"
+                    height="20"
+                  />
+                  <Typography
+                    fontSize={16}
+                    fontFamily={"Montserrat"}
+                    fontWeight={500}
+                    color="#D0950F"
+                    width="fit-content"
+                    sx={{ whiteSpace: "noWrap" }}
+                  >
+                    Call Us
+                  </Typography>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  gap="15px"
+                  sx={{ cursor: "pointer" }}
+                >
+                  <Image
+                    src={icons.chat}
+                    alt="card image"
+                    width="16"
+                    height="20"
+                  />
+                  <Typography
+                    fontSize={16}
+                    fontFamily={"Montserrat"}
+                    fontWeight={500}
+                    color="#D0950F"
+                    width="fit-content"
+                    sx={{ whiteSpace: "noWrap" }}
+                  >
+                    Live Chat
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      )}
+    </RequireAuth>
+  );
+};
+
+export default OrderConfirmation;

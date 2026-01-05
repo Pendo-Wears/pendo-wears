@@ -1,19 +1,22 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from "react";
 import { icons } from "@/src/assets/icons/icons";
-import { Box, TextField, Typography } from "@mui/material";
+import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { handleLogin } from "@/src/services/authUsage";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/src/context/AuthContext";
+import { getCountryData } from "@/src/lib/priceFormatter";
 
 const Login = () => {
+  const { isAuthenticated, setIsAuthenticated, fireAlert } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submitForm() {
     setLoading(true);
@@ -25,24 +28,24 @@ const Login = () => {
     console.log(result, "RESULTTTTT");
 
     if (!result.success) {
-      alert(result.error);
+      fireAlert(result.error, "error");
       return;
     }
-
+    fireAlert("Login Successful", "success");
+    getCountryData();
+    setIsAuthenticated(true);
     router.replace("/");
-
   }
 
   useEffect(() => {
-      const isAuthenticated = localStorage.getItem("isAuthenticated");
-      if (isAuthenticated === "true") {
-        router.replace("/");
-      }
-    }, []);
+    if (isAuthenticated) {
+      router.replace("/");
+    }
+  });
 
   return (
     <Box
-      bgcolor="#f5f5f5"
+      bgcolor="#fff"
       width="100%"
       display="flex"
       flexDirection="column"
@@ -85,11 +88,12 @@ const Login = () => {
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
               sx={{
-                bgcolor: "#fff",
+                bgcolor: "#f5f5f5",
                 borderRadius: "6px",
                 height: "54px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
+                    borderRadius: "8px",
                     border: "none", // remove border normally
                   },
                   "&:hover fieldset": {
@@ -100,6 +104,7 @@ const Login = () => {
                   },
                 },
                 input: {
+                  fontFamily: "Montserrat",
                   "&::placeholder": {
                     color: "#8D9396", // placeholder color
                     fontFamily: "Montserrat",
@@ -141,11 +146,12 @@ const Login = () => {
                 ),
               }}
               sx={{
-                bgcolor: "#fff",
+                bgcolor: "#f5f5f5",
                 borderRadius: "6px",
                 height: "54px",
                 "& .MuiOutlinedInput-root": {
                   "& fieldset": {
+                    borderRadius: "8px",
                     border: "none", // remove border normally
                   },
                   "&:hover fieldset": {
@@ -156,6 +162,7 @@ const Login = () => {
                   },
                 },
                 input: {
+                  fontFamily: "Montserrat",
                   "&::placeholder": {
                     color: "#8D9396", // placeholder color
                     fontFamily: "Montserrat",
@@ -186,7 +193,11 @@ const Login = () => {
           alignItems="center"
           borderRadius="6px"
           mb="54px"
-          sx={{ cursor: "pointer" }}
+          sx={{
+            cursor: "pointer",
+            pointerEvents: loading ? "none" : "auto",
+            opacity: loading ? 0.2 : 1,
+          }}
           onClick={submitForm}
         >
           <Typography
@@ -195,7 +206,7 @@ const Login = () => {
             fontFamily={"Montserrat"}
             color="#fff"
           >
-            Login
+            {loading ? <CircularProgress size={18} color="inherit" /> : "Login"}
           </Typography>
         </Box>
         <Box
