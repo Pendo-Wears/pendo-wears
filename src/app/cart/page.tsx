@@ -60,16 +60,26 @@ const Cart = () => {
     setCartItems(result);
   };
 
-  const getCartTotal = () => {
-    return getCart().reduce(
+  const [total, setTotal] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const cart = getCart();
+    setCartItems(cart);
+
+    const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
       0
     );
-  };
 
-  const getCartTotalQuantity = () => {
-    return getCart().reduce((sum: number, item: any) => sum + item.quantity, 0);
-  };
+    const totalQty = cart.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
+
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, []);
 
   const clearCart = () => {
     if (typeof window !== "undefined") {
@@ -157,7 +167,7 @@ const Cart = () => {
           Shopping cart
         </Typography>
         <Typography fontSize={16} fontFamily={"Montserrat"} color="#4B5563">
-          {getCartTotalQuantity()} items in your cart
+          {quantity} items in your cart
         </Typography>
         <Box
           mb="45px"
@@ -678,7 +688,7 @@ const Cart = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal()))}
+                  {formatPrice(Number(total))}
                 </Typography>
               </Box>
               <Box
@@ -749,7 +759,7 @@ const Cart = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal() + tax + shippingFee))}
+                  {formatPrice(Number(total + tax + shippingFee))}
                 </Typography>
               </Box>
               <Box
@@ -766,7 +776,7 @@ const Cart = () => {
                     fireAlert("Your cart is currently empty", "warning");
                     return;
                   }
-                  setAmount(Number(getCartTotal() + tax + shippingFee));
+                  setAmount(Number(total + tax + shippingFee));
                   router.push("/checkout");
                 }}
               >

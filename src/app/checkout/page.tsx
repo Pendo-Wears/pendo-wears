@@ -177,16 +177,26 @@ const Checkout = () => {
     setCartItems(result);
   };
 
-  const getCartTotal = () => {
-    return getCart().reduce(
+  const [total, setTotal] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const cart = getCart();
+    setCartItems(cart);
+
+    const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
       0
     );
-  };
 
-  const getCartTotalQuantity = () => {
-    return getCart().reduce((sum: number, item: any) => sum + item.quantity, 0);
-  };
+    const totalQty = cart.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
+
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, []);
 
   const fetchCountryData = async () => {
     const countryData = await getCountryData();
@@ -643,7 +653,7 @@ const Checkout = () => {
                 fontFamily={"Montserrat"}
                 color="#5C5C5C"
               >
-                {getCartTotalQuantity()} Item in your bags
+                {quantity} Item in your bags
               </Typography>
             </Box>
             <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
@@ -690,7 +700,7 @@ const Checkout = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal()))}
+                  {formatPrice(Number(total))}
                 </Typography>
               </Box>
               <Box
@@ -761,7 +771,7 @@ const Checkout = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal() + tax + shippingFee))}
+                  {formatPrice(Number(total + tax + shippingFee))}
                 </Typography>
               </Box>
               <Box display="flex" flexDirection={"column"} px="18px" mb="18px">
