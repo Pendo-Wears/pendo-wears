@@ -12,7 +12,6 @@ import {
   formatWoocommercePrice,
   getPriceRange,
 } from "@/src/lib/priceFormatter";
-import { getCart } from "../cart/page";
 import { ProductDetailsType, SyncProduct, SyncVariant } from "@/src/lib/types";
 
 const ProductDetails = ({
@@ -36,7 +35,11 @@ const ProductDetails = ({
 
   const saveRecentlyViewed = (data: any) => {
     let recents = [];
-    recents = JSON.parse(localStorage.getItem("recent") || "[]");
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("recent") || "[]"
+        : "[]";
+    recents = JSON.parse(raw);
     setRecentlyViewed(
       recents.filter((recent: SyncProduct) => recent?.id !== Number(slug))
     );
@@ -50,7 +53,9 @@ const ProductDetails = ({
       recents.push(data);
     }
 
-    localStorage.setItem("recent", JSON.stringify(recents));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("recent", JSON.stringify(recents));
+    }
   };
 
   const getProductDetails = async () => {
@@ -143,7 +148,11 @@ const ProductDetails = ({
     a.id === b.id && a.color === b.color && a.size === b.size;
 
   const addToCart = (item: any) => {
-    const cart = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const cart = JSON.parse(raw);
 
     const existing = cart.find((p: any) => isSameVariant(p, item));
 
@@ -153,7 +162,9 @@ const ProductDetails = ({
       cart.push(item);
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
     fireAlert("Item successfully added to cart", "success");
   };
 

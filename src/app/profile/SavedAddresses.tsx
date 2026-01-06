@@ -11,7 +11,9 @@ const SavedAddresses = () => {
   const [user, setUser] = useState<Billing>();
 
   const getUser = async () => {
-    const thisUser: User = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+    const thisUser: User = JSON.parse(raw);
     setUser(thisUser.billing);
   };
 

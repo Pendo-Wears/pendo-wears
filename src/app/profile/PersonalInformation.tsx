@@ -25,7 +25,9 @@ const PersonalInformation = () => {
   const [loading, setLoading] = useState(false);
 
   const getUser = async () => {
-    const thisUser: User = JSON.parse(localStorage.getItem("user") ?? "");
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+    const thisUser: User = JSON.parse(raw);
     setUser(thisUser);
     setFirstName(thisUser.first_name);
     setLastName(thisUser.last_name);
@@ -78,16 +80,18 @@ const PersonalInformation = () => {
           setIsEditMode(false);
           getUser();
           fireAlert("User updated successfully", "success");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...updateUser.data.data,
-              billing: {
-                ...updateUser.data.data.billing,
-                countryName: user?.billing.countryName,
-              },
-            })
-          );
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...updateUser.data.data,
+                billing: {
+                  ...updateUser.data.data.billing,
+                  countryName: user?.billing.countryName,
+                },
+              })
+            );
+          }
         }
       }
     } catch (error) {

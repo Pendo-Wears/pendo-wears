@@ -9,7 +9,7 @@ import { formatPrice, getCountryData } from "@/src/lib/priceFormatter";
 import FlutterwavePayButton from "./FlutterWavePayment";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { CartItem, getCart } from "../cart/page";
+import { CartItem } from "../cart/page";
 import { productsEndpoint } from "@/src/lib/endpoints";
 import Image from "next/image";
 import { icons } from "@/src/assets/icons/icons";
@@ -59,48 +59,55 @@ const Checkout = () => {
   //   console.log(response);
   // };
 
-  const createOrder = async () => {
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
-    const allCart = getCart();
-    const userCountry = await getCountryData();
+  // const createOrder = async () => {
+  //   const allCart = getCart();
+  //   const userCountry = await getCountryData();
 
-    if (!userData.id || allCart.length === 0) return;
+  //   if (!userData.id || allCart.length === 0) return;
 
-    try {
-      setLoading(true);
-      const orderPayload = {
-        userId: userData.id,
-        recipient: {
-          name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-          address1: userData?.billing?.address_1 || "",
-          state_name: userData?.billing?.state || "",
-          city: userData?.billing?.state || "",
-          country_code: userCountry?.iso2 || "",
-          country_name: userCountry?.name || "",
-          zip: userData?.billing?.postcode || "",
-          phone: userCountry?.phone_code + userData?.billing?.phone || "",
-          email: userData?.email || "",
-        },
-        items: allCart,
-      };
+  //   try {
+  //     setLoading(true);
+  //     const orderPayload = {
+  //       userId: userData.id,
+  //       recipient: {
+  //         name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
+  //         address1: userData?.billing?.address_1 || "",
+  //         state_name: userData?.billing?.state || "",
+  //         city: userData?.billing?.state || "",
+  //         country_code: userCountry?.iso2 || "",
+  //         country_name: userCountry?.name || "",
+  //         zip: userData?.billing?.postcode || "",
+  //         phone: userCountry?.phone_code + userData?.billing?.phone || "",
+  //         email: userData?.email || "",
+  //       },
+  //       items: allCart,
+  //     };
 
-      const order: any = await productsEndpoint.createOrder(orderPayload);
-      console.log("Order created successfully:", order);
-      if (order.success) {
-        fireAlert(order.message, "success");
-        localStorage.removeItem("cart");
-      }
-    } catch (error) {
-      console.error("Error creating order:", error);
-      fireAlert("Failed to create order", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const order: any = await productsEndpoint.createOrder(orderPayload);
+  //     console.log("Order created successfully:", order);
+  //     if (order.success) {
+  //       fireAlert(order.message, "success");
+  //       localStorage.removeItem("cart");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error creating order:", error);
+  //     fireAlert("Failed to create order", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const payWithFlutterwave = async () => {
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
-    const allCart = getCart();
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
+    const userData = JSON.parse(profile);
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const allCart = JSON.parse(raw);
     const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;
@@ -134,7 +141,10 @@ const Checkout = () => {
           expiry_month: expiryMonth,
           expiry_year: expiryYear,
         },
-        redirect: `${window.location.origin}/order-confirmation?order=${order.data.id}`,
+        redirect:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/order-confirmation?order=${order.data.id}`
+            : "",
         user: {
           email: user.email,
           phone_number: user?.billing?.phone || "",
@@ -147,7 +157,7 @@ const Checkout = () => {
       if (response.data.data.status === "pending") {
         const auth = response.data?.meta?.authorization;
 
-        if (auth?.mode === "redirect") {
+        if (auth?.mode === "redirect" && typeof window !== "undefined") {
           // Redirect to bank-hosted 3DS page
           window.location.href = auth.redirect;
         } else if (auth?.mode === "otp") {
@@ -159,26 +169,46 @@ const Checkout = () => {
         // Payment done
         router.push(`/order-confirmation?order=${order.data.id}`);
       }
-      localStorage.removeItem("cart");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("cart");
+      }
     }
   };
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
-    const result = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const result = JSON.parse(raw);
     setCartItems(result);
   };
 
-  const getCartTotal = () => {
-    return getCart().reduce(
+  const [total, setTotal] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const cart = JSON.parse(raw);
+    setCartItems(cart);
+
+    const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
       0
     );
-  };
 
-  const getCartTotalQuantity = () => {
-    return getCart().reduce((sum: number, item: any) => sum + item.quantity, 0);
-  };
+    const totalQty = cart.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
+
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, []);
 
   const fetchCountryData = async () => {
     const countryData = await getCountryData();
@@ -201,15 +231,22 @@ const Checkout = () => {
     }
   };
   // useEffect(() => {
-  //   setUser(JSON.parse(localStorage.getItem("user") || "null"));
   //   getAllCart();
   //   fetchCountryData();
   //   veriFyTransaction();
   //   createOrder();
   // }, [params]);
 
+  const getUser = () => {
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
+    setUser(JSON.parse(profile));
+  };
+
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    getUser();
     fetchCountryData();
     getAllCart();
   }, []);
@@ -628,13 +665,13 @@ const Checkout = () => {
                 fontFamily={"Montserrat"}
                 color="#5C5C5C"
               >
-                {getCartTotalQuantity()} Item in your bags
+                {quantity} Item in your bags
               </Typography>
             </Box>
             <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
               {cartItems.map((cart, id) => (
                 <Box key={id} pb="24px" borderBottom="1px solid #00000010">
-                  <CartItem cart={cart} getAllCart={getAllCart} isCheckout />
+                  <CartItem cart={cart} isCheckout />
                 </Box>
               ))}
             </Box>
@@ -675,7 +712,7 @@ const Checkout = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal()))}
+                  {formatPrice(Number(total))}
                 </Typography>
               </Box>
               <Box
@@ -746,7 +783,7 @@ const Checkout = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal() + tax + shippingFee))}
+                  {formatPrice(Number(total + tax + shippingFee))}
                 </Typography>
               </Box>
               <Box display="flex" flexDirection={"column"} px="18px" mb="18px">

@@ -29,8 +29,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [amount, setAmount] = useState(0);
 
+  const getUserAuth = () => {
+    if (typeof window !== "undefined") {
+      const raw = localStorage.getItem("isAuthenticated") === "true";
+      setIsAuthenticated(raw);
+    }
+  };
+
   useEffect(() => {
-    setIsAuthenticated(localStorage.getItem("isAuthenticated") === "true");
+    getUserAuth();
   });
 
   const fireAlert = (

@@ -68,7 +68,9 @@ const Register = () => {
     setPassword("");
     setCountry("");
     setAvatar("");
-    window.scrollTo(0, 0);
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+   }
   }
 
   useEffect(() => {

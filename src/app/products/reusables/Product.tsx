@@ -27,16 +27,21 @@ const Product = ({
     useState<WooProductDetails | null>(null);
 
   const addToWishlist = () => {
-    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    const raw = typeof window !== "undefined" ? localStorage.getItem("wishlist") || "[]" : "[]";
+    const wishlist = JSON.parse(raw);
 
     if (!wishlist.find((p: any) => p.id === product.id)) {
       wishlist.push({ ...product, inWishlist: true });
       fireAlert("Item successfully added to wishlist", "success");
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("wishlist", JSON.stringify(wishlist));
+      }
     } else {
       const updated = wishlist.filter((wish: any) => wish.id !== product.id);
       fireAlert("Item removed from wishlist", "success");
-      localStorage.setItem("wishlist", JSON.stringify(updated));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("wishlist", JSON.stringify(updated));
+      }
     }
   };
 

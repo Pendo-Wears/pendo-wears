@@ -17,15 +17,28 @@ import { useRouter } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
 import { GetCountries, GetState } from "react-country-state-city";
 
-export const getCart = () => {
+// export const getCart = () => {
+//   if (typeof window === "undefined") return [];
+//   const items =
+//     typeof window !== "undefined" ? localStorage.getItem("cart") || "[]" : "[]";
+//   return JSON.parse(items);
+// };
+
+const readCart = () => {
   if (typeof window === "undefined") return [];
   return JSON.parse(localStorage.getItem("cart") || "[]");
+};
+
+const writeCart = (cart: any[]) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
 };
 
 const Cart = () => {
   const router = useRouter();
   const { fireAlert, setAmount } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
   const [country, setCountry] = useState<any>(null);
@@ -54,26 +67,46 @@ const Cart = () => {
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
-    const result = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const result = JSON.parse(raw);
     setCartItems(result);
   };
 
-  const getCartTotal = () => {
-    return getCart().reduce(
+  const [total, setTotal] = useState(0);
+  const [quantity, setQuantity] = useState(0);
+
+  useEffect(() => {
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const cart = JSON.parse(raw);
+    setCartItems(cart);
+
+    const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
       0
     );
-  };
 
-  const getCartTotalQuantity = () => {
-    return getCart().reduce((sum: number, item: any) => sum + item.quantity, 0);
-  };
+    const totalQty = cart.reduce(
+      (sum: number, item: any) => sum + item.quantity,
+      0
+    );
 
-  const clearCart = () => {
-    localStorage.removeItem("cart");
-    fireAlert("Cart cleared successfully", "success");
-    getAllCart();
-  };
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, []);
+
+  // const clearCart = () => {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.removeItem("cart");
+  //   }
+  //   fireAlert("Cart cleared successfully", "success");
+  //   getAllCart();
+  // };
 
   const updateShippingAddress = async () => {
     try {
@@ -94,16 +127,18 @@ const Cart = () => {
         );
         if (updateUser?.data.success) {
           fireAlert("Shipping address updated successfully", "success");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...updateUser.data.data,
-              billing: {
-                ...updateUser.data.data.billing,
-                countryName: country?.name,
-              },
-            })
-          );
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...updateUser.data.data,
+                billing: {
+                  ...updateUser.data.data.billing,
+                  countryName: country?.name,
+                },
+              })
+            );
+          }
         }
       }
     } catch (error) {
@@ -112,23 +147,55 @@ const Cart = () => {
     }
   };
 
+  const getUser = () => {
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
+    setUser(JSON.parse(profile));
+  };
+
   useEffect(() => {
-    getAllCart();
-    fetchCountryData();
-    fetchCountries();
-    setUser(JSON.parse(localStorage.getItem("user") || "null"));
+    setCartItems(readCart());
+    getCountryData().then(setCountry);
+    GetCountries().then(setCountries);
+
+    const profile = localStorage.getItem("user");
+    if (profile) setUser(JSON.parse(profile));
   }, []);
 
   useEffect(() => {
-    fetchStates();
+    const totalPrice = cartItems?.reduce(
+      (sum, item) => sum + Number(item.retail_price) * item.quantity,
+      0
+    );
+    const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (country?.id) {
+      GetState(parseInt(country.id)).then(setStates);
+    }
   }, [country]);
 
   useEffect(() => {
+    if (!user) return;
     setAddress(user?.billing?.address_1 || "");
     setPhone(user?.billing?.phone || "");
     setZipCode(user?.billing?.postcode || "");
     setState({ name: user?.billing?.state || "" });
   }, [user]);
+
+  /* -------------------- Actions -------------------- */
+
+  const clearCart = () => {
+    writeCart([]);
+    setCartItems([]);
+    fireAlert("Cart cleared successfully", "success");
+  };
   return (
     <RequireAuth>
       <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
@@ -143,7 +210,7 @@ const Cart = () => {
           Shopping cart
         </Typography>
         <Typography fontSize={16} fontFamily={"Montserrat"} color="#4B5563">
-          {getCartTotalQuantity()} items in your cart
+          {quantity} items in your cart
         </Typography>
         <Box
           mb="45px"
@@ -195,7 +262,11 @@ const Cart = () => {
             </Box>
             <Activity mode={cartItems?.length > 0 ? "visible" : "hidden"}>
               {cartItems.map((cart) => (
-                <CartItem cart={cart} key={cart} getAllCart={getAllCart} />
+                <CartItem
+                  cart={cart}
+                  key={cart.id}
+                  onUpdate={() => setCartItems(readCart())}
+                />
               ))}
             </Activity>
             <Activity mode={cartItems?.length === 0 ? "visible" : "hidden"}>
@@ -664,7 +735,7 @@ const Cart = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal()))}
+                  {formatPrice(Number(total))}
                 </Typography>
               </Box>
               <Box
@@ -735,7 +806,7 @@ const Cart = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(getCartTotal() + tax + shippingFee))}
+                  {formatPrice(Number(total + tax + shippingFee))}
                 </Typography>
               </Box>
               <Box
@@ -752,7 +823,7 @@ const Cart = () => {
                     fireAlert("Your cart is currently empty", "warning");
                     return;
                   }
-                  setAmount(Number(getCartTotal() + tax + shippingFee));
+                  setAmount(Number(total + tax + shippingFee));
                   router.push("/checkout");
                 }}
               >
@@ -954,38 +1025,41 @@ interface CartItemProps extends SyncVariant {
 
 export const CartItem = ({
   cart,
-  getAllCart,
+  onUpdate,
   isCheckout = false,
   isConfirmed = false,
 }: {
   cart: CartItemProps;
-  getAllCart: () => void;
+  onUpdate?: () => void;
   isCheckout?: boolean;
   isConfirmed?: boolean;
 }) => {
   const { fireAlert } = useAuth();
 
   const removeFromCart = (key: number) => {
-    const cart = getCart().filter((item: any) => item.id !== key);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    getAllCart();
+    const all = readCart();
+    const cart = all.filter((item: any) => item.id !== key);
+    writeCart(cart);
     fireAlert("Item successfully removed from cart", "success");
   };
 
-  const updateCart = (key: number, quantity: number) => {
-    const cart = getCart();
+  const updateCart = (quantity: number) => {
+    const all = readCart();
 
     if (quantity < 1) {
-      removeFromCart(key);
-      return;
+      writeCart(all.filter((i: any) => i.id !== cart.id));
+    } else {
+      writeCart(
+        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i))
+      );
     }
-    const updated = cart
-      .map((item: any) => (item.id === key ? { ...item, quantity } : item))
-      .filter((item: any) => item.quantity > 0);
 
-    localStorage.setItem("cart", JSON.stringify(updated));
-    fireAlert("Item successfully updated", "success");
+    if (onUpdate) {
+      onUpdate();
+    }
+    fireAlert("Cart updated", "success");
   };
+
   return (
     <Box
       py={isCheckout || isConfirmed ? "13px" : "30px"}
@@ -1086,7 +1160,7 @@ export const CartItem = ({
                 display="flex"
                 alignItems={"center"}
                 justifyContent={"center"}
-                onClick={() => updateCart(cart.id, (cart.quantity -= 1))}
+                onClick={() => updateCart(cart.quantity - 1)}
                 sx={{
                   opacity: cart.quantity === 1 ? 0.5 : 1,
                   pointerEvents: cart.quantity === 1 ? "none" : "all",
@@ -1125,7 +1199,7 @@ export const CartItem = ({
                 display="flex"
                 alignItems={"center"}
                 justifyContent={"center"}
-                onClick={() => updateCart(cart.id, (cart.quantity += 1))}
+                onClick={() => updateCart(cart.quantity + 1)}
               >
                 <Typography
                   fontSize={16}

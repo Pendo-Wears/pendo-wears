@@ -16,7 +16,8 @@ export default function FlutterwavePayButton({ amount, email, name }: Props) {
     amount: Number(amount.toFixed(2)),
     currency: "NGN",
     payment_options: "card,banktransfer,ussd",
-    redirect_url: `${window.location.origin}/checkout`,
+    redirect_url:
+      typeof window !== "undefined" ? `${window.location.origin}/checkout` : "",
     customer: {
       email,
       name,

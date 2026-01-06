@@ -81,7 +81,7 @@ export async function signup({
 
     // token = login?.data?.data?.jwt;
 
-    // localStorage.setItem("token", token);
+    //if(typeof window !== "undefined"){localStorage.setItem("token", token);
 
     // const validate = await privateApi.post("/auth/v1/auth/validate", {
     //   jwt: token,
@@ -93,8 +93,8 @@ export async function signup({
     // }
 
     // // SAVE TO LOCAL STORAGE
-    // localStorage.setItem("user", JSON.stringify(user));
-    // localStorage.setItem("isAuthenticated", JSON.stringify(true));
+    //if(typeof window !== "undefined"){localStorage.setItem("user", JSON.stringify(user));
+    //if(typeof window !== "undefined"){localStorage.setItem("isAuthenticated", JSON.stringify(true));
 
     return { token, user };
   } catch (err: any) {
@@ -127,7 +127,9 @@ export async function login(identifier: string, password: string) {
 
     token = data?.data?.jwt;
 
-    localStorage.setItem("token", token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", token);
+    }
 
     // VALIDATE TOKEN
     const validate = await privateApi.post("/auth/v1/auth/validate", {
@@ -153,8 +155,10 @@ export async function login(identifier: string, password: string) {
     }
 
     // SAVE TO LOCAL STORAGE
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("isAuthenticated", JSON.stringify(true));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("isAuthenticated", JSON.stringify(true));
+    }
 
     return { token, user };
   } catch (err: any) {

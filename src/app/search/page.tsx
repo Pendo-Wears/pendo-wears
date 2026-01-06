@@ -55,7 +55,7 @@ const Search = () => {
       }
 
       router.replace(`/search?${params.toString()}`);
-      const result: any = await productsEndpoint.getProducts(params.toString());
+      const result: any = await productsEndpoint.getWooProducts(params.toString());
       if (result.status === 200) {
         setSearchResults(result.data);
       }

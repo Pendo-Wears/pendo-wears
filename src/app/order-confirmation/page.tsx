@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CartItem, getCart } from "../cart/page";
+import { CartItem } from "../cart/page";
 import { formatPrice, getCountryData } from "@/src/lib/priceFormatter";
 import { productsEndpoint } from "@/src/lib/endpoints";
 import { useAuth } from "@/src/context/AuthContext";
@@ -23,12 +23,15 @@ const OrderConfirmation = () => {
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
-    const result = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const result = JSON.parse(raw);
     setCartItems(result);
   };
 
   // const createOrder = async () => {
-  //   const userData = JSON.parse(localStorage.getItem("user") || "null");
   //   const allCart = getCart();
   //   const userCountry = await getCountryData();
 
@@ -210,7 +213,6 @@ const OrderConfirmation = () => {
                       <Box key={id}>
                         <CartItem
                           cart={cart}
-                          getAllCart={getAllCart}
                           isConfirmed
                         />
                       </Box>

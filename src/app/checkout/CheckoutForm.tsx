@@ -16,7 +16,6 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCart } from "../cart/page";
 import { SyncVariant } from "@/src/lib/types";
 import { productsEndpoint } from "@/src/lib/endpoints";
 
@@ -39,7 +38,11 @@ export default function CheckoutForm({ amount }: Props) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const cart: SyncVariant[] = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    // const cart: SyncVariant[] = JSON.parse(raw);
 
     if (!stripe || !elements) {
       fireAlert("Stripe has not loaded yet.", "error");
@@ -49,8 +52,13 @@ export default function CheckoutForm({ amount }: Props) {
 
     if (!amount) throw new Error("Invalid amount.");
 
-    const userData = JSON.parse(localStorage.getItem("user") || "null");
-    const allCart = getCart();
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
+    const userData = JSON.parse(profile);
+
+    const allCart = JSON.parse(raw);
     const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;
@@ -89,11 +97,12 @@ export default function CheckoutForm({ amount }: Props) {
           orderId: `${order.data.id}`,
         });
 
-        localStorage.setItem(
-          "stripeCustomerId",
-          JSON.stringify(data.customerId)
-        );
-
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "stripeCustomerId",
+            JSON.stringify(data.customerId)
+          );
+        }
         const clientSecret = data.clientSecret;
 
         if (!clientSecret) throw new Error("No client secret returned.");
@@ -129,14 +138,20 @@ export default function CheckoutForm({ amount }: Props) {
         fireAlert(err.message || "Payment failed.", "error");
       } finally {
         setLoading(false);
-        localStorage.removeItem("cart");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cart");
+        }
       }
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedStripeCustomerId = localStorage.getItem("stripeCustomerId");
+    const storedUser =
+      typeof window !== "undefined" ? localStorage.getItem("user") : "";
+    const storedStripeCustomerId =
+      typeof window !== "undefined"
+        ? localStorage.getItem("stripeCustomerId")
+        : "";
     if (storedStripeCustomerId) {
       setStripeCustomerId(JSON.parse(storedStripeCustomerId));
     }
