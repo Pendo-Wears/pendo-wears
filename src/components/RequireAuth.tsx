@@ -11,7 +11,7 @@ export default function RequireAuth({
   const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
     if (!token) {
       router.replace("/login");

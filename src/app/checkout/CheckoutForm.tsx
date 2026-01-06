@@ -49,7 +49,10 @@ export default function CheckoutForm({ amount }: Props) {
 
     if (!amount) throw new Error("Invalid amount.");
 
-    const profile = localStorage.getItem("user") || "null";
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
     const userData = JSON.parse(profile);
     const allCart = getCart();
     const userCountry = await getCountryData();
@@ -90,11 +93,12 @@ export default function CheckoutForm({ amount }: Props) {
           orderId: `${order.data.id}`,
         });
 
-        localStorage.setItem(
-          "stripeCustomerId",
-          JSON.stringify(data.customerId)
-        );
-
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "stripeCustomerId",
+            JSON.stringify(data.customerId)
+          );
+        }
         const clientSecret = data.clientSecret;
 
         if (!clientSecret) throw new Error("No client secret returned.");
@@ -130,14 +134,20 @@ export default function CheckoutForm({ amount }: Props) {
         fireAlert(err.message || "Payment failed.", "error");
       } finally {
         setLoading(false);
-        localStorage.removeItem("cart");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("cart");
+        }
       }
     }
   };
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedStripeCustomerId = localStorage.getItem("stripeCustomerId");
+    const storedUser =
+      typeof window !== "undefined" ? localStorage.getItem("user") : "";
+    const storedStripeCustomerId =
+      typeof window !== "undefined"
+        ? localStorage.getItem("stripeCustomerId")
+        : "";
     if (storedStripeCustomerId) {
       setStripeCustomerId(JSON.parse(storedStripeCustomerId));
     }

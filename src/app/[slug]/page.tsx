@@ -36,7 +36,10 @@ const ProductDetails = ({
 
   const saveRecentlyViewed = (data: any) => {
     let recents = [];
-    const raw = localStorage.getItem("recent") || "[]";
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("recent") || "[]"
+        : "[]";
     recents = JSON.parse(raw);
     setRecentlyViewed(
       recents.filter((recent: SyncProduct) => recent?.id !== Number(slug))
@@ -51,7 +54,9 @@ const ProductDetails = ({
       recents.push(data);
     }
 
-    localStorage.setItem("recent", JSON.stringify(recents));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("recent", JSON.stringify(recents));
+    }
   };
 
   const getProductDetails = async () => {
@@ -154,7 +159,9 @@ const ProductDetails = ({
       cart.push(item);
     }
 
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
     fireAlert("Item successfully added to cart", "success");
   };
 

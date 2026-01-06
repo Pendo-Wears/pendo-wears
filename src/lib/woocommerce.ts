@@ -6,7 +6,8 @@ const privateApi = axios.create({
 });
 
 privateApi.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : "";
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

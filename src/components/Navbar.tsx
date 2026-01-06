@@ -49,7 +49,10 @@ const Navbar = () => {
   };
 
   const getUser = () => {
-    const profile = localStorage.getItem("user") || "null";
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
     setUser(JSON.parse(profile));
   };
 

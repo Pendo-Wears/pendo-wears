@@ -14,7 +14,8 @@ const RecentOrders = () => {
   const router = useRouter();
 
   const getUserOrders = async () => {
-    const raw = localStorage.getItem("user") ?? "";
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
     const thisUser = JSON.parse(raw);
     setLoading(true);
     try {

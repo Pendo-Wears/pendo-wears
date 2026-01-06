@@ -98,7 +98,10 @@ const Checkout = () => {
   // };
 
   const payWithFlutterwave = async () => {
-    const profile = localStorage.getItem("user") || "null";
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
     const userData = JSON.parse(profile);
     const allCart = getCart();
     const userCountry = await getCountryData();
@@ -162,7 +165,9 @@ const Checkout = () => {
         // Payment done
         router.push(`/order-confirmation?order=${order.data.id}`);
       }
-      localStorage.removeItem("cart");
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("cart");
+      }
     }
   };
 
@@ -211,7 +216,10 @@ const Checkout = () => {
   // }, [params]);
 
   const getUser = () => {
-    const profile = localStorage.getItem("user") || "null";
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
     setUser(JSON.parse(profile));
   };
 

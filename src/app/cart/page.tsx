@@ -19,7 +19,8 @@ import { GetCountries, GetState } from "react-country-state-city";
 
 export const getCart = () => {
   if (typeof window === "undefined") return [];
-  const items = localStorage.getItem("cart") || "[]";
+  const items =
+    typeof window !== "undefined" ? localStorage.getItem("cart") || "[]" : "[]";
   return JSON.parse(items);
 };
 
@@ -71,7 +72,9 @@ const Cart = () => {
   };
 
   const clearCart = () => {
-    localStorage.removeItem("cart");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("cart");
+    }
     fireAlert("Cart cleared successfully", "success");
     getAllCart();
   };
@@ -95,16 +98,18 @@ const Cart = () => {
         );
         if (updateUser?.data.success) {
           fireAlert("Shipping address updated successfully", "success");
-          localStorage.setItem(
-            "user",
-            JSON.stringify({
-              ...updateUser.data.data,
-              billing: {
-                ...updateUser.data.data.billing,
-                countryName: country?.name,
-              },
-            })
-          );
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                ...updateUser.data.data,
+                billing: {
+                  ...updateUser.data.data.billing,
+                  countryName: country?.name,
+                },
+              })
+            );
+          }
         }
       }
     } catch (error) {
@@ -114,7 +119,10 @@ const Cart = () => {
   };
 
   const getUser = () => {
-    const profile = localStorage.getItem("user") || "null";
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
     setUser(JSON.parse(profile));
   };
 
@@ -973,7 +981,9 @@ export const CartItem = ({
 
   const removeFromCart = (key: number) => {
     const cart = getCart().filter((item: any) => item.id !== key);
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
     getAllCart();
     fireAlert("Item successfully removed from cart", "success");
   };
@@ -989,7 +999,9 @@ export const CartItem = ({
       .map((item: any) => (item.id === key ? { ...item, quantity } : item))
       .filter((item: any) => item.quantity > 0);
 
-    localStorage.setItem("cart", JSON.stringify(updated));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cart", JSON.stringify(updated));
+    }
     fireAlert("Item successfully updated", "success");
   };
   return (

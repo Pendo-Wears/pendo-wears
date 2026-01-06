@@ -13,7 +13,8 @@ const Orders = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserOrders = async () => {
-    const raw = localStorage.getItem("user") ?? "";
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
     const thisUser = JSON.parse(raw);
     setLoading(true);
     try {
