@@ -12,7 +12,6 @@ import {
   formatWoocommercePrice,
   getPriceRange,
 } from "@/src/lib/priceFormatter";
-import { getCart } from "../cart/page";
 import { ProductDetailsType, SyncProduct, SyncVariant } from "@/src/lib/types";
 
 const ProductDetails = ({
@@ -149,7 +148,11 @@ const ProductDetails = ({
     a.id === b.id && a.color === b.color && a.size === b.size;
 
   const addToCart = (item: any) => {
-    const cart = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const cart = JSON.parse(raw);
 
     const existing = cart.find((p: any) => isSameVariant(p, item));
 

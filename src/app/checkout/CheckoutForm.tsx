@@ -16,7 +16,6 @@ import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCart } from "../cart/page";
 import { SyncVariant } from "@/src/lib/types";
 import { productsEndpoint } from "@/src/lib/endpoints";
 
@@ -39,7 +38,11 @@ export default function CheckoutForm({ amount }: Props) {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const cart: SyncVariant[] = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    // const cart: SyncVariant[] = JSON.parse(raw);
 
     if (!stripe || !elements) {
       fireAlert("Stripe has not loaded yet.", "error");
@@ -54,7 +57,8 @@ export default function CheckoutForm({ amount }: Props) {
         ? localStorage.getItem("user") || "null"
         : "null";
     const userData = JSON.parse(profile);
-    const allCart = getCart();
+
+    const allCart = JSON.parse(raw);
     const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;

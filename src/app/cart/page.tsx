@@ -17,12 +17,12 @@ import { useRouter } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
 import { GetCountries, GetState } from "react-country-state-city";
 
-export const getCart = () => {
-  if (typeof window === "undefined") return [];
-  const items =
-    typeof window !== "undefined" ? localStorage.getItem("cart") || "[]" : "[]";
-  return JSON.parse(items);
-};
+// export const getCart = () => {
+//   if (typeof window === "undefined") return [];
+//   const items =
+//     typeof window !== "undefined" ? localStorage.getItem("cart") || "[]" : "[]";
+//   return JSON.parse(items);
+// };
 
 const Cart = () => {
   const router = useRouter();
@@ -56,7 +56,11 @@ const Cart = () => {
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
-    const result = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const result = JSON.parse(raw);
     setCartItems(result);
   };
 
@@ -64,7 +68,11 @@ const Cart = () => {
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
-    const cart = getCart();
+     const raw =
+       typeof window !== "undefined"
+         ? localStorage.getItem("cart") || "[]"
+         : "[]";
+    const cart = JSON.parse(raw);
     setCartItems(cart);
 
     const totalPrice = cart.reduce(
@@ -990,7 +998,12 @@ export const CartItem = ({
   const { fireAlert } = useAuth();
 
   const removeFromCart = (key: number) => {
-    const cart = getCart().filter((item: any) => item.id !== key);
+     const raw =
+       typeof window !== "undefined"
+         ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const all = JSON.parse(raw)
+    const cart = all.filter((item: any) => item.id !== key);
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
@@ -999,7 +1012,11 @@ export const CartItem = ({
   };
 
   const updateCart = (key: number, quantity: number) => {
-    const cart = getCart();
+     const raw =
+       typeof window !== "undefined"
+         ? localStorage.getItem("cart") || "[]"
+         : "[]";
+    const cart = JSON.parse(raw);
 
     if (quantity < 1) {
       removeFromCart(key);

@@ -9,7 +9,7 @@ import { formatPrice, getCountryData } from "@/src/lib/priceFormatter";
 import FlutterwavePayButton from "./FlutterWavePayment";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
-import { CartItem, getCart } from "../cart/page";
+import { CartItem } from "../cart/page";
 import { productsEndpoint } from "@/src/lib/endpoints";
 import Image from "next/image";
 import { icons } from "@/src/assets/icons/icons";
@@ -103,7 +103,11 @@ const Checkout = () => {
         ? localStorage.getItem("user") || "null"
         : "null";
     const userData = JSON.parse(profile);
-    const allCart = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const allCart = JSON.parse(raw);
     const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;
@@ -173,7 +177,11 @@ const Checkout = () => {
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
-    const result = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const result = JSON.parse(raw);
     setCartItems(result);
   };
 
@@ -181,7 +189,11 @@ const Checkout = () => {
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
-    const cart = getCart();
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const cart = JSON.parse(raw);
     setCartItems(cart);
 
     const totalPrice = cart.reduce(
