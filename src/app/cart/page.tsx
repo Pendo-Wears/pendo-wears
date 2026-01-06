@@ -24,10 +24,21 @@ import { GetCountries, GetState } from "react-country-state-city";
 //   return JSON.parse(items);
 // };
 
+const readCart = () => {
+  if (typeof window === "undefined") return [];
+  return JSON.parse(localStorage.getItem("cart") || "[]");
+};
+
+const writeCart = (cart: any[]) => {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+};
+
 const Cart = () => {
   const router = useRouter();
   const { fireAlert, setAmount } = useAuth();
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
   const [country, setCountry] = useState<any>(null);
@@ -68,10 +79,10 @@ const Cart = () => {
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
-     const raw =
-       typeof window !== "undefined"
-         ? localStorage.getItem("cart") || "[]"
-         : "[]";
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
     const cart = JSON.parse(raw);
     setCartItems(cart);
 
@@ -89,13 +100,13 @@ const Cart = () => {
     setQuantity(totalQty);
   }, []);
 
-  const clearCart = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("cart");
-    }
-    fireAlert("Cart cleared successfully", "success");
-    getAllCart();
-  };
+  // const clearCart = () => {
+  //   if (typeof window !== "undefined") {
+  //     localStorage.removeItem("cart");
+  //   }
+  //   fireAlert("Cart cleared successfully", "success");
+  //   getAllCart();
+  // };
 
   const updateShippingAddress = async () => {
     try {
@@ -145,22 +156,46 @@ const Cart = () => {
   };
 
   useEffect(() => {
-    getAllCart();
-    fetchCountryData();
-    fetchCountries();
-    getUser();
+    setCartItems(readCart());
+    getCountryData().then(setCountry);
+    GetCountries().then(setCountries);
+
+    const profile = localStorage.getItem("user");
+    if (profile) setUser(JSON.parse(profile));
   }, []);
 
   useEffect(() => {
-    fetchStates();
+    const totalPrice = cartItems?.reduce(
+      (sum, item) => sum + Number(item.retail_price) * item.quantity,
+      0
+    );
+    const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+    setTotal(totalPrice);
+    setQuantity(totalQty);
+  }, [cartItems]);
+
+  useEffect(() => {
+    if (country?.id) {
+      GetState(parseInt(country.id)).then(setStates);
+    }
   }, [country]);
 
   useEffect(() => {
+    if (!user) return;
     setAddress(user?.billing?.address_1 || "");
     setPhone(user?.billing?.phone || "");
     setZipCode(user?.billing?.postcode || "");
     setState({ name: user?.billing?.state || "" });
   }, [user]);
+
+  /* -------------------- Actions -------------------- */
+
+  const clearCart = () => {
+    writeCart([]);
+    setCartItems([]);
+    fireAlert("Cart cleared successfully", "success");
+  };
   return (
     <RequireAuth>
       <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
@@ -227,7 +262,11 @@ const Cart = () => {
             </Box>
             <Activity mode={cartItems?.length > 0 ? "visible" : "hidden"}>
               {cartItems.map((cart) => (
-                <CartItem cart={cart} key={cart} getAllCart={getAllCart} />
+                <CartItem
+                  cart={cart}
+                  key={cart.id}
+                  onUpdate={() => setCartItems(readCart())}
+                />
               ))}
             </Activity>
             <Activity mode={cartItems?.length === 0 ? "visible" : "hidden"}>
@@ -986,51 +1025,41 @@ interface CartItemProps extends SyncVariant {
 
 export const CartItem = ({
   cart,
-  getAllCart,
+  onUpdate,
   isCheckout = false,
   isConfirmed = false,
 }: {
   cart: CartItemProps;
-  getAllCart: () => void;
+  onUpdate?: () => void;
   isCheckout?: boolean;
   isConfirmed?: boolean;
 }) => {
   const { fireAlert } = useAuth();
 
   const removeFromCart = (key: number) => {
-     const raw =
-       typeof window !== "undefined"
-         ? localStorage.getItem("cart") || "[]"
-        : "[]";
-    const all = JSON.parse(raw)
+    const all = readCart();
     const cart = all.filter((item: any) => item.id !== key);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("cart", JSON.stringify(cart));
-    }
-    getAllCart();
+    writeCart(cart);
     fireAlert("Item successfully removed from cart", "success");
   };
 
-  const updateCart = (key: number, quantity: number) => {
-     const raw =
-       typeof window !== "undefined"
-         ? localStorage.getItem("cart") || "[]"
-         : "[]";
-    const cart = JSON.parse(raw);
+  const updateCart = (quantity: number) => {
+    const all = readCart();
 
     if (quantity < 1) {
-      removeFromCart(key);
-      return;
+      writeCart(all.filter((i: any) => i.id !== cart.id));
+    } else {
+      writeCart(
+        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i))
+      );
     }
-    const updated = cart
-      .map((item: any) => (item.id === key ? { ...item, quantity } : item))
-      .filter((item: any) => item.quantity > 0);
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem("cart", JSON.stringify(updated));
+    if (onUpdate) {
+      onUpdate();
     }
-    fireAlert("Item successfully updated", "success");
+    fireAlert("Cart updated", "success");
   };
+
   return (
     <Box
       py={isCheckout || isConfirmed ? "13px" : "30px"}
@@ -1131,7 +1160,7 @@ export const CartItem = ({
                 display="flex"
                 alignItems={"center"}
                 justifyContent={"center"}
-                onClick={() => updateCart(cart.id, (cart.quantity -= 1))}
+                onClick={() => updateCart(cart.quantity - 1)}
                 sx={{
                   opacity: cart.quantity === 1 ? 0.5 : 1,
                   pointerEvents: cart.quantity === 1 ? "none" : "all",
@@ -1170,7 +1199,7 @@ export const CartItem = ({
                 display="flex"
                 alignItems={"center"}
                 justifyContent={"center"}
-                onClick={() => updateCart(cart.id, (cart.quantity += 1))}
+                onClick={() => updateCart(cart.quantity + 1)}
               >
                 <Typography
                   fontSize={16}

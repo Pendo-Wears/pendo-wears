@@ -213,7 +213,6 @@ const OrderConfirmation = () => {
                       <Box key={id}>
                         <CartItem
                           cart={cart}
-                          getAllCart={getAllCart}
                           isConfirmed
                         />
                       </Box>

@@ -671,7 +671,7 @@ const Checkout = () => {
             <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
               {cartItems.map((cart, id) => (
                 <Box key={id} pb="24px" borderBottom="1px solid #00000010">
-                  <CartItem cart={cart} getAllCart={getAllCart} isCheckout />
+                  <CartItem cart={cart} isCheckout />
                 </Box>
               ))}
             </Box>
