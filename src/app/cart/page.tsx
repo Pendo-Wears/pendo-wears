@@ -138,6 +138,9 @@ const Cart = () => {
                 },
               })
             );
+
+            const profile = localStorage.getItem("user");
+            if (profile) setUser(JSON.parse(profile));
           }
         }
       }
