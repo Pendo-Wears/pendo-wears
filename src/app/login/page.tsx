@@ -34,14 +34,21 @@ const Login = () => {
     fireAlert("Login Successful", "success");
     getCountryData();
     setIsAuthenticated(true);
-    router.replace("/");
+    if (typeof window !== "undefined") {
+      const path = localStorage.getItem("path") || "";
+      const parsedPath = JSON.parse(path);
+      if (parsedPath) {
+        router.replace(`${parsedPath}`);
+        localStorage.removeItem("path");
+      } else router.replace("/");
+    }
   }
 
   useEffect(() => {
     if (isAuthenticated) {
       router.replace("/");
     }
-  });
+  }, []);
 
   return (
     <Box

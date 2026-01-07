@@ -38,7 +38,6 @@ const HomePage = () => {
     getCategories();
   }, []);
   return (
-    <RequireAuth>
       <Box>
         <MultilinkUI
           links={categories
@@ -55,7 +54,6 @@ const HomePage = () => {
         <OurStory />
         <Tribe />
       </Box>
-    </RequireAuth>
   );
 };
 

@@ -181,7 +181,7 @@ export const logoutUser = () => {
 
     // Redirect the user (optional)
     if (typeof window !== "undefined") {
-      window.location.href = "/login"; // or "/" or "/auth"
+      window.location.href = "/"; // or "/" or "/auth"
     }
 
     return true;
