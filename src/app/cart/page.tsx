@@ -138,6 +138,9 @@ const Cart = () => {
                 },
               })
             );
+
+            const profile = localStorage.getItem("user");
+            if (profile) setUser(JSON.parse(profile));
           }
         }
       }
@@ -821,6 +824,18 @@ const Cart = () => {
                 onClick={() => {
                   if (cartItems.length === 0) {
                     fireAlert("Your cart is currently empty", "warning");
+                    return;
+                  }
+                  if (
+                    !user?.billing?.state ||
+                    !user?.billing?.countryName ||
+                    !user?.billing?.address_1 ||
+                    !user?.billing?.phone
+                  ) {
+                    fireAlert(
+                      "Update all shipping information fields",
+                      "warning"
+                    );
                     return;
                   }
                   setAmount(Number(total + tax + shippingFee));
