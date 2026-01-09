@@ -31,6 +31,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
     slug: string;
     image: {
       src: string;
+      alt: string;
     };
   } | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -160,6 +161,11 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
       category: slug,
     }));
   }, []);
+
+  const imgUrl = category?.image?.src?.replace(
+    "http://localhost:3000",
+    "https://darkgray-heron-136669.hostingersite.com"
+  );
   return (
     <Box pb="46px">
       <Box
@@ -180,7 +186,12 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         </Typography>
         <MultilinkUI
           links={categories
-            .filter((x) => x.slug !== "noir-gold" && x.slug !== "rhythm-thread")
+            .filter(
+              (x) =>
+                x.slug !== "noir-gold-collection" &&
+                x.slug !== "rhythm-thread-collection" &&
+                x.slug !== "heritage-alchemy-collection"
+            )
             .map((category) => ({
               name: category.name,
               to: `/collection/${category.slug}?id=${category.id}`,
@@ -220,8 +231,8 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         >
           <Activity mode={category?.name ? "visible" : "hidden"}>
             <Image
-              src={category?.image?.src! ?? images.hoodie}
-              alt="hoodie"
+              src={imgUrl!}
+              alt={category?.image?.alt!}
               fill
               style={{ objectFit: "contain" }}
               loading="eager"
@@ -283,7 +294,36 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               alignItems={"center"}
               justifyContent={"space-between"}
               onClick={() =>
-                setFilterOptions((prev) => ({ ...prev, category: "noir-gold" }))
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  category: "heritage-alchemy-collection",
+                }))
+              }
+            >
+              <Typography
+                fontSize={18}
+                fontFamily={"Montserrat"}
+                width="fit-content"
+                sx={{ whiteSpace: "noWrap" }}
+                color="#1A1A1A"
+              >
+                Heritage Alchemy
+              </Typography>
+              <Radio
+                checked={
+                  filterOptions.category === "heritage-alchemy-collection"
+                }
+              />
+            </Box>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              justifyContent={"space-between"}
+              onClick={() =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  category: "noir-gold-collection",
+                }))
               }
             >
               <Typography
@@ -295,7 +335,9 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               >
                 Noir Gold
               </Typography>
-              <Radio checked={filterOptions.category === "noir-gold"} />
+              <Radio
+                checked={filterOptions.category === "noir-gold-collection"}
+              />
             </Box>
             <Box
               display="flex"
@@ -304,7 +346,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               onClick={() =>
                 setFilterOptions((prev) => ({
                   ...prev,
-                  category: "rhythm-thread",
+                  category: "rhythm-thread-collection",
                 }))
               }
             >
@@ -317,7 +359,9 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               >
                 Rhythm & Thread Collection
               </Typography>
-              <Radio checked={filterOptions.category === "rhythm-thread"} />
+              <Radio
+                checked={filterOptions.category === "rhythm-thread-collection"}
+              />
             </Box>
           </Box>
           <Box

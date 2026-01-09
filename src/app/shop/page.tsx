@@ -44,12 +44,17 @@ const Shop = () => {
     };
 
   const items = categories
-    .filter((x) => x.slug === "noir-gold" || x.slug === "rhythm-thread")
+    .filter(
+      (x) =>
+        x.slug === "noir-gold-collection" ||
+        x.slug === "rhythm-thread-collection" ||
+        x.slug === "heritage-alchemy-collection"
+    )
     ?.map((category) => ({
       label: category.name,
       action: () => {
-        param.set("category", category.slug)
-        param.set("type", category.name)
+        param.set("category", category.slug);
+        param.set("type", category.name);
         router.replace(`${pathname}?${param.toString()}`);
         getProducts();
       },

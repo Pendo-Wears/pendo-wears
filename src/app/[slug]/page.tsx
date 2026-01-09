@@ -12,7 +12,12 @@ import {
   formatWoocommercePrice,
   getPriceRange,
 } from "@/src/lib/priceFormatter";
-import { ProductDetailsType, SyncProduct, SyncVariant } from "@/src/lib/types";
+import {
+  ProductDetailsType,
+  SyncProduct,
+  SyncVariant,
+  WooProductDetails,
+} from "@/src/lib/types";
 
 const ProductDetails = ({
   params,
@@ -23,6 +28,8 @@ const ProductDetails = ({
   const { fireAlert } = useAuth();
   const [productDetails, setProductDetails] =
     useState<ProductDetailsType | null>(null);
+  const [wooproductDetails, setWooProductDetails] =
+    useState<WooProductDetails | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<SyncVariant | null>(
     null
   );
@@ -47,10 +54,10 @@ const ProductDetails = ({
     const details = recents.find(
       (recent: SyncProduct) => recent?.id === Number(slug)
     );
+    if (recents.length === 6) recents.pop();
     if (!details?.name) {
-      if (recents.length === 3) recents.pop();
+      recents = [data, ...recents];
       console.log(productDetails, "jjjjjjjj");
-      recents.push(data);
     }
 
     if (typeof window !== "undefined") {
@@ -68,6 +75,7 @@ const ProductDetails = ({
       const wooResult: any = await productsEndpoint.getWooProductDetails(slug);
 
       if (wooResult.success) {
+        setWooProductDetails(wooResult.data);
         setWooDesc(wooResult.data.description);
         saveRecentlyViewed(wooResult.data);
       }
@@ -176,8 +184,15 @@ const ProductDetails = ({
     getProducts();
   }, []);
 
+  const collection = wooproductDetails?.categories?.find(
+    (x) =>
+      x.slug === "noir-gold-collection" ||
+      x.slug === "rhythm-thread-collection" ||
+      x.slug === "heritage-alchemy-collection"
+  );
+
   return (
-    <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
+    <Box px={{ xs: "16px", sm: "20px", md: "50px" }}>
       <Box display={"flex"} alignItems={"flex-start"} gap="60px" mb="90px">
         <Box
           width="100%"
@@ -204,7 +219,7 @@ const ProductDetails = ({
         <Box width="100%" maxWidth="582px">
           <Box pb="25px" borderBottom={"1px solid #00000010"}>
             <Typography fontSize={16} fontFamily={"Montserrat"} color="#2D2D2D">
-              Noir Gold Collection
+              {collection?.name}
             </Typography>
             <Typography
               fontSize={32}
@@ -445,11 +460,29 @@ const ProductDetails = ({
           Recently viewed
         </Typography>
         <Activity mode={recentlyViewed?.length > 0 ? "visible" : "hidden"}>
-          <Grid container spacing="30px">
+          <Box
+            pb="70px"
+            bgcolor="#fff"
+            display="flex"
+            gap="30px"
+            flexWrap={"nowrap"}
+            sx={{
+              overflow: "auto",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            }}
+          >
             {recentlyViewed?.map((product, index) => (
-              <Product product={product} key={index} />
+              <Product
+                product={product}
+                key={index}
+                maxWidth={"424px"}
+                minWidth={"424px"}
+                flex={1}
+              />
             ))}
-          </Grid>
+          </Box>
         </Activity>
         <Activity mode={recentlyViewed?.length === 0 ? "visible" : "hidden"}>
           <Typography

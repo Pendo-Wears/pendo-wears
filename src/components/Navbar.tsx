@@ -65,7 +65,7 @@ const Navbar = () => {
     {
       name: "Collection",
       items: categories
-        .filter((x) => x.slug === "noir-gold" || x.slug === "rhythm-thread")
+        .filter((x) => x.slug === "noir-gold-collection" || x.slug === "rhythm-thread-collection" || x.slug === "heritage-alchemy-collection")
         ?.map((category) => ({
           name: category.name,
           to: `/shop?type=${category.name}&category=${category.slug}`,
@@ -74,7 +74,7 @@ const Navbar = () => {
     {
       name: "Products",
       items: categories
-        .filter((x) => x.slug !== "noir-gold" && x.slug !== "rhythm-thread")
+        .filter((x) => x.slug !== "noir-gold-collection" && x.slug !== "rhythm-thread-collection" && x.slug !== "heritage-alchemy-collection")
         ?.map((category) => ({
           name: category.name,
           to: `/collection/${category.slug}?id=${category.id}`,

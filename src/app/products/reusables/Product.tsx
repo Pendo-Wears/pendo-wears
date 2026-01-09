@@ -14,20 +14,22 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
 
-const Product = ({
-  showPrice = true,
-  product,
-}: {
+interface ProductProps extends React.ComponentProps<typeof Grid> {
   showPrice?: boolean;
   product: any;
-}) => {
+}
+
+const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
   const { fireAlert } = useAuth();
   const router = useRouter();
   const [productDetails, setProductDetails] =
     useState<WooProductDetails | null>(null);
 
   const addToWishlist = () => {
-    const raw = typeof window !== "undefined" ? localStorage.getItem("wishlist") || "[]" : "[]";
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("wishlist") || "[]"
+        : "[]";
     const wishlist = JSON.parse(raw);
 
     if (!wishlist.find((p: any) => p.id === product.id)) {
@@ -59,13 +61,19 @@ const Product = ({
   // useEffect(() => {
   //   getProductDetails();
   // }, []);
+
+  const imgUrl = product?.images?.[0].src?.replace(
+    "http://localhost:3000",
+    "https://darkgray-heron-136669.hostingersite.com"
+  );
   return (
     <Grid
       size={{ xs: 12, sm: 6, md: 4 }}
       borderRadius={"10px"}
       sx={{ cursor: "pointer" }}
       bgcolor="#ffffff"
-      boxShadow={"10px 0px 30px 10px rgba(0, 0, 0, 0.1)"}
+      boxShadow={"0px 10px 30px 0px rgba(0, 0, 0, 0.1)"}
+      {...props}
     >
       <Box
         width="100%"
@@ -78,7 +86,7 @@ const Product = ({
         flexDirection={"column"}
       >
         <Image
-          src={product?.images?.[0].src || ""}
+          src={imgUrl}
           alt={product?.images?.[0].name || ""}
           width="350"
           height="450"

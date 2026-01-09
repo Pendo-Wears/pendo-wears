@@ -36,7 +36,7 @@ const Login = () => {
     setIsAuthenticated(true);
     if (typeof window !== "undefined") {
       const path = localStorage.getItem("path") || "";
-      const parsedPath = JSON.parse(path);
+      const parsedPath = path ? JSON.parse(path) : "";
       if (parsedPath) {
         router.replace(`${parsedPath}`);
         localStorage.removeItem("path");

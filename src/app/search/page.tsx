@@ -55,7 +55,9 @@ const Search = () => {
       }
 
       router.replace(`/search?${params.toString()}`);
-      const result: any = await productsEndpoint.getWooProducts(params.toString());
+      const result: any = await productsEndpoint.getWooProducts(
+        params.toString()
+      );
       if (result.status === 200) {
         setSearchResults(result.data);
       }
@@ -272,6 +274,32 @@ const Search = () => {
               alignItems={"center"}
               justifyContent={"space-between"}
               onClick={() =>
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  category: "heritage-alchemy-collection",
+                }))
+              }
+            >
+              <Typography
+                fontSize={18}
+                fontFamily={"Montserrat"}
+                width="fit-content"
+                sx={{ whiteSpace: "noWrap" }}
+                color="#1A1A1A"
+              >
+                Heritage Alchemy
+              </Typography>
+              <Radio
+                checked={
+                  filterOptions.category === "heritage-alchemy-collection"
+                }
+              />
+            </Box>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              justifyContent={"space-between"}
+              onClick={() =>
                 setFilterOptions((prev) => ({ ...prev, category: "noir-gold" }))
               }
             >
@@ -293,7 +321,7 @@ const Search = () => {
               onClick={() =>
                 setFilterOptions((prev) => ({
                   ...prev,
-                  category: "rhythm-thread",
+                  category: "rhythm-thread-collection",
                 }))
               }
             >
@@ -306,7 +334,9 @@ const Search = () => {
               >
                 Rhythm & Thread Collection
               </Typography>
-              <Radio checked={filterOptions.category === "rhythm-thread"} />
+              <Radio
+                checked={filterOptions.category === "rhythm-thread-collection"}
+              />
             </Box>
           </Box>
           <Box
