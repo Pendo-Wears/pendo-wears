@@ -48,10 +48,16 @@ const UserTag = () => {
   };
 
   async function uploadToImgBB(file: File) {
-    const apiKey = process.env.NEXT_PUBLIC_IMGBB_APIkEY; // free key
-    const formData = new FormData();
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY; // ✅ fixed name
 
+    if (!apiKey) {
+      throw new Error("ImgBB API key is missing");
+    }
+
+    const formData = new FormData();
     formData.append("image", file);
+
+    setLoading(true);
 
     const response = await fetch(
       `https://api.imgbb.com/1/upload?key=${apiKey}`,
@@ -61,14 +67,29 @@ const UserTag = () => {
       }
     );
 
-    const data = await response.json();
+    const text = await response.text();
 
-    await updateAvatar(data.data.display_url!);
-    return data.data.display_url; // public image URL
+    if (!text) {
+      throw new Error("Empty response from ImgBB");
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("ImgBB raw response:", text);
+      throw new Error("ImgBB did not return JSON");
+    }
+
+    if (!response.ok || !data?.data?.display_url) {
+      throw new Error(data?.error?.message || "ImgBB upload failed");
+    }
+
+    await updateAvatar(data.data.display_url);
+    return data.data.display_url;
   }
 
   const updateAvatar = async (url: string) => {
-    setLoading(true)
     const raw =
       typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
     const thisUser: User = JSON.parse(raw);

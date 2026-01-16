@@ -13,10 +13,6 @@ export default function RequireAuth({
 
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null;
-
   useEffect(() => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : "";
@@ -30,6 +26,10 @@ export default function RequireAuth({
       setAllowed(true);
     }
   }, [router]);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   if (!allowed) return "LOADING..."; // or a spinner
 
