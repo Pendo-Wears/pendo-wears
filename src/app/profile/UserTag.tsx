@@ -16,16 +16,12 @@ const UserTag = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
-    const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser = JSON.parse(raw);
-    // setUser(thisUser);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
       if (result.success) {
         const userOrders = result.data.filter(
-          (order: any) => order.recipient.email === thisUser?.email
+          (order: any) => order.recipient.email === user?.email
         );
         setOrders(userOrders.length);
       }

@@ -42,10 +42,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const getUser = () => {
-    const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser = JSON.parse(raw!);
-    setUser(thisUser);
+    if (typeof window === "undefined") return;
+
+    const raw = localStorage.getItem("user");
+
+    if (!raw) {
+      setUser(undefined);
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      setUser(parsed);
+    } catch (err) {
+      console.error("Invalid user in localStorage:", raw);
+      localStorage.removeItem("user");
+      setUser(undefined);
+    }
   };
 
   useEffect(() => {
@@ -61,6 +74,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAlertMessage(message);
     setAlertType(type);
   };
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   return (
     <AuthContext.Provider
