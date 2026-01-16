@@ -12,7 +12,7 @@ import { getCountryData } from "@/src/lib/priceFormatter";
 import GoogleLoginButton from "@/src/components/GoogleButton";
 
 const Login = () => {
-  const { isAuthenticated, setIsAuthenticated, fireAlert } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, fireAlert, getUser } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState("");
@@ -35,6 +35,7 @@ const Login = () => {
     fireAlert("Login Successful", "success");
     getCountryData();
     setIsAuthenticated(true);
+    getUser();
     if (typeof window !== "undefined") {
       const path = localStorage.getItem("path") || "";
       const parsedPath = path ? JSON.parse(path) : "";
