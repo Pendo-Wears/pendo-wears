@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { CartItem } from "../cart/page";
 import { formatPrice, getCountryData } from "@/src/lib/priceFormatter";
 import { productsEndpoint } from "@/src/lib/endpoints";
@@ -31,46 +31,82 @@ const OrderConfirmation = () => {
     setCartItems(result);
   };
 
-  // const createOrder = async () => {
-  //   const allCart = getCart();
-  //   const userCountry = await getCountryData();
+  const createOrder = async () => {
+    if (loading) return;
 
-  //   if (!userData.id || allCart.length === 0) return;
+    let data;
 
-  //   try {
-  //     setLoading(true);
-  //     const orderPayload = {
-  //       userId: userData.id,
-  //       recipient: {
-  //         name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-  //         address1: userData?.billing?.address_1 || "",
-  //         state_name: userData?.billing?.state || "",
-  //         city: userData?.billing?.state || "",
-  //         country_code: userCountry?.iso2 || "",
-  //         country_name: userCountry?.name || "",
-  //         zip: userData?.billing?.postcode || "",
-  //         phone: userCountry?.phone_code + userData?.billing?.phone || "",
-  //         email: userData?.email || "",
-  //       },
-  //       items: allCart,
-  //     };
+    const encoded = searchParams.get("response");
+    if (encoded) {
+      try {
+        const decoded = decodeURIComponent(encoded);
+        data = JSON.parse(decoded);
+        setResponseData(data);
+        //  if (data.status === "successful" && data.txRef) {
+        //    getOrderDetails(data.txRef.split("-")[1]);
+        //  }
+        console.log(data, "ORDER CONFIRMATION DATA");
+      } catch (error) {
+        console.error("Failed to parse response param:", error);
+      }
+    }
 
-  //     const order: any = await productsEndpoint.createOrder(orderPayload);
-  //     console.log("Order created successfully:", order);
-  //     if (order.success) {
-  //       fireAlert(order.message, "success");
-  //       setOrderDetails(order.data);
-  //       localStorage.removeItem("cart");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error creating order:", error);
-  //     fireAlert("Failed to create order", "error");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+    console.log(data.txRef)
+
+    const profile =
+      typeof window !== "undefined"
+        ? localStorage.getItem("user") || "null"
+        : "null";
+    const userData = JSON.parse(profile);
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("cart") || "[]"
+        : "[]";
+    const allCart = JSON.parse(raw);
+    const userCountry = await getCountryData();
+    if (!userData.id || allCart.length === 0) return;
+
+    try {
+      setLoading(true);
+      const orderPayload = {
+        userId: userData.id,
+        txRef: data?.txRef,
+        paymentMethod:
+          userCountry?.region === "Africa"
+            ? "CARD | FLUTTERWAVE"
+            : "CARD | STRIPE",
+        recipient: {
+          name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
+          address1: userData?.billing?.address_1 || "",
+          state_name: userData?.billing?.state || "",
+          city: userData?.billing?.state || "",
+          country_code: userCountry?.iso2 || "",
+          country_name: userCountry?.name || "",
+          zip: userData?.billing?.postcode || "",
+          phone: userCountry?.phone_code + userData?.billing?.phone || "",
+          email: userData?.email || "",
+        },
+        items: allCart,
+      };
+
+      const order: any = await productsEndpoint.createOrder(orderPayload);
+      console.log("Order created successfully:", order);
+      if (order.success) {
+        fireAlert(order.message, "success");
+        setOrderDetails(order.data);
+        localStorage.removeItem("cart");
+        localStorage.setItem("orderId", order.data.id);
+      }
+    } catch (error: any) {
+      console.error("Error creating order:", error);
+      fireAlert(error.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getOrderDetails = async (id: string) => {
+    if (loading) return;
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrderDetails(id);
@@ -84,28 +120,21 @@ const OrderConfirmation = () => {
     }
   };
 
-  useEffect(() => {
-    const orderId = searchParams.get("order");
-    const encoded = searchParams.get("response");
-    if (encoded) {
-      try {
-        const decoded = decodeURIComponent(encoded);
-        const data = JSON.parse(decoded);
-        setResponseData(data);
-        if (data.status === "successful" && data.txRef) {
-          getOrderDetails(data.txRef.split("-")[1]);
-        }
-        console.log(data, "ORDER CONFIRMATION DATA");
-      } catch (error) {
-        console.error("Failed to parse response param:", error);
-      }
-    }
-    if (orderId) {
-      getOrderDetails(orderId);
-    }
-  }, [searchParams]);
+  const onLoad = () => {
+    const raw = localStorage.getItem("orderId");
+    const id = raw ? JSON.parse(raw) : null;
+    console.log(id, "ZXCVBNM");
+
+    if (id === null) createOrder();
+    else getOrderDetails(id);
+  };
+
+  const hasFetched = useRef(false);
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+    onLoad();
     getAllCart();
   }, []);
   return (
@@ -143,6 +172,7 @@ const OrderConfirmation = () => {
                 fontWeight={700}
                 mt="40px"
                 mb="12px"
+                onClick={onLoad}
               >
                 Order Confirmed!
               </Typography>
@@ -211,10 +241,7 @@ const OrderConfirmation = () => {
                   <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
                     {orderDetails?.items.map((cart: any, id: number) => (
                       <Box key={id}>
-                        <CartItem
-                          cart={cart}
-                          isConfirmed
-                        />
+                        <CartItem cart={cart} isConfirmed />
                       </Box>
                     ))}
                   </Box>

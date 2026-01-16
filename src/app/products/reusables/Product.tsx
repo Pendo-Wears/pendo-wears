@@ -62,9 +62,11 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
   //   getProductDetails();
   // }, []);
 
-  const imgUrl = product?.images?.[0].src?.replace(
-    "http://localhost:3000",
-    "https://darkgray-heron-136669.hostingersite.com"
+  const storeUrl = process.env.NEXT_PUBLIC_WOO_STORE_URL;
+
+  const imgUrl = product?.images?.[0]?.src?.replace(
+    new URL(product?.images?.[0]?.src).origin,
+    storeUrl!
   );
   return (
     <Grid

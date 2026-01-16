@@ -9,6 +9,7 @@ import { handleLogin } from "@/src/services/authUsage";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 import { getCountryData } from "@/src/lib/priceFormatter";
+import GoogleLoginButton from "@/src/components/GoogleButton";
 
 const Login = () => {
   const { isAuthenticated, setIsAuthenticated, fireAlert } = useAuth();
@@ -229,36 +230,15 @@ const Login = () => {
           </Typography>
           <Box width="168px" height="1px" bgcolor="#C0C0C0"></Box>
         </Box>
-        <Box
-          width="100%"
-          bgcolor="#fff"
-          height="52px"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          borderRadius="6px"
-          gap="14px"
-          mb="50px"
-          sx={{ cursor: "pointer" }}
-          border="1px solid #C0C0C0"
-        >
-          <Image src={icons.google} alt="google" width="32" height="32" />
-          <Typography
-            fontSize={24}
-            fontWeight={500}
-            fontFamily={"Montserrat"}
-            color="#000"
-          >
-            Google
-          </Typography>
-        </Box>
+
+        <GoogleLoginButton />
         <Typography
           textAlign={"center"}
           fontWeight={500}
           fontSize={18}
           color="#707070"
           fontFamily={"Montserrat"}
-          mb="40px"
+          my="40px"
         >
           Don’t have an Account?{" "}
           <Link href="/register" style={{ textDecoration: "none" }}>

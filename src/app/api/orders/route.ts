@@ -32,6 +32,8 @@ export async function POST(req: Request) {
       email: body.recipient.email,
       printfulOrderId: id,
       status: status,
+      txRef: body.txRef,
+      paymentMethod: body.paymentMethod,
     };
 
     // save to DB later
@@ -41,41 +43,46 @@ export async function POST(req: Request) {
 
     // TODO: GET USER ORDERS FROM WP "GET /wp-json/wp/v2/store_order?author=me"
 
-    // const wpRes = await publicApi.post(
-    //   `/wc/v3/orders?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`,
-    //   {
-    //     status: status,
-    //     billing: {
-    //       first_name: body.recipient.first_name,
-    //       last_name: body.recipient.last_name,
-    //       address_1: body.recipient.address1,
-    //       city: body.recipient.city,
-    //       country: body.recipient.country_code,
-    //       email: body.recipient.email,
-    //       phone: body.recipient.phone || "",
-    //     },
+    const wpRes = await publicApi.post(
+      `/wc/v3/orders?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`,
+      {
+        status: "checkout-draft",
+        order_key: `#PF${printfulOrderId}`,
+        customer_note: "",
+        transaction_id: orderRecord.txRef,
+        customer_id: orderRecord.userId,
+        payment_method: orderRecord.paymentMethod,
+        billing: {
+          first_name: body.recipient.first_name,
+          last_name: body.recipient.last_name,
+          address_1: body.recipient.address1,
+          city: body.recipient.city,
+          country: body.recipient.country_code,
+          email: body.recipient.email,
+          phone: body.recipient.phone || "",
+        },
 
-    //     // IMPORTANT: dummy line item (required by WC)
-    //     line_items: body.items.map((item: SyncVariant) => ({
-    //       product_id: item.id, // dummy product ID
-    //       quantity: item.quantity,
-    //       total: Number(item.retail_price) * item.quantity,
-    //     })),
+        // IMPORTANT: dummy line item (required by WC)
+        line_items: body.items.map((item: SyncVariant) => ({
+          product_id: Number(item.external_id), // dummy product ID
+          quantity: item.quantity,
+          // total: Number(item.retail_price) * item.quantity,
+        })),
 
-    //     meta_data: [
-    //       {
-    //         key: "printful_order_id",
-    //         value: 123,
-    //       },
-    //       {
-    //         key: "printful_status",
-    //         value: status,
-    //       },
-    //     ],
-    //   }
-    // );
+        meta_data: [
+          {
+            key: "pendo_transaction_id",
+            value: `${orderRecord.txRef}`,
+          },
+          {
+            key: "pendo_printful_order_id",
+            value: `#PF${printfulOrderId}`,
+          },
+        ],
+      }
+    );
 
-    // console.log("WP Response:", wpRes.data);
+    console.log("WP Response:", wpRes.data);
 
     return NextResponse.json(order);
   } catch (err: any) {

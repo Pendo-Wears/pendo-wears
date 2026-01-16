@@ -4,7 +4,7 @@ import { icons } from "@/src/assets/icons/icons";
 import { images } from "@/src/assets/images/images";
 import { Box, Grid, MenuItem, Typography } from "@mui/material";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { Activity, useEffect, useState } from "react";
 import Product from "../products/reusables/Product";
 import MenuUI from "@/src/components/MenuUI";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -13,17 +13,18 @@ import { useAuth } from "@/src/context/AuthContext";
 
 const Shop = () => {
   const router = useRouter();
-  const pathname = usePathname()
+  const pathname = usePathname();
   const { fireAlert } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<
-      {
-        name: string;
-        slug: string;
-        id: number;
-      }[]
-    >([]);
+  const [openGallery, setOpenGallery] = useState(false);
+  const [categories, setCategories] = useState<
+    {
+      name: string;
+      slug: string;
+      id: number;
+    }[]
+  >([]);
   const searchParams = useSearchParams();
   const param = new URLSearchParams(searchParams.toString());
 
@@ -31,17 +32,17 @@ const Shop = () => {
     setAnchorEl(event.currentTarget);
   };
 
-    const getCategories = async () => {
-      try {
-        const result: any = await productsEndpoint.getCategories();
-        console.log(result);
-        if (result.status === 200) {
-          setCategories(result.data);
-        }
-      } catch (e: any) {
-        fireAlert(e.message, "error");
+  const getCategories = async () => {
+    try {
+      const result: any = await productsEndpoint.getCategories();
+      console.log(result);
+      if (result.status === 200) {
+        setCategories(result.data);
       }
-    };
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    }
+  };
 
   const items = categories
     .filter(
@@ -63,7 +64,7 @@ const Shop = () => {
   const getProducts = async () => {
     try {
       const result: any = await productsEndpoint.getWooProducts(
-        `category=${param.get("category")}`
+        param.size === 0 ? "" : `category=${param.get("category")}`
       );
       if (result.success) {
         setProducts(result.data);
@@ -113,19 +114,31 @@ const Shop = () => {
         <Box display="flex" alignItems={"center"} gap="6px">
           <Typography
             p="8px"
-            color="#656565"
+            color={openGallery ? "#000" : "#656565"}
             fontSize={"20px"}
-            fontWeight={500}
+            fontWeight={openGallery ? 700 : 500}
             fontFamily={"Montserrat"}
+            sx={{cursor: 'pointer', "&:hover": {
+              color: '#000',
+              fontWeight: 700,
+              transition: "color .8s ease"
+            }}}
+            onClick={() => setOpenGallery(true)}
           >
             Look
           </Typography>
           <Typography
             p="8px"
-            color="#656565"
+            color={!openGallery ? "#000" : "#656565"}
             fontSize={"20px"}
-            fontWeight={500}
+            fontWeight={!openGallery ? 700 : 500}
             fontFamily={"Montserrat"}
+            sx={{cursor: 'pointer', "&:hover": {
+              color: '#000',
+              fontWeight: 700,
+              transition: "color .8s ease"
+            }}}
+            onClick={() => setOpenGallery(false)}
           >
             Products
           </Typography>
@@ -176,24 +189,31 @@ const Shop = () => {
           form.
         </Typography>
       </Box>
-      <Grid container spacing="30px">
-        {products.map((product, index) => (
-          <Product product={product} showPrice={false} key={index} />
-        ))}
-      </Grid>
-      <Box width="100%" py="60px" display="flex">
-        <Image
-          src={images.woman1}
-          alt="col"
-          style={{ objectFit: "cover", maxWidth: "1512" }}
-          height="717"
-        />
-      </Box>
-      <Grid container spacing="30px">
-        {products.map((product, index) => (
-          <Product product={product} showPrice={false} key={index} />
-        ))}
-      </Grid>
+      <Activity mode={openGallery ? "hidden" : "visible"}>
+        <Grid container spacing="30px">
+          {products.map((product, index) => (
+            <Product product={product} showPrice={false} key={index} />
+          ))}
+        </Grid>
+      </Activity>
+      <Box
+        my='60px'
+        width="100%"
+        height="717px"
+        sx={{
+          backgroundImage: `url(${images.woman1.src})`,
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+        }}
+      ></Box>
+      <Activity mode={openGallery ? "hidden" : "visible"}>
+        <Grid container spacing="30px">
+          {products.map((product, index) => (
+            <Product product={product} showPrice={false} key={index} />
+          ))}
+        </Grid>
+      </Activity>
       <MenuUI
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl}

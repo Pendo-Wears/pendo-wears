@@ -12,14 +12,14 @@ import { useRouter } from "next/navigation";
 import { productsEndpoint } from "../lib/endpoints";
 
 const Navbar = () => {
-  const { isAuthenticated, fireAlert } = useAuth();
+  const { isAuthenticated, fireAlert, user } = useAuth();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [collectionAnchorEl, setCollectionAnchorEl] =
     useState<null | HTMLElement>(null);
   const [hideCollection, setHideCollection] = useState(false);
   const [selectedCollection, setSelectedCollection] = useState("");
-  const [user, setUser] = useState<any>(null);
+  // const [user, setUser] = useState<any>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -53,19 +53,24 @@ const Navbar = () => {
       typeof window !== "undefined"
         ? localStorage.getItem("user") || "null"
         : "null";
-    setUser(JSON.parse(profile));
+    // setUser(JSON.parse(profile));
   };
 
   useEffect(() => {
     getCategories();
-    getUser();
+    // getUser();
   }, []);
 
   const collections = [
     {
       name: "Collection",
       items: categories
-        .filter((x) => x.slug === "noir-gold-collection" || x.slug === "rhythm-thread-collection" || x.slug === "heritage-alchemy-collection")
+        .filter(
+          (x) =>
+            x.slug === "noir-gold-collection" ||
+            x.slug === "rhythm-thread-collection" ||
+            x.slug === "heritage-alchemy-collection"
+        )
         ?.map((category) => ({
           name: category.name,
           to: `/shop?type=${category.name}&category=${category.slug}`,
@@ -74,7 +79,12 @@ const Navbar = () => {
     {
       name: "Products",
       items: categories
-        .filter((x) => x.slug !== "noir-gold-collection" && x.slug !== "rhythm-thread-collection" && x.slug !== "heritage-alchemy-collection")
+        .filter(
+          (x) =>
+            x.slug !== "noir-gold-collection" &&
+            x.slug !== "rhythm-thread-collection" &&
+            x.slug !== "heritage-alchemy-collection"
+        )
         ?.map((category) => ({
           name: category.name,
           to: `/collection/${category.slug}?id=${category.id}`,
@@ -144,8 +154,7 @@ const Navbar = () => {
                 alt="search"
                 width="28"
                 height="28"
-                objectFit="cover"
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", objectFit: "cover" }}
                 onClick={() => router.push("/search")}
               />
               <Link href="/profile/wishlist">
@@ -154,7 +163,7 @@ const Navbar = () => {
                   alt="wishlist"
                   width="28"
                   height="30"
-                  objectFit="cover"
+                  style={{ objectFit: "cover" }}
                 />
               </Link>
               <Link href="/cart">
@@ -163,7 +172,7 @@ const Navbar = () => {
                   alt="cart"
                   width="28"
                   height="28"
-                  objectFit="cover"
+                  style={{ objectFit: "cover" }}
                 />
               </Link>
             </Box>
@@ -201,11 +210,17 @@ const Navbar = () => {
                 onClick={handleMenuOpen}
               >
                 <Image
-                  src={user?.avatar_url ? user?.avatar_url : icons.avatar}
+                  src={
+                    (user?.meta_data?.find(
+                      (x: any) => x.key === "simple_local_avatar"
+                    )?.value as any) ||
+                    user?.avatar_url ||
+                    icons.avatar.src
+                  }
                   alt="avatar"
                   width="45"
                   height="45"
-                  style={{ borderRadius: "100%" }}
+                  style={{ borderRadius: "100%", objectFit: "cover" }}
                 />
                 <Image
                   src={icons.arrowDown}

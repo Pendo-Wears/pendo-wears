@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
+import { User } from "../lib/types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,6 +17,9 @@ interface AuthContextType {
   ) => void;
   amount: number;
   setAmount: (x: number) => void;
+  user: User | undefined;
+  setUser: (x: User) => void;
+  getUser: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   >("success");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [amount, setAmount] = useState(0);
+  const [user, setUser] = useState<User>();
 
   const getUserAuth = () => {
     if (typeof window !== "undefined") {
@@ -36,9 +41,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const getUser = () => {
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+    const thisUser = JSON.parse(raw);
+    setUser(thisUser);
+  };
+
   useEffect(() => {
     getUserAuth();
-  });
+    getUser();
+  }, []);
 
   const fireAlert = (
     message: string,
@@ -63,6 +76,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fireAlert,
         amount,
         setAmount,
+        user,
+        setUser,
+        getUser,
       }}
     >
       {children}

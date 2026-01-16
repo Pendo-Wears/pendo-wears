@@ -181,6 +181,7 @@ const ProductDetails = ({
       getProductDetails();
       getPrintfulProducts();
     }
+    localStorage.removeItem("orderId");
     getProducts();
   }, []);
 
@@ -242,6 +243,136 @@ const ProductDetails = ({
                 : getPriceRange(productDetails?.sync_variants)}
             </Typography>
           </Box>
+          {/* <Box py="25px" borderBottom={"1px solid #00000010"}>
+            <Typography
+              fontSize={16}
+              fontFamily={"Montserrat"}
+              color="#000"
+              fontWeight={600}
+              mb="10px"
+            >
+              Variants
+            </Typography>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              gap="26px"
+              flexWrap={"wrap"}
+            >
+              {[
+                ...new Set(
+                  [
+                    ...new Map(
+                      productDetails?.sync_variants.map((item) => [
+                        item.color,
+                        item,
+                      ])
+                    ).values(),
+                  ]
+                    .filter((item) => !size || item.size === size)
+                    .map((item) => item)
+                ),
+              ]?.map((variant: any) => (
+                <Box
+                  key={variant.name}
+                  width="60px"
+                  height={"60px"}
+                  borderRadius={"2px"}
+                  border={`1px solid ${
+                    selectedVariant?.color === variant.color
+                      ? "#D9D9D9"
+                      : "transparent"
+                  }`}
+                  p="5px"
+                  display="flex"
+                  alignItems={"flex-start"}
+                  justifyContent={"center"}
+                  onClick={() =>
+                    setSelectedVariant((prev: any) => ({
+                      ...prev,
+                      ...variant,
+                      size: prev?.size ? prev?.size : "",
+                      name: productDetails?.sync_product?.name,
+                    }))
+                  }
+                >
+                  <Image
+                    src={variant?.product?.image || ""}
+                    alt={variant?.product?.name || ""}
+                    width={60}
+                    height={60}
+                    style={{ objectFit: "cover" }}
+                  />
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Box py="25px" borderBottom={"1px solid #00000010"}>
+            <Typography
+              fontSize={16}
+              fontFamily={"Montserrat"}
+              color="#000"
+              fontWeight={600}
+              mb="10px"
+            >
+              Select Sizes
+            </Typography>
+            <Box
+              display="flex"
+              alignItems={"center"}
+              flexWrap={"wrap"}
+              gap="20px"
+            >
+              {[
+                ...new Set(
+                  [
+                    ...new Map(
+                      productDetails?.sync_variants.map((item) => [
+                        item.size,
+                        item,
+                      ])
+                    ).values(),
+                  ]
+                    .filter((item) => !color || item.color === color)
+                    .map((item) => item)
+                ),
+              ]?.map((variant: SyncVariant) => (
+                <Box
+                  key={variant.id}
+                  width="80px"
+                  height={"40px"}
+                  borderRadius={"2px"}
+                  bgcolor={
+                    selectedVariant?.size === variant.size ? "#000" : "#F1F3F4"
+                  }
+                  p="8px"
+                  display="flex"
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() =>
+                    setSelectedVariant((prev: any) => ({
+                      ...prev,
+                      ...variant,
+                      color: prev?.color ? prev?.color : "",
+                      name: productDetails?.sync_product?.name,
+                      product: { ...prev?.product },
+                    }))
+                  }
+                >
+                  <Typography
+                    fontSize={20}
+                    fontFamily={"Montserrat"}
+                    color={
+                      selectedVariant?.size === variant.size ? "#fff" : "#000"
+                    }
+                  >
+                    {variant.size}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box> */}
           <Box py="25px" borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}

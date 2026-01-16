@@ -162,10 +162,14 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
     }));
   }, []);
 
+  const storeUrl = process.env.NEXT_PUBLIC_WOO_STORE_URL;
+
   const imgUrl = category?.image?.src?.replace(
-    "http://localhost:3000",
-    "https://darkgray-heron-136669.hostingersite.com"
+    new URL(category?.image?.src).origin,
+    storeUrl!
   );
+
+  console.log(imgUrl, "ASDFGHJKL");
   return (
     <Box pb="46px">
       <Box
@@ -229,7 +233,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           position="relative"
           overflow={"hidden"}
         >
-          <Activity mode={category?.name ? "visible" : "hidden"}>
+          <Activity mode={category?.name && imgUrl ? "visible" : "hidden"}>
             <Image
               src={imgUrl!}
               alt={category?.image?.alt!}

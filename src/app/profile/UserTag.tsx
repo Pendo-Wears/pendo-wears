@@ -3,13 +3,15 @@
 import { icons } from "@/src/assets/icons/icons";
 import { useAuth } from "@/src/context/AuthContext";
 import { productsEndpoint } from "@/src/lib/endpoints";
+import { User } from "@/src/lib/types";
+import userEndpoints from "@/src/lib/userServices";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const UserTag = () => {
-  const { fireAlert } = useAuth();
-  const [user, setUser] = useState<any>({});
+  const { fireAlert, user, setUser, getUser } = useAuth();
+  // const [] = useState<any>({});
   const [orders, setOrders] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +19,7 @@ const UserTag = () => {
     const raw =
       typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
     const thisUser = JSON.parse(raw);
-    setUser(thisUser);
+    // setUser(thisUser);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
@@ -32,6 +34,76 @@ const UserTag = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const result: any = await userEndpoints.uploadImage(formData);
+      console.log(result);
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    }
+  };
+
+  async function uploadToImgBB(file: File) {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_APIkEY; // free key
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    const response = await fetch(
+      `https://api.imgbb.com/1/upload?key=${apiKey}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    await updateAvatar(data.data.display_url!);
+    return data.data.display_url; // public image URL
+  }
+
+  const updateAvatar = async (url: string) => {
+    setLoading(true)
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+    const thisUser: User = JSON.parse(raw);
+    try {
+      const result: any = await userEndpoints.updateUser(thisUser?.id, {
+        meta_data: [
+          {
+            key: "simple_local_avatar",
+            value: url,
+          },
+        ],
+      });
+      if (result?.data.success) {
+        console.log(result, "ASDFGHJKL");
+        fireAlert("User updated successfully", "success");
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(result.data.data));
+        }
+      }
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    } finally {
+      getUser();
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    // 1️⃣ Upload to WordPress Media Library
+    const avatarUrl = await uploadToImgBB(file);
+
+    // 2️⃣ Update simple_local_avatar meta
+    // const updatedUser = await updateAvatar(avatarUrl);
+
+    // console.log("Updated user avatar:", updatedUser);
   };
 
   useEffect(() => {
@@ -54,11 +126,19 @@ const UserTag = () => {
         <>
           <Box position="relative">
             <Image
-              src={user?.avatar_url}
+              src={
+                (user?.meta_data?.find(
+                  (x: any) => x.key === "simple_local_avatar"
+                )?.value as any) || user?.avatar_url
+              }
               alt="avatar"
               width="128"
               height="128"
-              style={{ borderRadius: "100%", border: "4px solid #D0950F" }}
+              style={{
+                borderRadius: "100%",
+                border: "4px solid #D0950F",
+                objectFit: "cover",
+              }}
             />
             <Image
               src={icons.camera}
@@ -72,6 +152,19 @@ const UserTag = () => {
                 cursor: "pointer",
               }}
             />
+            <Box
+              width="32px"
+              height="32px"
+              sx={{ opacity: 0 }}
+              position={"absolute"}
+              bottom={"8px"}
+              right={"8px"}
+              bgcolor="red"
+              borderRadius={"100%"}
+              component={"input"}
+              type="file"
+              onChange={(e: any) => handleAvatarUpload(e.target.files[0])}
+            ></Box>
           </Box>
           <Typography
             mt="22px"

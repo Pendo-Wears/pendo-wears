@@ -36,6 +36,7 @@ const HomePage = () => {
 
   useEffect(() => {
     getCategories();
+    localStorage.removeItem("orderId");
   }, []);
   return (
     <Box>
@@ -674,7 +675,7 @@ const Tribe = () => {
           required
           placeholder="Enter your email"
           value={""}
-          onChange={(e) => {}}
+          // onChange={(e) => {}}
           sx={{
             bgcolor: "transparent",
             borderRadius: "6px",

@@ -90,14 +90,14 @@ const Register = () => {
     }
   };
 
-  const updateAvatar = async (url: string) => {
-    try {
-      const result: any = await userEndpoints.updateAvatar(51, url);
-      console.log(result);
-    } catch (e: any) {
-      fireAlert(e.message, "error");
-    }
-  };
+  // const updateAvatar = async (url: string) => {
+  //   try {
+  //     const result: any = await userEndpoints.updateAvatar(51, url);
+  //     console.log(result);
+  //   } catch (e: any) {
+  //     fireAlert(e.message, "error");
+  //   }
+  // };
 
   const handleAvatarUpload = async (file: File) => {
     // 1️⃣ Upload to WordPress Media Library
