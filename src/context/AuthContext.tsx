@@ -44,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const getUser = () => {
     const raw =
       typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser = JSON.parse(raw);
+    const thisUser = JSON.parse(raw!);
     setUser(thisUser);
   };
 
