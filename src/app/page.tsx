@@ -38,6 +38,12 @@ const HomePage = () => {
     getCategories();
     localStorage.removeItem("orderId");
   }, []);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
   return (
     <Box>
       <MultilinkUI

@@ -11,6 +11,12 @@ export default function RequireAuth({
   const [allowed, setAllowed] = useState(false);
   const pathname = usePathname();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
   useEffect(() => {
     const token =
       typeof window !== "undefined" ? localStorage.getItem("token") : "";
