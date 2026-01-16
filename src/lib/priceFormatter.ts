@@ -1,25 +1,27 @@
-"use client"
+"use client";
 
 import { count } from "console";
 import { GetCountries } from "react-country-state-city";
 import { Country } from "react-country-state-city/dist/esm/types";
+import { useAuth } from "../context/AuthContext";
 
-const user = typeof window !== "undefined" ? localStorage?.getItem("user") || "null" : "null";
-const parsedUser = JSON.parse(user);
-const countryCode = parsedUser?.billing?.country;
+// const user = typeof window !== "undefined" ? localStorage?.getItem("user") || "null" : "null";
+// const parsedUser = JSON.parse(user);
+// const { user } = useAuth();
+// const countryCode = user?.billing?.country;
 
 let country: Country | undefined = undefined;
 
-export const getCountryData = async () => {
+export const getCountryData = async (code: string) => {
   // let countries: any[] = [];
   const countries = await GetCountries().then((result) => {
     return result;
   });
-  country = countries.find((c: any) => c.iso2 === countryCode);
+  country = countries.find((c: any) => c.iso2 === code);
   return country;
 };
 
-getCountryData();
+// getCountryData();
 
 // getCountryName().then((res) => {
 //   country = res;

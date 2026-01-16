@@ -57,7 +57,7 @@ const Cart = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchCountryData = async () => {
-    const countryData = await getCountryData();
+    const countryData = await getCountryData(user?.billing?.country!);
     setCountry(countryData);
   };
 
@@ -169,7 +169,7 @@ const Cart = () => {
 
   useEffect(() => {
     setCartItems(readCart());
-    getCountryData().then(setCountry);
+    getCountryData(user?.billing?.country!).then(setCountry);
     GetCountries().then(setCountries);
     localStorage.removeItem("orderId");
 

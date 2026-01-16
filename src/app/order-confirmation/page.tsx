@@ -12,7 +12,7 @@ import Image from "next/image";
 import { icons } from "@/src/assets/icons/icons";
 
 const OrderConfirmation = () => {
-  const { fireAlert } = useAuth();
+  const { fireAlert, user } = useAuth();
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -51,40 +51,40 @@ const OrderConfirmation = () => {
       }
     }
 
-    console.log(data.txRef)
+    console.log(data.txRef);
 
-    const profile =
-      typeof window !== "undefined"
-        ? localStorage.getItem("user") || "null"
-        : "null";
-    const userData = JSON.parse(profile);
+    // const profile =
+    //   typeof window !== "undefined"
+    //     ? localStorage.getItem("user") || "null"
+    //     : "null";
+    // const userData = JSON.parse(profile);
     const raw =
       typeof window !== "undefined"
         ? localStorage.getItem("cart") || "[]"
         : "[]";
     const allCart = JSON.parse(raw);
-    const userCountry = await getCountryData();
-    if (!userData.id || allCart.length === 0) return;
+    const userCountry = await getCountryData(user?.billing?.country!);
+    if (!user?.id || allCart.length === 0) return;
 
     try {
       setLoading(true);
       const orderPayload = {
-        userId: userData.id,
+        userId: user?.id,
         txRef: data?.txRef,
         paymentMethod:
           userCountry?.region === "Africa"
             ? "CARD | FLUTTERWAVE"
             : "CARD | STRIPE",
         recipient: {
-          name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-          address1: userData?.billing?.address_1 || "",
-          state_name: userData?.billing?.state || "",
-          city: userData?.billing?.state || "",
+          name: `${user?.first_name || ""} ${user?.last_name || ""}`,
+          address1: user?.billing?.address_1 || "",
+          state_name: user?.billing?.state || "",
+          city: user?.billing?.state || "",
           country_code: userCountry?.iso2 || "",
           country_name: userCountry?.name || "",
-          zip: userData?.billing?.postcode || "",
-          phone: userCountry?.phone_code + userData?.billing?.phone || "",
-          email: userData?.email || "",
+          zip: user?.billing?.postcode || "",
+          phone: userCountry?.phone_code! + user?.billing?.phone || "",
+          email: user?.email || "",
         },
         items: allCart,
       };

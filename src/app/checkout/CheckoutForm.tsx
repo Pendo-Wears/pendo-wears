@@ -59,7 +59,7 @@ export default function CheckoutForm({ amount }: Props) {
     const userData = JSON.parse(profile);
 
     const allCart = JSON.parse(raw);
-    const userCountry = await getCountryData();
+    // const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;
 

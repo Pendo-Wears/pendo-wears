@@ -33,7 +33,7 @@ const Login = () => {
       return;
     }
     fireAlert("Login Successful", "success");
-    getCountryData();
+    // getCountryData();
     setIsAuthenticated(true);
     getUser();
     if (typeof window !== "undefined") {

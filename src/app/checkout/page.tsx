@@ -18,8 +18,7 @@ import { SyncVariant } from "@/src/lib/types";
 const Checkout = () => {
   const router = useRouter();
   const params = useSearchParams();
-  const { amount, fireAlert } = useAuth();
-  const [user, setUser] = useState<any>(null);
+  const { amount, fireAlert, user, setUser } = useAuth();
   const [country, setCountry] = useState<any>(null);
 
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
@@ -108,7 +107,7 @@ const Checkout = () => {
         ? localStorage.getItem("cart") || "[]"
         : "[]";
     const allCart = JSON.parse(raw);
-    const userCountry = await getCountryData();
+    // const userCountry = await getCountryData();
 
     if (!userData.id) return;
 
@@ -189,7 +188,7 @@ const Checkout = () => {
   }, []);
 
   const fetchCountryData = async () => {
-    const countryData = await getCountryData();
+    const countryData = await getCountryData(user?.billing?.country!);
     setCountry(countryData);
   };
 

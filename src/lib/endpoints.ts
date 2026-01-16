@@ -200,7 +200,7 @@ const productsEndpoint = {
   },
 
   createOrder: async (data: {
-    userId: string;
+    userId: string | number;
     recipient: any;
     items: SyncVariant[];
   }) => {

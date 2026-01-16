@@ -178,7 +178,7 @@ const Navbar = () => {
             </Box>
             {!isAuthenticated ? (
               <Link
-                href="/register"
+                href="/login"
                 style={{
                   textDecoration: "none",
                   display:
