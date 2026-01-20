@@ -26,14 +26,15 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning style={{ background: "#fff" }}>
         {/* <ThemeRegistry> */}
-          <AuthProvider>
-            <Box sx={{ maxWidth: "1512px", margin: "0 auto " }}>
-              <Navbar />
-              <Box mt="130px">{children}</Box>
-              <Footer />
-            </Box>
-            <AlertUI />
-          </AuthProvider>
+        <script src="https://accounts.google.com/gsi/client" async defer />
+        <AuthProvider>
+          <Box sx={{ maxWidth: "1512px", margin: "0 auto " }}>
+            <Navbar />
+            <Box mt="130px">{children}</Box>
+            <Footer />
+          </Box>
+          <AlertUI />
+        </AuthProvider>
         {/* </ThemeRegistry> */}
       </body>
     </html>

@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         pathname: "/wp-content/uploads/**",
       },
       {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3000",
+        pathname: "/wp-content/uploads/**",
+      },
+      {
         protocol: "https",
         hostname: "files.cdn.printful.com",
         pathname: "/**",
@@ -22,6 +28,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "secure.gravatar.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
         pathname: "/**",
       },
     ],

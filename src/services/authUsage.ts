@@ -1,4 +1,9 @@
-import { signup, login } from "../lib/authServices";
+import {
+  signup,
+  login,
+  resetPassword,
+  changePassword,
+} from "../lib/authServices";
 
 export async function handleSignup(formData: {
   firstName: string;
@@ -62,6 +67,27 @@ export async function handleLogin(identifier: string, password: string) {
     console.log("Token:", token);
 
     return { success: true, user, token };
+  } catch (error: any) {
+    console.error("Login failed:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function changeUserPassword(password: string) {
+  // if (!email || email.trim() === "") {
+  //   return { success: false, error: "Email or username is required" };
+  // }
+
+  if (!password || password.trim() === "") {
+    return { success: false, error: "Password is required" };
+  }
+
+  try {
+    const reset = await changePassword(password);
+
+    console.log("Reset successful", reset);
+
+    return { success: true, dats: reset.data };
   } catch (error: any) {
     console.error("Login failed:", error.message);
     return { success: false, error: error.message };

@@ -42,6 +42,11 @@ import cartYellow from "./cartYellow.png";
 import truckFilled from "./truckFilled.png";
 import chat from "./chat.png";
 import email from "./email.png";
+import gem from "./gem.png";
+import hand from "./hand.png";
+import crown from "./crown.png";
+import bulb from "./bulb.png";
+import globe from "./globe.png";
 import phone from "./phone.png";
 
 export const icons = {
@@ -90,4 +95,9 @@ export const icons = {
   chat,
   email,
   phone,
+  gem,
+  globe,
+  crown,
+  bulb,
+  hand,
 };

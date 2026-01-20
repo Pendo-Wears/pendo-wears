@@ -3,27 +3,25 @@
 import { icons } from "@/src/assets/icons/icons";
 import { useAuth } from "@/src/context/AuthContext";
 import { productsEndpoint } from "@/src/lib/endpoints";
+import { User } from "@/src/lib/types";
+import userEndpoints from "@/src/lib/userServices";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const UserTag = () => {
-  const { fireAlert } = useAuth();
-  const [user, setUser] = useState<any>({});
+  const { fireAlert, user, setUser, getUser } = useAuth();
+  // const [] = useState<any>({});
   const [orders, setOrders] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
-    const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser = JSON.parse(raw);
-    setUser(thisUser);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
       if (result.success) {
         const userOrders = result.data.filter(
-          (order: any) => order.recipient.email === thisUser?.email
+          (order: any) => order.recipient.email === user?.email
         );
         setOrders(userOrders.length);
       }
@@ -32,6 +30,97 @@ const UserTag = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const uploadImage = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const result: any = await userEndpoints.uploadImage(formData);
+      console.log(result);
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    }
+  };
+
+  async function uploadToImgBB(file: File) {
+    const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY; // ✅ fixed name
+
+    if (!apiKey) {
+      throw new Error("ImgBB API key is missing");
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    setLoading(true);
+
+    const response = await fetch(
+      `https://api.imgbb.com/1/upload?key=${apiKey}`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const text = await response.text();
+
+    if (!text) {
+      throw new Error("Empty response from ImgBB");
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error("ImgBB raw response:", text);
+      throw new Error("ImgBB did not return JSON");
+    }
+
+    if (!response.ok || !data?.data?.display_url) {
+      throw new Error(data?.error?.message || "ImgBB upload failed");
+    }
+
+    await updateAvatar(data.data.display_url);
+    return data.data.display_url;
+  }
+
+  const updateAvatar = async (url: string) => {
+    const raw =
+      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+    const thisUser: User = JSON.parse(raw);
+    try {
+      const result: any = await userEndpoints.updateUser(thisUser?.id, {
+        meta_data: [
+          {
+            key: "simple_local_avatar",
+            value: url,
+          },
+        ],
+      });
+      if (result?.data.success) {
+        console.log(result, "ASDFGHJKL");
+        fireAlert("User updated successfully", "success");
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(result.data.data));
+        }
+      }
+    } catch (e: any) {
+      fireAlert(e.message, "error");
+    } finally {
+      getUser();
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarUpload = async (file: File) => {
+    // 1️⃣ Upload to WordPress Media Library
+    const avatarUrl = await uploadToImgBB(file);
+
+    // 2️⃣ Update simple_local_avatar meta
+    // const updatedUser = await updateAvatar(avatarUrl);
+
+    // console.log("Updated user avatar:", updatedUser);
   };
 
   useEffect(() => {
@@ -54,11 +143,19 @@ const UserTag = () => {
         <>
           <Box position="relative">
             <Image
-              src={user?.avatar_url}
+              src={
+                (user?.meta_data?.find(
+                  (x: any) => x.key === "simple_local_avatar"
+                )?.value as any) || user?.avatar_url
+              }
               alt="avatar"
               width="128"
               height="128"
-              style={{ borderRadius: "100%", border: "4px solid #D0950F" }}
+              style={{
+                borderRadius: "100%",
+                border: "4px solid #D0950F",
+                objectFit: "cover",
+              }}
             />
             <Image
               src={icons.camera}
@@ -72,6 +169,19 @@ const UserTag = () => {
                 cursor: "pointer",
               }}
             />
+            <Box
+              width="32px"
+              height="32px"
+              sx={{ opacity: 0 }}
+              position={"absolute"}
+              bottom={"8px"}
+              right={"8px"}
+              bgcolor="red"
+              borderRadius={"100%"}
+              component={"input"}
+              type="file"
+              onChange={(e: any) => handleAvatarUpload(e.target.files[0])}
+            ></Box>
           </Box>
           <Typography
             mt="22px"

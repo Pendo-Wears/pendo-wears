@@ -52,6 +52,19 @@ const productsEndpoint = {
     }
   },
 
+  getTags: async () => {
+    try {
+      const response = await publicApi.get("/wc/store/v1/products/tags");
+      return response;
+    } catch (error: any) {
+      console.log(
+        "Error fetching products:",
+        error.response?.data || error.message
+      );
+      return [];
+    }
+  },
+
   getCategory: async (id: number | string) => {
     try {
       const response = await publicApi.get(
@@ -187,7 +200,7 @@ const productsEndpoint = {
   },
 
   createOrder: async (data: {
-    userId: string;
+    userId: string | number;
     recipient: any;
     items: SyncVariant[];
   }) => {

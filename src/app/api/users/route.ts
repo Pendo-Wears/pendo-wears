@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { privateApi, publicApi } from "@/src/lib/woocommerce";
 
 export async function GET(req: NextRequest) {
-  if (
-    !process.env.WOO_CONSUMER_KEY ||
-    !process.env.WOO_CONSUMER_SECRET
-  ) {
+  if (!process.env.WOO_CONSUMER_KEY || !process.env.WOO_CONSUMER_SECRET) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 403 });
   }
 

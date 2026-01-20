@@ -17,6 +17,14 @@ import cloth from "./cloth.png";
 import woman1 from "./woman1.png";
 import hoodie from "./hoodie.png";
 import about from "./about.png";
+import abt1 from "./abt1.png";
+import abt2 from "./abt2.png";
+import abt3 from "./abt3.png";
+import abt4 from "./abt4.png";
+import abt5 from "./abt5.png";
+import abt6 from "./abt6.png";
+import abt from "./abt.png";
+import usr1 from "./usr1.png";
 
 export const images = {
   shirt,
@@ -38,4 +46,12 @@ export const images = {
   woman1,
   hoodie,
   about,
+  abt1,
+  abt2,
+  abt3,
+  abt4,
+  abt5,
+  abt6,
+  abt,
+  usr1
 };

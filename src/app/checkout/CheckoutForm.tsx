@@ -59,89 +59,73 @@ export default function CheckoutForm({ amount }: Props) {
     const userData = JSON.parse(profile);
 
     const allCart = JSON.parse(raw);
-    const userCountry = await getCountryData();
+    // const userCountry = await getCountryData();
 
     if (!userData.id || allCart.length === 0) return;
 
-    const orderPayload = {
-      userId: userData.id,
-      recipient: {
-        name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-        address1: userData?.billing?.address_1 || "",
-        state_name: userData?.billing?.state || "",
-        city: userData?.billing?.state || "",
-        country_code: userCountry?.iso2 || "",
-        country_name: userCountry?.name || "",
-        zip: userData?.billing?.postcode || "",
-        phone: userCountry?.phone_code + userData?.billing?.phone || "",
-        email: userData?.email || "",
-      },
-      items: allCart,
-    };
+    try {
+      // 1️⃣ Create PaymentIntent on the server
+      const { data } = await axios.post("/api/payment-intent", {
+        amount,
+        user: {
+          email: user?.email!,
+          name: `${user?.first_name || ""} ${user?.last_name || ""}`,
+          userId: user?.id,
+          phone: user?.phone_number,
+          country: user?.billing?.countryName,
+          stripeCustomerId,
+        },
+        txRef: `tx-${crypto.randomUUID()}`,
+      });
 
-    const order: any = await productsEndpoint.createOrder(orderPayload);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "stripeCustomerId",
+          JSON.stringify(data.customerId)
+        );
+      }
+      const clientSecret = data.clientSecret;
 
-    if (order.success) {
-      try {
-        // 1️⃣ Create PaymentIntent on the server
-        const { data } = await axios.post("/api/payment-intent", {
-          amount,
-          user: {
-            email: user?.email!,
-            name: `${user?.first_name || ""} ${user?.last_name || ""}`,
-            userId: user?.id,
-            phone: user?.phone_number,
-            country: user?.billing?.countryName,
-            stripeCustomerId,
+      if (!clientSecret) throw new Error("No client secret returned.");
+
+      // 2️⃣ Confirm the card payment
+      const cardNumber = elements.getElement(CardNumberElement);
+      const cardExpiry = elements.getElement(CardExpiryElement);
+      const cardCvc = elements.getElement(CardCvcElement);
+
+      if (!cardNumber || !cardExpiry || !cardCvc) {
+        throw new Error("One of the card elements is missing");
+        return;
+      }
+
+      const { error: stripeError, paymentIntent } =
+        await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardNumber,
+            billing_details: {
+              email: user.email,
+              name: user.name,
+            },
           },
-          orderId: `${order.data.id}`,
         });
 
-        if (typeof window !== "undefined") {
-          localStorage.setItem(
-            "stripeCustomerId",
-            JSON.stringify(data.customerId)
-          );
-        }
-        const clientSecret = data.clientSecret;
+      if (stripeError) throw stripeError;
 
-        if (!clientSecret) throw new Error("No client secret returned.");
+      console.log(paymentIntent, "paymentIntent");
 
-        // 2️⃣ Confirm the card payment
-        const cardNumber = elements.getElement(CardNumberElement);
-        const cardExpiry = elements.getElement(CardExpiryElement);
-        const cardCvc = elements.getElement(CardCvcElement);
-
-        if (!cardNumber || !cardExpiry || !cardCvc) {
-          throw new Error("One of the card elements is missing");
-          return;
-        }
-
-        const { error: stripeError, paymentIntent } =
-          await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: cardNumber,
-              billing_details: {
-                email: user.email,
-                name: user.name,
-              },
-            },
-          });
-
-        if (stripeError) throw stripeError;
-
-        if (paymentIntent?.status === "succeeded") {
-          router.replace(`/order-confirmation?order=${order.data.id}`);
-          fireAlert("Payment successful!", "success");
-        }
-      } catch (err: any) {
-        fireAlert(err.message || "Payment failed.", "error");
-      } finally {
-        setLoading(false);
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("cart");
-        }
+      if (paymentIntent?.status === "succeeded") {
+        router.replace(
+          `/order-confirmation?response=${JSON.stringify({
+            ...paymentIntent,
+            txRef: `${paymentIntent.id}`,
+          })}`
+        );
+        fireAlert("Payment successful!", "success");
       }
+    } catch (err: any) {
+      fireAlert(err.message || "Payment failed.", "error");
+    } finally {
+      setLoading(false);
     }
   };
 

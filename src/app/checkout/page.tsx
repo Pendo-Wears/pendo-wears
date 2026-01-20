@@ -18,8 +18,7 @@ import { SyncVariant } from "@/src/lib/types";
 const Checkout = () => {
   const router = useRouter();
   const params = useSearchParams();
-  const { amount, fireAlert } = useAuth();
-  const [user, setUser] = useState<any>(null);
+  const { amount, fireAlert, user, setUser } = useAuth();
   const [country, setCountry] = useState<any>(null);
 
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
@@ -108,70 +107,48 @@ const Checkout = () => {
         ? localStorage.getItem("cart") || "[]"
         : "[]";
     const allCart = JSON.parse(raw);
-    const userCountry = await getCountryData();
+    // const userCountry = await getCountryData();
 
-    if (!userData.id || allCart.length === 0) return;
+    if (!userData.id) return;
 
-    const orderPayload = {
-      userId: userData.id,
-      recipient: {
-        name: `${userData?.first_name || ""} ${userData?.last_name || ""}`,
-        address1: userData?.billing?.address_1 || "",
-        state_name: userData?.billing?.state || "",
-        city: userData?.billing?.state || "",
-        country_code: userCountry?.iso2 || "",
-        country_name: userCountry?.name || "",
-        zip: userData?.billing?.postcode || "",
-        phone: userCountry?.phone_code + userData?.billing?.phone || "",
-        email: userData?.email || "",
+    const response = await axios.post("/api/flutterwave/pay", {
+      tx_ref: `${crypto.randomUUID()}`,
+      amount,
+      email: user?.email || "",
+      currency: "USD",
+      card: {
+        number: cardNumber,
+        cvv: cvc,
+        expiry_month: expiryMonth,
+        expiry_year: expiryYear,
       },
-      items: allCart,
-    };
+      redirect:
+        typeof window !== "undefined"
+          ? `${window.location.origin}/order-confirmation`
+          : "",
+      user: {
+        email: user?.email,
+        phone_number: user?.billing?.phone || "",
+        name: `${user?.first_name || ""} ${user?.last_name || ""}`,
+      },
+    });
 
-    const order: any = await productsEndpoint.createOrder(orderPayload);
-    if (order.success) {
-      const response = await axios.post("/api/flutterwave/pay", {
-        tx_ref: `tx-${order.data.id}`,
-        amount,
-        email: user?.email || "",
-        currency: "USD",
-        card: {
-          number: cardNumber,
-          cvv: cvc,
-          expiry_month: expiryMonth,
-          expiry_year: expiryYear,
-        },
-        redirect:
-          typeof window !== "undefined"
-            ? `${window.location.origin}/order-confirmation?order=${order.data.id}`
-            : "",
-        user: {
-          email: user.email,
-          phone_number: user?.billing?.phone || "",
-          name: `${user?.first_name || ""} ${user?.last_name || ""}`,
-        },
-      });
+    console.log("Stripe response:", response);
 
-      console.log("Stripe response:", response);
+    if (response.data.data.status === "pending") {
+      const auth = response.data?.meta?.authorization;
 
-      if (response.data.data.status === "pending") {
-        const auth = response.data?.meta?.authorization;
-
-        if (auth?.mode === "redirect" && typeof window !== "undefined") {
-          // Redirect to bank-hosted 3DS page
-          window.location.href = auth.redirect;
-        } else if (auth?.mode === "otp") {
-          // Show OTP input form in your app
-          // TODO: HANDLE OTP VERIFICATION
-          handleVerify(response.data.data.flw_ref, response.data.data.otp);
-        }
-      } else if (response.data.data?.status === "successful") {
-        // Payment done
-        router.push(`/order-confirmation?order=${order.data.id}`);
+      if (auth?.mode === "redirect" && typeof window !== "undefined") {
+        // Redirect to bank-hosted 3DS page
+        window.location.href = auth.redirect;
+      } else if (auth?.mode === "otp") {
+        // Show OTP input form in your app
+        // TODO: HANDLE OTP VERIFICATION
+        handleVerify(response.data.data.flw_ref, response.data.data.otp);
       }
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("cart");
-      }
+    } else if (response.data.data?.status === "successful") {
+      // Payment done
+      router.push(`/order-confirmation`);
     }
   };
 
@@ -211,7 +188,7 @@ const Checkout = () => {
   }, []);
 
   const fetchCountryData = async () => {
-    const countryData = await getCountryData();
+    const countryData = await getCountryData(user?.billing?.country!);
     setCountry(countryData);
   };
 

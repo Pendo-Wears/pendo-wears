@@ -167,6 +167,24 @@ export async function login(identifier: string, password: string) {
   }
 }
 
+export const resetPassword = async (email: string) => {
+  const reset = await privateApi.post(
+    `/auth/v1/auth/reset_password&email=${email}`
+  );
+
+  return reset;
+};
+
+export const changePassword = async (
+  newPassword: string
+) => {
+  const reset = await privateApi.post(`/wp/v2/users/me`, {
+    password: newPassword,
+  });
+
+  return reset;
+};
+
 export const logoutUser = () => {
   try {
     if (typeof window !== "undefined") {
@@ -181,7 +199,7 @@ export const logoutUser = () => {
 
     // Redirect the user (optional)
     if (typeof window !== "undefined") {
-      window.location.href = "/login"; // or "/" or "/auth"
+      window.location.href = "/"; // or "/" or "/auth"
     }
 
     return true;

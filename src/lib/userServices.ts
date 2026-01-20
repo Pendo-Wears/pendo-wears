@@ -15,7 +15,7 @@ const userEndpoints = {
     }
   },
 
-  getUser: async (userId: string) => {
+  getUser: async (userId: string | number) => {
     try {
       const response = await axios.get(`/api/users/${userId}`);
       return response;
@@ -45,7 +45,7 @@ const userEndpoints = {
 
   uploadImage: async (data: any) => {
     try {
-      const response = await privateApi.post(`/wp/v2/media`);
+      const response = await axios.post(`/api/media`, data);
       return response;
     } catch (error: any) {
       console.log(
@@ -56,12 +56,10 @@ const userEndpoints = {
     }
   },
 
-  updateAvatar: async (userId: number, url: string) => {
+  updateAvatar: async (url: string) => {
     try {
-      const response = await privateApi.post(`/wp/v2/users/${userId}`, {
-        simple_local_avatar: {
-          full: url,
-        },
+      const response = await privateApi.post(`/wp/v2/users/me`, {
+        simple_local_avatar: url,
       });
       return response;
     } catch (error: any) {

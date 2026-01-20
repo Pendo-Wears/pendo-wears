@@ -11,7 +11,13 @@ import {
 } from "@/src/lib/priceFormatter";
 import { ProductDetailsType, SyncVariant } from "@/src/lib/types";
 import userEndpoints from "@/src/lib/userServices";
-import { Box, MenuItem, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
@@ -37,7 +43,7 @@ const writeCart = (cart: any[]) => {
 
 const Cart = () => {
   const router = useRouter();
-  const { fireAlert, setAmount } = useAuth();
+  const { fireAlert, setAmount, user, setUser, getUser } = useAuth();
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
@@ -48,10 +54,10 @@ const Cart = () => {
   const [phone, setPhone] = useState<string>("");
   const [states, setStates] = useState<any[]>([]);
   const [countries, setCountries] = useState<any[]>([]);
-  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchCountryData = async () => {
-    const countryData = await getCountryData();
+    const countryData = await getCountryData(user?.billing?.country!);
     setCountry(countryData);
   };
 
@@ -109,6 +115,7 @@ const Cart = () => {
   // };
 
   const updateShippingAddress = async () => {
+    setLoading(true);
     try {
       const updateBody = {
         billing: {
@@ -147,21 +154,24 @@ const Cart = () => {
     } catch (error) {
       console.error("Error updating shipping address:", error);
       fireAlert("Failed to update shipping address", "error");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const getUser = () => {
-    const profile =
-      typeof window !== "undefined"
-        ? localStorage.getItem("user") || "null"
-        : "null";
-    setUser(JSON.parse(profile));
-  };
+  // const getUser = () => {
+  //   const profile =
+  //     typeof window !== "undefined"
+  //       ? localStorage.getItem("user") || "null"
+  //       : "null";
+  //   setUser(JSON.parse(profile));
+  // };
 
   useEffect(() => {
     setCartItems(readCart());
-    getCountryData().then(setCountry);
+    getCountryData(user?.billing?.country!).then(setCountry);
     GetCountries().then(setCountries);
+    localStorage.removeItem("orderId");
 
     const profile = localStorage.getItem("user");
     if (profile) setUser(JSON.parse(profile));
@@ -604,16 +614,20 @@ const Cart = () => {
                   sx={{ cursor: "pointer" }}
                   onClick={updateShippingAddress}
                 >
-                  <Typography
-                    fontSize={16}
-                    fontFamily={"Montserrat"}
-                    fontWeight={500}
-                    color="#FFFFFF"
-                    width="fit-content"
-                    sx={{ whiteSpace: "noWrap" }}
-                  >
-                    Update
-                  </Typography>
+                  {loading ? (
+                    <CircularProgress size={24} sx={{ color: "#fff" }} />
+                  ) : (
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      fontWeight={500}
+                      color="#FFFFFF"
+                      width="fit-content"
+                      sx={{ whiteSpace: "noWrap" }}
+                    >
+                      Update
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             </Box>
@@ -826,9 +840,10 @@ const Cart = () => {
                     fireAlert("Your cart is currently empty", "warning");
                     return;
                   }
+                  console.log(user?.billing, "23456789");
                   if (
                     !user?.billing?.state ||
-                    !user?.billing?.countryName ||
+                    !user?.billing?.country ||
                     !user?.billing?.address_1 ||
                     !user?.billing?.phone
                   ) {
@@ -1055,6 +1070,9 @@ export const CartItem = ({
     const all = readCart();
     const cart = all.filter((item: any) => item.id !== key);
     writeCart(cart);
+    if (onUpdate) {
+      onUpdate();
+    }
     fireAlert("Item successfully removed from cart", "success");
   };
 
@@ -1179,6 +1197,7 @@ export const CartItem = ({
                 sx={{
                   opacity: cart.quantity === 1 ? 0.5 : 1,
                   pointerEvents: cart.quantity === 1 ? "none" : "all",
+                  cursor: 'pointer'
                 }}
               >
                 <Typography
@@ -1215,6 +1234,7 @@ export const CartItem = ({
                 alignItems={"center"}
                 justifyContent={"center"}
                 onClick={() => updateCart(cart.quantity + 1)}
+                sx={{cursor: 'pointer'}}
               >
                 <Typography
                   fontSize={16}
@@ -1248,7 +1268,7 @@ export const CartItem = ({
             <Image
               src={icons.redBin}
               alt="delete"
-              style={{ objectFit: "contain" }}
+              style={{ objectFit: "contain", cursor: 'pointer' }}
               width="14"
               height="20"
               onClick={() => removeFromCart(cart.id)}

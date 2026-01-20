@@ -6,15 +6,17 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import Address from "./reusables/Address";
 import { Billing, User } from "@/src/lib/types";
+import { getCountryData } from "@/src/lib/priceFormatter";
+import { Country } from "react-country-state-city/dist/esm/types";
+import { useAuth } from "@/src/context/AuthContext";
 
 const SavedAddresses = () => {
-  const [user, setUser] = useState<Billing>();
+  const {user, setUser} = useAuth();
+  const [country, setCountry] = useState<Country>()
 
   const getUser = async () => {
-    const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser: User = JSON.parse(raw);
-    setUser(thisUser.billing);
+    const countryData = await getCountryData(user?.billing?.country!);
+    setCountry(countryData)
   };
 
   useEffect(() => {
@@ -51,8 +53,8 @@ const SavedAddresses = () => {
         <Address
           isDefault
           location="Home"
-          address={`${user?.address_1 || ""}, ${user?.state || ""}, ${
-            user?.countryName || ""
+          address={`${user?.billing?.address_1 || ""}, ${user?.billing?.state || ""}, ${
+            country?.name || ""
           }`}
         />
       </Box>

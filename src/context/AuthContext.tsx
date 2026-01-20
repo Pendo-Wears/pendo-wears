@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
+import { User } from "../lib/types";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -16,6 +17,10 @@ interface AuthContextType {
   ) => void;
   amount: number;
   setAmount: (x: number) => void;
+  user: User | undefined;
+  setUser: (x: User) => void;
+  getUser: () => void;
+  getUserAuth: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   >("success");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [amount, setAmount] = useState(0);
+  const [user, setUser] = useState<User>();
 
   const getUserAuth = () => {
     if (typeof window !== "undefined") {
@@ -36,9 +42,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const getUser = () => {
+    if (typeof window === "undefined") return;
+
+    const raw = localStorage.getItem("user");
+
+    if (!raw) {
+      setUser(undefined);
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(raw);
+      setUser(parsed);
+    } catch (err) {
+      console.error("Invalid user in localStorage:", raw);
+      localStorage.removeItem("user");
+      setUser(undefined);
+    }
+  };
+
   useEffect(() => {
     getUserAuth();
-  });
+    getUser();
+  }, []);
 
   const fireAlert = (
     message: string,
@@ -48,6 +75,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAlertMessage(message);
     setAlertType(type);
   };
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   return (
     <AuthContext.Provider
@@ -63,6 +96,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         fireAlert,
         amount,
         setAmount,
+        user,
+        setUser,
+        getUser,
+        getUserAuth,
       }}
     >
       {children}

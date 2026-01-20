@@ -9,8 +9,8 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const PersonalInformation = () => {
-  const { fireAlert } = useAuth();
-  const [user, setUser] = useState<User | null>(null);
+  const { fireAlert, user: thisUser, setUser, getUser } = useAuth();
+  // const [user, setUser] = useState<User | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,17 +24,14 @@ const PersonalInformation = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const getUser = async () => {
-    const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
-    const thisUser: User = JSON.parse(raw);
-    setUser(thisUser);
-    setFirstName(thisUser.first_name);
-    setLastName(thisUser.last_name);
-    setEmail(thisUser.email);
-    setPhoneNumber(thisUser.billing.phone);
-    const date = thisUser.meta_data.find((x) => x.key === "dateOfBirth");
-    const userGender = thisUser.meta_data.find((x) => x.key === "gender");
+  const getUserData = async () => {
+
+    setFirstName(thisUser?.first_name!);
+    setLastName(thisUser?.last_name!);
+    setEmail(thisUser?.email!);
+    setPhoneNumber(thisUser?.billing.phone!);
+    const date = thisUser?.meta_data.find((x) => x.key === "dateOfBirth");
+    const userGender = thisUser?.meta_data.find((x) => x.key === "gender");
     setDob(date?.value);
     setGender(userGender?.value);
   };
@@ -71,9 +68,9 @@ const PersonalInformation = () => {
         ],
       };
 
-      if (user && user.id) {
+      if (thisUser && thisUser.id) {
         const updateUser: any = await userEndpoints.updateUser(
-          user?.id,
+          thisUser?.id,
           updateBody
         );
         if (updateUser?.data.success) {
@@ -87,7 +84,7 @@ const PersonalInformation = () => {
                 ...updateUser.data.data,
                 billing: {
                   ...updateUser.data.data.billing,
-                  countryName: user?.billing.countryName,
+                  countryName: thisUser?.billing.countryName,
                 },
               })
             );
@@ -98,12 +95,13 @@ const PersonalInformation = () => {
       console.error("Error updating user:", error);
       fireAlert("Failed to update user", "error");
     } finally {
+      getUser();
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getUser();
+    getUserData();
   }, []);
   return (
     <Box width="72%" bgcolor="#f5f5f5" borderRadius={"16px"} p="32px">

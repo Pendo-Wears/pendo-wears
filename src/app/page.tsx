@@ -36,26 +36,30 @@ const HomePage = () => {
 
   useEffect(() => {
     getCategories();
+    localStorage.removeItem("orderId");
   }, []);
   return (
-    <RequireAuth>
-      <Box>
-        <MultilinkUI
-          links={categories
-            .filter((x) => x.slug !== "noir-gold" && x.slug !== "rhythm-thread")
-            .map((category) => ({
-              name: category.name,
-              to: `/collection/${category.slug}?id=${category.id}`,
-            }))}
-        />
-        <Hero />
-        <Collections />
-        <Products />
-        <Shop />
-        <OurStory />
-        <Tribe />
-      </Box>
-    </RequireAuth>
+    <Box>
+      <MultilinkUI
+        links={categories
+          .filter(
+            (x) =>
+              x.slug !== "noir-gold-collection" &&
+              x.slug !== "rhythm-thread-collection" &&
+              x.slug !== "heritage-alchemy-collection"
+          )
+          .map((category) => ({
+            name: category.name,
+            to: `/collection/${category.slug}?id=${category.id}`,
+          }))}
+      />
+      <Hero />
+      <Collections />
+      <Products />
+      <Shop />
+      <OurStory />
+      <Tribe />
+    </Box>
   );
 };
 
@@ -671,7 +675,7 @@ const Tribe = () => {
           required
           placeholder="Enter your email"
           value={""}
-          onChange={(e) => {}}
+          // onChange={(e) => {}}
           sx={{
             bgcolor: "transparent",
             borderRadius: "6px",
