@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { productsEndpoint } from "../lib/endpoints";
 
 const Navbar = () => {
-  const { isAuthenticated, fireAlert, user } = useAuth();
+  const { isAuthenticated, fireAlert, user, getUserAuth } = useAuth();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [collectionAnchorEl, setCollectionAnchorEl] =
@@ -58,6 +58,7 @@ const Navbar = () => {
 
   useEffect(() => {
     getCategories();
+      getUserAuth();
     // getUser();
   }, []);
 
@@ -102,7 +103,10 @@ const Navbar = () => {
       icon: icons.change,
       action: () => router.push("/change-password"),
     },
-    { label: "Logout", icon: icons.logout, action: logoutUser },
+    { label: "Logout", icon: icons.logout, action: () => {
+      logoutUser()
+      getUserAuth()
+    } },
   ];
   return (
     <Box

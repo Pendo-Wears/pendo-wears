@@ -1,23 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Activity } from "react";
 import { icons } from "@/src/assets/icons/icons";
 import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { handleLogin } from "@/src/services/authUsage";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 import { getCountryData } from "@/src/lib/priceFormatter";
 import GoogleLoginButton from "@/src/components/GoogleButton";
 
 const Login = () => {
-  const { isAuthenticated, setIsAuthenticated, fireAlert, getUser } = useAuth();
+  const { isAuthenticated, setIsAuthenticated, fireAlert, getUser, getUserAuth } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+   const searchParams = useSearchParams();
+   const params = new URLSearchParams(searchParams.toString());
 
   async function submitForm() {
     setLoading(true);
@@ -35,6 +37,7 @@ const Login = () => {
     fireAlert("Login Successful", "success");
     // getCountryData();
     setIsAuthenticated(true);
+    getUserAuth()
     getUser();
     if (typeof window !== "undefined") {
       const path = localStorage.getItem("path") || "";
@@ -45,11 +48,36 @@ const Login = () => {
       } else router.replace("/");
     }
   }
+  const [statusUpdate, setStatusUpdate] = useState("")
+
+  const getAccountStatus = () => {
+    const status = params.get("verified")
+    if(!status)
+      return;
+
+    if(status === "1"){
+      return setStatusUpdate("Your account has been successfully activated. Log in to continue")
+    }
+    else if(status === "0"){
+      return setStatusUpdate("Verification failed or link expired")
+    }
+    else{
+      return setStatusUpdate("Unable to verify email")
+    }
+
+   
+  }
 
   useEffect(() => {
     if (isAuthenticated) {
       router.replace("/");
     }
+
+     getAccountStatus()
+     setTimeout(() => {
+      params.delete("verified")
+      router.replace('/login')
+    }, 5000);
   }, []);
 
   return (
@@ -63,6 +91,24 @@ const Login = () => {
       py={"90px"}
     >
       <Box width="100%" maxWidth="589px">
+        <Activity mode={statusUpdate ? 'visible' : "hidden"}>
+          <Box
+            p="12px 24px"
+            borderRadius={"12px"}
+            mb="24px"
+            bgcolor={"#10851cff"}
+          >
+            <Typography
+              textAlign={"left"}
+              color="#fff"
+              fontSize={16}
+              fontWeight={500}
+              fontFamily={"Montserrat"}
+            >
+        {statusUpdate}
+        </Typography>
+        </Box>
+        </Activity>
         <Box mb="54px" alignSelf={"flex-start"}>
           <Typography
             color="#1A1A1A"

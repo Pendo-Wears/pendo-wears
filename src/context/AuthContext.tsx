@@ -20,6 +20,7 @@ interface AuthContextType {
   user: User | undefined;
   setUser: (x: User) => void;
   getUser: () => void;
+  getUserAuth: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -98,6 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         setUser,
         getUser,
+        getUserAuth,
       }}
     >
       {children}
