@@ -372,7 +372,7 @@ const Register = () => {
             required
             placeholder="Please select your country"
             select
-            value={country}
+            value={country || "Select country"}
             children={countriesList.map((country) => (
               <MenuItem
                 style={{
@@ -385,13 +385,14 @@ const Register = () => {
                 key={country.id}
                 onClick={() => setCountry(country.iso2)}
               >
-                {country.iso2} - {country.name}
+                {country.name}
               </MenuItem>
             ))}
             sx={{
               bgcolor: "#f5f5f5",
               borderRadius: "6px",
               height: "54px",
+              fontFamily: "Montserrat",
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
                   borderRadius: "8px",
@@ -416,7 +417,7 @@ const Register = () => {
             }}
           />
         </Box>
-        <Box display="flex" gap="24px" alignItems={"center"} width="100%">
+        {/* <Box display="flex" gap="24px" alignItems={"center"} width="100%">
           <Box position={"relative"}>
             <Box
               width="100%"
@@ -490,7 +491,7 @@ const Register = () => {
               }}
             />
           </Box>
-        </Box>
+        </Box> */}
       </Box>
       <Typography
         textAlign={"center"}
