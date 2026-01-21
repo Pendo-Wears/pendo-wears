@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const wpRes = await publicApi.post(
       `/wc/v3/orders?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`,
       {
-        status: "checkout-draft",
+        status: "processing",
         order_key: `#PF${printfulOrderId}`,
         customer_note: "",
         transaction_id: orderRecord.txRef,
