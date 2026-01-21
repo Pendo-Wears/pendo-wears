@@ -216,7 +216,7 @@ const Navbar = () => {
                 <Image
                   src={
                     (user?.meta_data?.find(
-                      (x: any) => x.key === "simple_local_avatar"
+                      (x: any) => x.key === "simple_local_avatar",
                     )?.value as any) ||
                     user?.avatar_url ||
                     icons.avatar.src
