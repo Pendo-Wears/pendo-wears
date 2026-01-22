@@ -146,6 +146,7 @@ const OrderConfirmation = () => {
           display="flex"
           alignItems={"center"}
           justifyContent={"center"}
+          my="200px"
         >
           <CircularProgress />
         </Box>
@@ -200,30 +201,31 @@ const OrderConfirmation = () => {
               </Typography>
             </Box>
             <Box
-              mb="48px"
+              mb={{ xs: 2, sm: "48px" }}
               //   px={{ xs: "16px", sm: "20px", md: "50px" }}
               display="flex"
               alignItems={"flex-start"}
-              gap="32px"
+              gap={{ xs: 2, sm: "32px" }}
+              flexWrap={"wrap"}
             >
               <Box flex={1}>
                 <Box
                   width="100%"
                   bgcolor={"#F9FAFB"}
                   borderRadius={"15px"}
-                  py="30px"
-                  px="30px"
+                  py={{ xs: "16px", sm: "30px" }}
+                  px={{ xs: "16px", sm: "30px" }}
                   border="1px solid #00000010"
-                  mb="24px"
+                  mb={{ xs: "16px", sm: "24px" }}
                 >
                   <Box
-                    mb="24px"
+                    mb={{ xs: 2, sm: "24px" }}
                     display="flex"
                     alignItems={"center"}
                     justifyContent={"space-between"}
                   >
                     <Typography
-                      fontSize={24}
+                      fontSize={{ xs: 18, sm: 24 }}
                       fontFamily={"Montserrat"}
                       color="#000"
                       fontWeight={700}
@@ -231,7 +233,7 @@ const OrderConfirmation = () => {
                       Order Details
                     </Typography>
                     <Typography
-                      fontSize={14}
+                      fontSize={{ xs: 12, sm: 14 }}
                       fontFamily={"Montserrat"}
                       color="#5C5C5C"
                     >
@@ -250,13 +252,13 @@ const OrderConfirmation = () => {
                   flex={1}
                   bgcolor={"#F9FAFB"}
                   borderRadius={"15px"}
-                  py="30px"
-                  px="30px"
+                  py={{ xs: "16px", sm: "30px" }}
+                  px={{ xs: "16px", sm: "30px" }}
                   border="1px solid #00000010"
                 >
                   <Box mb="10px">
                     <Typography
-                      fontSize={24}
+                      fontSize={{ xs: 18, sm: 24 }}
                       fontFamily={"Montserrat"}
                       color="#000"
                       fontWeight={600}
@@ -268,10 +270,11 @@ const OrderConfirmation = () => {
                     display={"flex"}
                     alignItems={"flex-start"}
                     justifyContent={"space-between"}
+                    gap="8px"
                   >
                     <Box>
                       <Typography
-                        fontSize={16}
+                        fontSize={{ xs: 14, sm: 16 }}
                         fontWeight={500}
                         fontFamily={"Montserrat"}
                         color="#1A1A1A"
@@ -316,9 +319,14 @@ const OrderConfirmation = () => {
                         {orderDetails?.recipient?.country_name}
                       </Typography>
                     </Box>
-                    <Box>
+                    <Box
+                      display={"flex"}
+                      flexDirection={"column"}
+                      alignItems={"flex-end"}
+                      textAlign={"right"}
+                    >
                       <Typography
-                        fontSize={16}
+                        fontSize={{ xs: 14, sm: 16 }}
                         fontWeight={500}
                         fontFamily={"Montserrat"}
                         color="#1A1A1A"
@@ -332,6 +340,7 @@ const OrderConfirmation = () => {
                         fontFamily={"Montserrat"}
                         color="#1A1A1A"
                         mb="8px"
+                        textAlign={"right"}
                       >
                         {orderDetails?.shipping_service_name}
                       </Typography>
@@ -357,22 +366,22 @@ const OrderConfirmation = () => {
                   </Box>
                 </Box>
               </Box>
-              <Box width="270px">
+              <Box width={{ xs: "100%", md: "270px" }}>
                 <Box
                   width="100%"
                   bgcolor={"#F9FAFB"}
                   borderRadius={"15px"}
-                  py="30px"
-                  px="18px"
+                  py={{ xs: 2, sm: "30px" }}
+                  px={{ xs: 2, sm: "18px" }}
                   border="1px solid #00000010"
-                  mb="24px"
+                  mb={{ xs: 2, sm: "24px" }}
                 >
                   <Typography
-                    fontSize={24}
+                    fontSize={{ xs: 18, sm: 24 }}
                     fontFamily={"Montserrat"}
                     color="#1A1A1A"
                     fontWeight={700}
-                    mb="24px"
+                    mb={{ xs: 2, sm: "24px" }}
                   >
                     Order Summary
                   </Typography>
@@ -383,7 +392,7 @@ const OrderConfirmation = () => {
                     mb="18px"
                   >
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={500}
@@ -391,7 +400,7 @@ const OrderConfirmation = () => {
                       Subtotal
                     </Typography>
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={700}
@@ -406,7 +415,7 @@ const OrderConfirmation = () => {
                     mb="18px"
                   >
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={500}
@@ -414,7 +423,7 @@ const OrderConfirmation = () => {
                       Shipping
                     </Typography>
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1a1a1a"
                       fontWeight={700}
@@ -429,7 +438,7 @@ const OrderConfirmation = () => {
                     mb="18px"
                   >
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={500}
@@ -437,7 +446,7 @@ const OrderConfirmation = () => {
                       Tax
                     </Typography>
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={700}
@@ -454,7 +463,7 @@ const OrderConfirmation = () => {
                     borderBottom={"1px solid #00000010"}
                   >
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#16A34A"
                       fontWeight={500}
@@ -462,7 +471,7 @@ const OrderConfirmation = () => {
                       Discount
                     </Typography>
                     <Typography
-                      fontSize={16}
+                      fontSize={{ xs: 14, sm: 16 }}
                       fontFamily={"Montserrat"}
                       color="#16A34A"
                       fontWeight={700}
@@ -476,7 +485,7 @@ const OrderConfirmation = () => {
                     justifyContent={"space-between"}
                   >
                     <Typography
-                      fontSize={18}
+                      fontSize={{ xs: 16, sm: 18 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={700}
@@ -484,7 +493,7 @@ const OrderConfirmation = () => {
                       Total
                     </Typography>
                     <Typography
-                      fontSize={18}
+                      fontSize={{ xs: 16, sm: 18 }}
                       fontFamily={"Montserrat"}
                       color="#1A1A1A"
                       fontWeight={700}
@@ -497,17 +506,17 @@ const OrderConfirmation = () => {
                   width="100%"
                   bgcolor={"#F9FAFB"}
                   borderRadius={"15px"}
-                  py="30px"
-                  px="18px"
+                  py={{ xs: 2, sm: "30px" }}
+                  px={{ xs: 2, sm: "18px" }}
                   border="1px solid #00000010"
-                  mb="24px"
+                  mb={{ xs: 2, sm: "24px" }}
                 >
                   <Typography
-                    fontSize={24}
+                    fontSize={{ xs: 18, sm: 24 }}
                     fontFamily={"Montserrat"}
                     color="#1A1A1A"
                     fontWeight={500}
-                    mb="24px"
+                    mb={{ xs: 2, sm: "24px" }}
                   >
                     Payment Method
                   </Typography>
@@ -520,7 +529,7 @@ const OrderConfirmation = () => {
                     />
                     <Box>
                       <Typography
-                        fontSize={16}
+                        fontSize={{ xs: 12, sm: 16 }}
                         fontFamily={"Montserrat"}
                         color="#1A1A1A"
                         fontWeight={700}
@@ -529,7 +538,7 @@ const OrderConfirmation = () => {
                         •••• •••• •••• 4532
                       </Typography>
                       <Typography
-                        fontSize={14}
+                        fontSize={12}
                         fontFamily={"Montserrat"}
                         color="#656565"
                         fontWeight={500}
@@ -543,17 +552,17 @@ const OrderConfirmation = () => {
                   width="100%"
                   bgcolor={"#D5AC4C1A"}
                   borderRadius={"15px"}
-                  py="30px"
-                  px="18px"
+                  py={{ xs: 2, sm: "30px" }}
+                  px={{ xs: 2, sm: "18px" }}
                   border="1px solid #D5AC4C33"
-                  mb="24px"
+                  mb={{ xs: 2, sm: "24px" }}
                 >
                   <Typography
-                    fontSize={24}
+                    fontSize={{ xs: 18, sm: 24 }}
                     fontFamily={"Montserrat"}
                     color="#1A1A1A"
                     fontWeight={500}
-                    mb="24px"
+                    mb={{ xs: 2, sm: "24px" }}
                   >
                     What's Next?
                   </Typography>
@@ -622,6 +631,7 @@ const OrderConfirmation = () => {
               display="flex"
               alignItems={"center"}
               justifyContent={"center"}
+              flexWrap={"wrap"}
               gap="16px"
               mb="48px"
             >
@@ -721,7 +731,7 @@ const OrderConfirmation = () => {
             >
               <Typography
                 textAlign={"center"}
-                fontSize={18}
+                fontSize={{ xs: 16, sm: 18 }}
                 fontFamily={"Montserrat"}
                 color="#1a1a1a"
                 fontWeight={700}
@@ -742,7 +752,8 @@ const OrderConfirmation = () => {
                 width="100%"
                 display="flex"
                 alignItems={"center"}
-                justifyContent={"center"}
+                  justifyContent={"center"}
+                  flexWrap={'wrap'}
                 gap="16px"
               >
                 <Box

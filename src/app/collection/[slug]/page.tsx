@@ -178,7 +178,9 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         justifyContent={"space-between"}
         width="100%"
         mb="30px"
+        flexWrap={{xs: 'wrap', sm: 'nowrap'}}
         px={{ xs: "16px", sm: "20px", md: "50px" }}
+        gap={{xs: 2}}
       >
         <Typography
           fontSize={24}
@@ -204,6 +206,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         <Box
           display="flex"
           alignItems={"center"}
+          ml='auto'
           justifyContent={"space-around"}
           minWidth="114px"
           minHeight="45px"

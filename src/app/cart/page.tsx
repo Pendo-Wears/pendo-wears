@@ -11,12 +11,15 @@ import {
 } from "@/src/lib/priceFormatter";
 import { ProductDetailsType, SyncVariant } from "@/src/lib/types";
 import userEndpoints from "@/src/lib/userServices";
+
 import {
   Box,
   CircularProgress,
   MenuItem,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -43,6 +46,8 @@ const writeCart = (cart: any[]) => {
 
 const Cart = () => {
   const router = useRouter();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { fireAlert, setAmount, user, setUser, getUser } = useAuth();
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
@@ -94,12 +99,12 @@ const Cart = () => {
 
     const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
-      0
+      0,
     );
 
     const totalQty = cart.reduce(
       (sum: number, item: any) => sum + item.quantity,
-      0
+      0,
     );
 
     setTotal(totalPrice);
@@ -130,7 +135,7 @@ const Cart = () => {
       if (user && user.id) {
         const updateUser: any = await userEndpoints.updateUser(
           user?.id,
-          updateBody
+          updateBody,
         );
         if (updateUser?.data.success) {
           fireAlert("Shipping address updated successfully", "success");
@@ -143,7 +148,7 @@ const Cart = () => {
                   ...updateUser.data.data.billing,
                   countryName: country?.name,
                 },
-              })
+              }),
             );
 
             const profile = localStorage.getItem("user");
@@ -180,7 +185,7 @@ const Cart = () => {
   useEffect(() => {
     const totalPrice = cartItems?.reduce(
       (sum, item) => sum + Number(item.retail_price) * item.quantity,
-      0
+      0,
     );
     const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -355,7 +360,7 @@ const Cart = () => {
                   value={country?.name || ""} // controlled value
                   onChange={(e) => {
                     const selected = countries.find(
-                      (c) => c.name === e.target.value
+                      (c) => c.name === e.target.value,
                     );
                     setCountry(selected);
                     fetchStates();
@@ -419,7 +424,7 @@ const Cart = () => {
                     value={state?.name || ""} // controlled value
                     onChange={(e) => {
                       const selected = states.find(
-                        (c) => c.name === e.target.value
+                        (c) => c.name === e.target.value,
                       );
                       setState(selected);
                     }}
@@ -849,7 +854,7 @@ const Cart = () => {
                   ) {
                     fireAlert(
                       "Update all shipping information fields",
-                      "warning"
+                      "warning",
                     );
                     return;
                   }
@@ -1065,7 +1070,8 @@ export const CartItem = ({
   isConfirmed?: boolean;
 }) => {
   const { fireAlert } = useAuth();
-
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const removeFromCart = (key: number) => {
     const all = readCart();
     const cart = all.filter((item: any) => item.id !== key);
@@ -1083,7 +1089,7 @@ export const CartItem = ({
       writeCart(all.filter((i: any) => i.id !== cart.id));
     } else {
       writeCart(
-        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i))
+        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i)),
       );
     }
 
@@ -1096,16 +1102,22 @@ export const CartItem = ({
   return (
     <Box
       py={isCheckout || isConfirmed ? "13px" : "30px"}
-      px={isCheckout || isConfirmed ? "10px" : 0}
+      px={{ xs: 0, sm: isCheckout || isConfirmed ? "10px" : 0 }}
       borderBottom={"1px solid #00000010"}
       bgcolor={isCheckout ? "#fff" : "transparent"}
       display="flex"
-      alignItems={"center"}
-      gap="24px"
+      alignItems={{ xs: "flex-start", md: "center" }}
+      gap={{ xs: "16px", sm: "24px" }}
     >
       <Box
-        width={isConfirmed ? "64px" : "128px"}
-        height={isConfirmed ? "64px" : isCheckout ? "152px" : "128px"}
+        width={{
+          xs: isConfirmed ? "54px" : "118",
+          sm: isConfirmed ? "64px" : "128px",
+        }}
+        height={{
+          xs: isConfirmed ? "54px" : isCheckout ? "142px" : "118px",
+          sm: isConfirmed ? "64px" : isCheckout ? "152px" : "128px",
+        }}
         borderRadius={"8px"}
         bgcolor={"#F3F4F6"}
         p="8px"
@@ -1117,17 +1129,30 @@ export const CartItem = ({
           src={cart.product.image || ""}
           alt={cart.product.name || ""}
           style={{ objectFit: "contain" }}
-          width={isConfirmed ? "64" : "103"}
-          height={isConfirmed ? "64" : "103"}
+          width={
+            mobile ? (isConfirmed ? "54" : "93") : isConfirmed ? "64" : "103"
+          }
+          height={
+            mobile ? (isConfirmed ? "54" : "93") : isConfirmed ? "64" : "103"
+          }
         />
       </Box>
       <Box flex={1}>
         <Typography
-          fontSize={isConfirmed ? 20 : isCheckout ? 18 : 24}
+          fontSize={{
+            xs: isConfirmed ? 14 : isCheckout ? 14 : 20,
+            sm: isConfirmed ? 20 : isCheckout ? 18 : 24,
+          }}
           fontFamily={"Montserrat"}
           color="#1A1A1A"
           fontWeight={500}
           mb={isCheckout || isConfirmed ? 0 : "10px"}
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
         >
           {cart.product.name}
         </Typography>
@@ -1166,7 +1191,7 @@ export const CartItem = ({
           </Typography>
         </Activity>
         <Typography
-          fontSize={14}
+          fontSize={{xs: 12, sm: 14}}
           fontFamily={"Montserrat"}
           color={isCheckout ? "#1A1A1A" : "#656565"}
           fontWeight={500}
@@ -1175,7 +1200,7 @@ export const CartItem = ({
           Quantity:{" "}
           <Activity mode={isCheckout || isConfirmed ? "visible" : "hidden"}>
             <Typography
-              fontSize={isCheckout ? 14 : 16}
+              fontSize={{xs: 12, sm: isCheckout ? 14 : 16}}
               fontFamily={"Montserrat"}
               color="#1A1A1A"
               fontWeight={500}
@@ -1197,7 +1222,7 @@ export const CartItem = ({
                 sx={{
                   opacity: cart.quantity === 1 ? 0.5 : 1,
                   pointerEvents: cart.quantity === 1 ? "none" : "all",
-                  cursor: 'pointer'
+                  cursor: "pointer",
                 }}
               >
                 <Typography
@@ -1234,7 +1259,7 @@ export const CartItem = ({
                 alignItems={"center"}
                 justifyContent={"center"}
                 onClick={() => updateCart(cart.quantity + 1)}
-                sx={{cursor: 'pointer'}}
+                sx={{ cursor: "pointer" }}
               >
                 <Typography
                   fontSize={16}
@@ -1256,7 +1281,7 @@ export const CartItem = ({
           gap="18px"
         >
           <Typography
-            fontSize={18}
+            fontSize={{ xs: 14, sm: 18 }}
             fontFamily={"Montserrat"}
             color="#1A1A1A"
             fontWeight={700}
@@ -1268,7 +1293,7 @@ export const CartItem = ({
             <Image
               src={icons.redBin}
               alt="delete"
-              style={{ objectFit: "contain", cursor: 'pointer' }}
+              style={{ objectFit: "contain", cursor: "pointer" }}
               width="14"
               height="20"
               onClick={() => removeFromCart(cart.id)}

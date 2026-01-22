@@ -11,7 +11,14 @@ const Footer = () => {
         display="flex"
         alignItems={"center"}
       >
-        <Box flex={1} display="flex" alignItems={"center"} gap="40px">
+        <Box
+          flex={1}
+          display="flex"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", md: "row" }}
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"
@@ -72,7 +79,7 @@ const Footer = () => {
           <Typography
             key={index}
             color="#D0950F"
-            fontSize={200}
+            fontSize={{ xs: 80, md: 200 }}
             fontFamily="Cormorant Garamond"
             letterSpacing={"10%"}
             fontWeight={700}
@@ -86,10 +93,19 @@ const Footer = () => {
       <Box
         px={{ xs: "16px", sm: "20px", md: "68px" }}
         display="flex"
-        alignItems={"center"}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        flexDirection={{ xs: "column", md: "row" }}
         mb="30px"
+        gap={{ xs: "16px", sm: 0 }}
       >
-        <Box flex={1} display="flex" alignItems={"center"} gap="40px">
+        <Box
+          flex={1}
+          display="flex"
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"
@@ -136,7 +152,13 @@ const Footer = () => {
             Returns
           </Typography>
         </Box>
-        <Box display="flex" alignItems={"center"} gap="40px">
+        <Box
+          display="flex"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"

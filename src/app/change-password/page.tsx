@@ -49,13 +49,14 @@ const ChangePassword = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      py={"90px"}
+      py={{xs: '45px', sm: "90px"}}
+      px={2}
     >
       <Box width="100%" maxWidth="589px">
         <Box mb="54px" alignSelf={"flex-start"}>
           <Typography
             color="#1A1A1A"
-            fontSize={24}
+            fontSize={{xs: 18, sm: 24}}
             fontWeight={900}
             fontFamily={"Montserrat"}
             mb="8px"
@@ -69,7 +70,7 @@ const ChangePassword = () => {
         <Box display="flex" flexDirection="column" gap="24px" mb="76px">
           <Box>
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}

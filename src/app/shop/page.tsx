@@ -2,7 +2,14 @@
 
 import { icons } from "@/src/assets/icons/icons";
 import { images } from "@/src/assets/images/images";
-import { Box, Grid, MenuItem, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  MenuItem,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Image from "next/image";
 import React, { Activity, useEffect, useState } from "react";
 import Product from "../products/reusables/Product";
@@ -15,6 +22,8 @@ const Shop = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { fireAlert } = useAuth();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [openGallery, setOpenGallery] = useState(false);
@@ -49,7 +58,7 @@ const Shop = () => {
       (x) =>
         x.slug === "noir-gold-collection" ||
         x.slug === "rhythm-thread-collection" ||
-        x.slug === "heritage-alchemy-collection"
+        x.slug === "heritage-alchemy-collection",
     )
     ?.map((category) => ({
       label: category.name,
@@ -64,7 +73,7 @@ const Shop = () => {
   const getProducts = async () => {
     try {
       const result: any = await productsEndpoint.getWooProducts(
-        param.size === 0 ? "" : `category=${param.get("category")}`
+        param.size === 0 ? "" : `category=${param.get("category")}`,
       );
       if (result.success) {
         setProducts(result.data);
@@ -79,14 +88,16 @@ const Shop = () => {
     getCategories();
   }, []);
   return (
-    <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="200px">
+    <Box px={{ xs: 0, sm: "20px", md: "50px" }} pb="200px">
       <Box
         width="100%"
         display="flex"
         alignItems={"center"}
         gap="10px"
         justifyContent={"space-between"}
+        flexDirection={{ xs: "column", sm: "row" }}
         mb="30px"
+        px={{ xs: 2, sm: 0 }}
       >
         <Box
           p="8px"
@@ -118,11 +129,14 @@ const Shop = () => {
             fontSize={"20px"}
             fontWeight={openGallery ? 700 : 500}
             fontFamily={"Montserrat"}
-            sx={{cursor: 'pointer', "&:hover": {
-              color: '#000',
-              fontWeight: 700,
-              transition: "color .8s ease"
-            }}}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                color: "#000",
+                fontWeight: 700,
+                transition: "color .8s ease",
+              },
+            }}
             onClick={() => setOpenGallery(true)}
           >
             Look
@@ -133,19 +147,32 @@ const Shop = () => {
             fontSize={"20px"}
             fontWeight={!openGallery ? 700 : 500}
             fontFamily={"Montserrat"}
-            sx={{cursor: 'pointer', "&:hover": {
-              color: '#000',
-              fontWeight: 700,
-              transition: "color .8s ease"
-            }}}
+            sx={{
+              cursor: "pointer",
+              "&:hover": {
+                color: "#000",
+                fontWeight: 700,
+                transition: "color .8s ease",
+              },
+            }}
             onClick={() => setOpenGallery(false)}
           >
             Products
           </Typography>
         </Box>
       </Box>
-      <Box display="flex" gap="37px">
-        <Box display="flex" flexDirection={"column"} gap="23px">
+      <Box
+        display="flex"
+        gap="37px"
+        flexDirection={{ xs: "column", sm: "row" }}
+        px={{ xs: 2, sm: 0 }}
+      >
+        <Box
+          display="flex"
+          flexDirection={{ xs: "row", sm: "column" }}
+          overflow={"auto"}
+          gap="23px"
+        >
           <Box p="10px" border="2px solid #D0950F" borderRadius={"15px"}>
             <Image src={images.gold1} alt="col" width="140" height="140" />
           </Box>
@@ -163,17 +190,25 @@ const Shop = () => {
           </Box>
         </Box>
         <Box
-          height="auto"
-          flex={1}
+          width="100%"
+          maxWidth={"900px"}
+          height={{ xs: "500px", sm: "auto" }}
+          flex={{xs: undefined, sm: 1}}
           bgcolor="#F3EFE9"
-          display="flex"
-          alignItems={"flex-end"}
-          justifyContent={"center"}
+          // display="flex"
+          // alignItems={"flex-end"}
+          // justifyContent={"center"}
+          sx={{
+            backgroundImage: `url(${images.cloth.src})`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+          }}
         >
-          <Image src={images.cloth} alt="col" width={900} height="900" />
+          {/* <Image src={images.cloth} alt="col" fill /> */}
         </Box>
       </Box>
-      <Box py="60px">
+      <Box py="60px" px={{ xs: 2, sm: 0 }}>
         <Typography
           color="#1A1A1A"
           fontSize={"16px"}
@@ -189,15 +224,17 @@ const Shop = () => {
           form.
         </Typography>
       </Box>
-      <Activity mode={openGallery ? "hidden" : "visible"}>
-        <Grid container spacing="30px">
-          {products.map((product, index) => (
-            <Product product={product} showPrice={false} key={index} />
-          ))}
-        </Grid>
-      </Activity>
+      <Box px={{ xs: 2, sm: 0 }}>
+        <Activity mode={openGallery ? "hidden" : "visible"}>
+          <Grid container spacing="30px">
+            {products.map((product, index) => (
+              <Product product={product} showPrice={false} key={index} />
+            ))}
+          </Grid>
+        </Activity>
+      </Box>
       <Box
-        my='60px'
+        my="60px"
         width="100%"
         height="717px"
         sx={{
@@ -207,13 +244,15 @@ const Shop = () => {
           backgroundSize: "cover",
         }}
       ></Box>
-      <Activity mode={openGallery ? "hidden" : "visible"}>
-        <Grid container spacing="30px">
-          {products.map((product, index) => (
-            <Product product={product} showPrice={false} key={index} />
-          ))}
-        </Grid>
-      </Activity>
+      <Box px={{ xs: 2, sm: 0 }}>
+        <Activity mode={openGallery ? "hidden" : "visible"}>
+          <Grid container spacing="30px">
+            {products.map((product, index) => (
+              <Product product={product} showPrice={false} key={index} />
+            ))}
+          </Grid>
+        </Activity>
+      </Box>
       <MenuUI
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl}

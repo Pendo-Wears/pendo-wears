@@ -112,7 +112,8 @@ const Login = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      py={"90px"}
+      py={{xs: '45px', sm: "90px"}}
+      px="16px"
     >
       <Box width="100%" maxWidth="589px">
         <Activity mode={statusUpdate ? "visible" : "hidden"}>
@@ -125,7 +126,7 @@ const Login = () => {
             <Typography
               textAlign={"left"}
               color="#fff"
-              fontSize={16}
+              fontSize={{ xs: 14, sm: 16 }}
               fontWeight={500}
               fontFamily={"Montserrat"}
             >
@@ -136,21 +137,30 @@ const Login = () => {
         <Box mb="54px" alignSelf={"flex-start"}>
           <Typography
             color="#1A1A1A"
-            fontSize={24}
+            fontSize={{ xs: 18, sm: 24 }}
             fontWeight={900}
             fontFamily={"Montserrat"}
             mb="8px"
           >
             Already have Pendo Account
           </Typography>
-          <Typography fontSize={16} fontWeight={500} fontFamily={"Montserrat"}>
+          <Typography
+            fontSize={{ xs: 14, sm: 16 }}
+            fontWeight={500}
+            fontFamily={"Montserrat"}
+          >
             Login your account to have access to Pendo
           </Typography>
         </Box>
-        <Box display="flex" flexDirection="column" gap="24px" mb="76px">
+        <Box
+          display="flex"
+          flexDirection="column"
+          gap={{ xs: 2, sm: "24px" }}
+          mb={{ xs: 5, sm: "76px" }}
+        >
           <Box>
             <Typography
-              fontSize={18}
+              fontSize={{ xs: 16, sm: 18 }}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -196,7 +206,7 @@ const Login = () => {
           </Box>
           <Box>
             <Typography
-              fontSize={18}
+              fontSize={{ xs: 16, sm: 18 }}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -252,7 +262,7 @@ const Login = () => {
               }}
             />
             <Typography
-              fontSize={16}
+              fontSize={{ xs: 14, sm: 16 }}
               color="#D0950F"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -271,7 +281,7 @@ const Login = () => {
           justifyContent="center"
           alignItems="center"
           borderRadius="6px"
-          mb="54px"
+          mb={{ xs: 4, sm: "54px" }}
           sx={{
             cursor: "pointer",
             pointerEvents: loading ? "none" : "auto",
@@ -292,24 +302,32 @@ const Login = () => {
           display="flex"
           alignItems="center"
           justifyContent={"center"}
-          gap="30px"
-          mb="50px"
+          gap={{ xs: 2, sm: "30px" }}
+          mb={{ xs: 2, sm: "50px" }}
         >
-          <Box width="168px" height="1px" bgcolor="#C0C0C0"></Box>
+          <Box
+            width={{ xs: "20%", sm: "168px" }}
+            height="1px"
+            bgcolor="#C0C0C0"
+          ></Box>
           <Typography fontSize={16} color="#707070" fontFamily={"Montserrat"}>
             Or sign in with
           </Typography>
-          <Box width="168px" height="1px" bgcolor="#C0C0C0"></Box>
+          <Box
+            width={{ xs: "20%", sm: "168px" }}
+            height="1px"
+            bgcolor="#C0C0C0"
+          ></Box>
         </Box>
 
         <GoogleLoginButton />
         <Typography
           textAlign={"center"}
           fontWeight={500}
-          fontSize={18}
+          fontSize={{ xs: 14, sm: 18 }}
           color="#707070"
           fontFamily={"Montserrat"}
-          my="40px"
+          my={{xs: 3, sm: "40px"}}
         >
           Don’t have an Account?{" "}
           <Link href="/register" style={{ textDecoration: "none" }}>
@@ -319,6 +337,7 @@ const Login = () => {
               fontWeight={700}
               color="#000"
               fontFamily={"Montserrat"}
+              fontSize={16}
             >
               Sign up
             </Typography>

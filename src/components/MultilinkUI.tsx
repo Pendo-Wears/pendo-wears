@@ -18,9 +18,15 @@ const MultilinkUI = ({ links }: { links: { name: string; to: string }[] }) => {
       width="100%"
       display="flex"
       gap="20px"
-      px="16px"
+      mx="16px"
       justifyContent="center"
       alignItems="center"
+      overflow={'auto'}
+      sx={{
+        "&::-webkit-scrollbar": {
+          display: 'none'
+        }
+      }}
     >
       {links.map((link, index) => (
         <Typography
@@ -30,6 +36,7 @@ const MultilinkUI = ({ links }: { links: { name: string; to: string }[] }) => {
             // setCurrentPath(link.to);
           }}
           sx={{
+            whiteSpace: 'nowrap',
             cursor: "pointer",
             borderBottom:
               pathname === link.to
