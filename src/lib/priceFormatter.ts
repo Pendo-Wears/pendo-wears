@@ -47,7 +47,7 @@ export const formatPrice = (price: number) => {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0, // remove decimals if you want
-  }).format(price);
+  }).format(price).slice(2);
 };
 
 export const getPriceRange = (items: any): string => {

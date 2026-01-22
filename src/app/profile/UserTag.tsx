@@ -128,8 +128,9 @@ const UserTag = () => {
   }, []);
   return (
     <Box
-      width="28%"
+      width={{ xs: "100%", sm: '50%', md: "28%" }}
       height="auto"
+      py={{xs: '30px', md: undefined}}
       bgcolor="#f5f5f5"
       borderRadius={"16px"}
       display="flex"

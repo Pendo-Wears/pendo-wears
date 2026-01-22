@@ -25,13 +25,13 @@ const SavedAddresses = () => {
 
   return (
     <Box
-      width="28%"
+      width={{ xs: "100%", md: "28%" }}
       height="auto"
       maxHeight={"512px"}
       bgcolor="#f5f5f5"
       borderRadius={"16px"}
-      px="22px"
-      py="32px"
+      px={{xs: '16px', sm: "22px"}}
+      py={{xs: '16px', sm: "32px"}}
     >
       <Box
         display="flex"

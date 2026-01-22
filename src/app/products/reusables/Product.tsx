@@ -17,13 +17,32 @@ import React, { Activity, useEffect, useState } from "react";
 interface ProductProps extends React.ComponentProps<typeof Grid> {
   showPrice?: boolean;
   product: any;
+  callback?: () => void;
 }
 
-const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
+const Product = ({
+  showPrice = true,
+  product,
+  callback,
+  ...props
+}: ProductProps) => {
   const { fireAlert } = useAuth();
   const router = useRouter();
   const [productDetails, setProductDetails] =
     useState<WooProductDetails | null>(null);
+  const [isInWishlist, setIsInWishlist] = useState(false);
+
+  const checkIfIsInWishlist = () => {
+    const raw =
+      typeof window !== "undefined"
+        ? localStorage.getItem("wishlist") || "[]"
+        : "[]";
+    const wishlist = JSON.parse(raw);
+
+    if (wishlist.find((p: any) => p.id === product.id)) {
+      setIsInWishlist(true);
+    }
+  };
 
   const addToWishlist = () => {
     const raw =
@@ -38,13 +57,16 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
       if (typeof window !== "undefined") {
         localStorage.setItem("wishlist", JSON.stringify(wishlist));
       }
+      checkIfIsInWishlist();
     } else {
       const updated = wishlist.filter((wish: any) => wish.id !== product.id);
       fireAlert("Item removed from wishlist", "success");
       if (typeof window !== "undefined") {
         localStorage.setItem("wishlist", JSON.stringify(updated));
       }
+      setIsInWishlist(false);
     }
+    if (callback) callback();
   };
 
   // const getProductDetails = async () => {
@@ -66,7 +88,7 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
 
   const imgUrl = product?.images?.[0]?.src?.replace(
     new URL(product?.images?.[0]?.src).origin,
-    storeUrl!
+    storeUrl!,
   );
 
   const collection = product?.categories?.find(
@@ -75,6 +97,10 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
       x.slug === "rhythm-thread-collection" ||
       x.slug === "heritage-alchemy-collection",
   );
+
+  useEffect(() => {
+    checkIfIsInWishlist();
+  }, []);
   return (
     <Grid
       size={{ xs: 12, sm: 6, md: 4 }}
@@ -100,7 +126,7 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
           width="350"
           height="350"
           style={{ alignSelf: "center", objectFit: "contain" }}
-          onClick={() => router.push(`/${product?.id}`)}
+          onClick={() => router.push(`/${product?.slug}`)}
         />
         <Box
           display="flex"
@@ -146,7 +172,9 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
           </Box>
         </Box>
         <Image
-          src={product?.inWishlist ? icons.wishlisted : icons.star}
+          src={
+            product?.inWishlist || isInWishlist ? icons.wishlisted : icons.star
+          }
           alt="star"
           width="32"
           height="32"
@@ -173,7 +201,7 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
             alignItems={"center"}
             justifyContent={"space-between"}
             mb="8px"
-            overflow={'hidden'}
+            overflow={"hidden"}
           >
             <Typography
               color="rgba(0, 0, 0, .7)"
@@ -194,7 +222,7 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
               fontSize={{ xs: 18, sm: "24px" }}
               fontWeight={600}
               fontFamily={"Montserrat"}
-              whiteSpace={'nowrap'}
+              whiteSpace={"nowrap"}
             >
               {product?.prices?.price_range
                 ? `${formatWoocommercePrice(

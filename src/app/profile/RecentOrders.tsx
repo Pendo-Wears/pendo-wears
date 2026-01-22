@@ -38,7 +38,12 @@ const RecentOrders = () => {
   }, []);
 
   return (
-    <Box width="72%" bgcolor="#f5f5f5" borderRadius={"16px"} p="32px">
+    <Box
+      width={{ xs: "100%", md: "72%" }}
+      bgcolor="#f5f5f5"
+      borderRadius={"16px"}
+      p={{ xs: "16px", sm: "20px", md: "32px" }}
+    >
       <Box
         display="flex"
         alignItems={"center"}
@@ -55,7 +60,7 @@ const RecentOrders = () => {
         </Typography>
         <Typography
           color={"#D0950F"}
-          fontSize={16}
+          fontSize={{xs: 14, sm: 16}}
           fontWeight={500}
           fontFamily={"Montserrat"}
           onClick={() => router.push("/profile/orders")}

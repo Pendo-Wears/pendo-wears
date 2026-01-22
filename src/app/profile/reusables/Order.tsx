@@ -4,9 +4,14 @@ import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { Activity } from "react";
 
-const Order = ({ order }:{order: any}) => {
+const Order = ({ order }: { order: any }) => {
   return (
-    <Box p="21px" border="1px solid #E5E7EB" borderRadius={"12px"} bgcolor={'#fff'}>
+    <Box
+      p={{ xs: "16px", sm: "21px" }}
+      border="1px solid #E5E7EB"
+      borderRadius={"12px"}
+      bgcolor={"#fff"}
+    >
       <Box
         display="flex"
         alignItems={"flex-start"}
@@ -32,21 +37,32 @@ const Order = ({ order }:{order: any}) => {
           </Typography>
         </Box>
         <Typography
-          fontSize={14}
+          fontSize={{xs: 12, sm: 14}}
           color="#15803D"
           fontWeight={500}
           fontFamily={"Montserrat"}
           textTransform={"capitalize"}
           py="5px"
-          px="12px"
-          borderRadius={"100px"}
+          px={{xs: '10px', sm: "12px"}}
+          borderRadius={{xs: '5px', sm: "100px"}}
           bgcolor="#DCFCE7"
         >
           {order.status}
         </Typography>
       </Box>
       <Box display="flex" alignItems={"center"} gap="16px">
-        <Box display="flex" alignItems={"flex-start"} gap="8px" flex={1}>
+        <Box
+          display="flex"
+          alignItems={"flex-start"}
+          gap="8px"
+          flex={1}
+          overflow={"auto"}
+          sx={{
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           {order.items.map((item: any) => (
             <Box
               display="flex"
@@ -67,6 +83,8 @@ const Order = ({ order }:{order: any}) => {
                   width="48"
                   height="48"
                   style={{
+                    objectFit: 'cover',
+                    objectPosition: "center top",
                     position: "absolute",
                     zIndex: 5,
                     top: "50%",
@@ -81,6 +99,10 @@ const Order = ({ order }:{order: any}) => {
                   color="#2D3436"
                   fontWeight={600}
                   fontFamily={"Montserrat"}
+                  width="60px"
+                  whiteSpace={"nowrap"}
+                  textOverflow={"ellipsis"}
+                  overflow={"hidden"}
                 >
                   {item.name}
                 </Typography>
@@ -98,7 +120,7 @@ const Order = ({ order }:{order: any}) => {
         </Box>
         <Box>
           <Typography
-            fontSize={20}
+            fontSize={{xs: 16, sm: 20}}
             color="#2D3436"
             fontWeight={700}
             fontFamily={"Montserrat"}
@@ -106,9 +128,9 @@ const Order = ({ order }:{order: any}) => {
           >
             {formatPrice(order.costs.total)}
           </Typography>
-          <Activity mode={order.status !== 'draft' ? 'visible' : 'hidden'}>
+          <Activity mode={order.status !== "draft" ? "visible" : "hidden"}>
             <Typography
-              fontSize={14}
+              fontSize={{xs: 12, sm: 14}}
               color="#00B894"
               fontWeight={500}
               fontFamily={"Montserrat"}

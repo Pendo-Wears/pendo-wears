@@ -17,6 +17,7 @@ import { productsEndpoint } from "../lib/endpoints";
 import { useAuth } from "../context/AuthContext";
 import { AxiosError } from "axios";
 import RequireAuth from "../components/RequireAuth";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
   const { fireAlert } = useAuth();
@@ -150,6 +151,7 @@ const Hero = ({ mobile }: { mobile: boolean }) => {
 };
 
 const Collections = ({ mobile }: { mobile: boolean }) => {
+  const router = useRouter();
   return (
     <Box pt="45px" px={{ xs: "16px", sm: "20px", md: "50px" }}>
       <Box
@@ -169,6 +171,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
+            cursor: "pointer",
           }}
           position={"relative"}
           px="43px"
@@ -176,6 +179,11 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
           display="flex"
           alignItems={"flex-end"}
           overflow={"hidden"}
+          onClick={() =>
+            router.push(
+              "/shop?type=Noir Gold Collection&category=noir-gold-collection",
+            )
+          }
         >
           <Box
             position={"absolute"}
@@ -222,6 +230,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
+            cursor: "pointer",
           }}
           position={"relative"}
           px="43px"
@@ -229,6 +238,11 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
           display="flex"
           alignItems={"flex-end"}
           overflow={"hidden"}
+          onClick={() =>
+            router.push(
+              "/shop?type=Rhythm Thread Collection&category=rhythm-thread-collection",
+            )
+          }
         >
           <Box
             position={"absolute"}
@@ -294,7 +308,15 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
           color="#2D2D2D"
           lineHeight={"100%"}
           p="10px"
-          borderBottom={"2px solid #2D2D2D"}
+          sx={{
+            cursor: "pointer",
+            borderBottom: "2px solid transparent",
+            transition: "all .5 ease",
+            "&:hover": {
+              borderBottom: "2px solid #2D2D2D",
+            },
+          }}
+          onClick={() => router.push("/shop")}
         >
           Discover all our collections
         </Typography>
@@ -304,6 +326,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
 };
 
 const Products = ({ mobile }: { mobile: boolean }) => {
+  const router = useRouter()
   return (
     <Box bgcolor="#000" pb="112px">
       <Typography
@@ -352,6 +375,10 @@ const Products = ({ mobile }: { mobile: boolean }) => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/hoodie?id=54")}
         >
           See More
         </Typography>
@@ -391,6 +418,10 @@ const Products = ({ mobile }: { mobile: boolean }) => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/tee?id=55")}
         >
           See More
         </Typography>
@@ -429,6 +460,10 @@ const Products = ({ mobile }: { mobile: boolean }) => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/joggers?id=58")}
         >
           See More
         </Typography>
@@ -700,6 +735,7 @@ const Tribe = ({ mobile }: { mobile: boolean }) => {
         display="flex"
         alignItems={"center"}
         gap="16px"
+        justifyContent={'center'}
         width="100%"
         px="16px"
       >

@@ -39,7 +39,12 @@ const Wishlist = () => {
           px={{ xs: "16px", sm: "20px", md: "50px" }}
         >
           {wishlist?.map((product, index) => (
-            <Product product={product} showPrice={false} key={index} />
+            <Product
+              product={product}
+              showPrice={false}
+              key={index}
+              callback={getWishlist}
+            />
           ))}
         </Grid>
       </Activity>
