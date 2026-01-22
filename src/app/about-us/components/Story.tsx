@@ -7,7 +7,7 @@ import { images } from "@/src/assets/images/images";
 const Story = ({ onClose }: { onClose: () => void }) => {
   return (
     <DetailsModal title="Our Story" onClose={onClose}>
-      <Box mt="30px" px="50px" width='700px'>
+      <Box mt="30px" px="50px" width="700px">
         <Image
           src={images.abt}
           alt="Our Story"
@@ -18,7 +18,7 @@ const Story = ({ onClose }: { onClose: () => void }) => {
         <Box mt="30px">
           <Typography
             mb="2px"
-            fontSize={24}
+            fontSize={{ xs: 18, sm: 24 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
             color="#000"

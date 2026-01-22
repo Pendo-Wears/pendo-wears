@@ -18,7 +18,7 @@ const MultilinkUI = ({ links }: { links: { name: string; to: string }[] }) => {
       width="100%"
       display="flex"
       gap="20px"
-      mx="16px"
+      px="16px"
       justifyContent="center"
       alignItems="center"
       overflow={'auto'}

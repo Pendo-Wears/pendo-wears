@@ -148,7 +148,7 @@ const OrderConfirmation = () => {
           justifyContent={"center"}
           my="200px"
         >
-          <CircularProgress />
+          <CircularProgress size={24} sx={{color: "#000"}} />
         </Box>
       ) : (
         <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">

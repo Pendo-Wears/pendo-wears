@@ -68,6 +68,13 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
     new URL(product?.images?.[0]?.src).origin,
     storeUrl!
   );
+
+  const collection = product?.categories?.find(
+    (x: any) =>
+      x.slug === "noir-gold-collection" ||
+      x.slug === "rhythm-thread-collection" ||
+      x.slug === "heritage-alchemy-collection",
+  );
   return (
     <Grid
       size={{ xs: 12, sm: 6, md: 4 }}
@@ -91,7 +98,7 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
           src={imgUrl}
           alt={product?.images?.[0].name || ""}
           width="350"
-          height="450"
+          height="350"
           style={{ alignSelf: "center", objectFit: "contain" }}
           onClick={() => router.push(`/${product?.id}`)}
         />
@@ -102,7 +109,17 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
           width="100%"
         >
           <Activity mode={showPrice ? "hidden" : "visible"}>
-            <Typography color="#000" fontSize="18px" fontFamily={"Montserrat"}>
+            <Typography
+              color="#000"
+              fontSize={{ xs: 16, sm: "18px" }}
+              fontFamily={"Montserrat"}
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
               {product?.name}
             </Typography>
           </Activity>
@@ -149,37 +166,56 @@ const Product = ({ showPrice = true, product, ...props }: ProductProps) => {
           mt="12px"
           p="10px"
           onClick={() => router.push(`/${product?.id}`)}
+          overflow={"hidden"}
         >
           <Box
             display="flex"
             alignItems={"center"}
             justifyContent={"space-between"}
             mb="8px"
+            overflow={'hidden'}
           >
             <Typography
               color="rgba(0, 0, 0, .7)"
-              fontSize="18px"
+              fontSize={{ xs: 14, sm: "18px" }}
               fontFamily={"Montserrat"}
               textTransform={"capitalize"}
+              sx={{
+                display: "-webkit-box",
+                WebkitLineClamp: 1,
+                WebkitBoxOrient: "vertical",
+                overflow: "ellipsis",
+              }}
             >
-              NOIR
+              {collection?.name}
             </Typography>
             <Typography
               color="#000"
-              fontSize="24px"
+              fontSize={{ xs: 18, sm: "24px" }}
               fontWeight={600}
               fontFamily={"Montserrat"}
+              whiteSpace={'nowrap'}
             >
               {product?.prices?.price_range
                 ? `${formatWoocommercePrice(
-                    product?.prices?.price_range?.min_amount!
+                    product?.prices?.price_range?.min_amount!,
                   )} - ${formatWoocommercePrice(
-                    product?.prices?.price_range?.max_amount!
+                    product?.prices?.price_range?.max_amount!,
                   )}`
                 : formatWoocommercePrice(product?.prices?.sale_price!)}
             </Typography>
           </Box>
-          <Typography color="#000" fontSize="24px" fontFamily={"Montserrat"}>
+          <Typography
+            color="#000"
+            fontSize={{ xs: 18, sm: "24px" }}
+            fontFamily={"Montserrat"}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: "vertical",
+              overflow: "ellipsis",
+            }}
+          >
             {product?.name}
           </Typography>
         </Box>

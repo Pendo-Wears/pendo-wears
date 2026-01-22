@@ -1,7 +1,7 @@
 "use client";
 
 import { images } from "@/src/assets/images/images";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import Image from "next/image";
 import React, { Activity, use, useEffect, useState } from "react";
 import Product from "../products/reusables/Product";
@@ -26,17 +26,20 @@ const ProductDetails = ({
 }) => {
   const { slug } = use(params);
   const { fireAlert } = useAuth();
+  const theme = useTheme()
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"))
   const [productDetails, setProductDetails] =
     useState<ProductDetailsType | null>(null);
   const [wooproductDetails, setWooProductDetails] =
     useState<WooProductDetails | null>(null);
   const [selectedVariant, setSelectedVariant] = useState<SyncVariant | null>(
-    null
+    null,
   );
   const [wooDesc, setWooDesc] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [ShowFullDescription, setShowFullDescription] = useState(false);
   const [recentlyViewed, setRecentlyViewed] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
   const [color, setColor] = useState("");
   const [size, setSize] = useState("");
 
@@ -48,11 +51,11 @@ const ProductDetails = ({
         : "[]";
     recents = JSON.parse(raw);
     setRecentlyViewed(
-      recents.filter((recent: SyncProduct) => recent?.id !== Number(slug))
+      recents.filter((recent: SyncProduct) => recent?.id !== Number(slug)),
     );
 
     const details = recents.find(
-      (recent: SyncProduct) => recent?.id === Number(slug)
+      (recent: SyncProduct) => recent?.id === Number(slug),
     );
     if (recents.length === 6) recents.pop();
     if (!details?.name) {
@@ -66,6 +69,7 @@ const ProductDetails = ({
   };
 
   const getProductDetails = async () => {
+    setLoading(true);
     // try {
     //   const result: any = await productsEndpoint.getProductDetails(slug);
     //   if (result.success) {
@@ -81,6 +85,8 @@ const ProductDetails = ({
       }
     } catch (e: any) {
       fireAlert(e.message, "error");
+    } finally {
+      setLoading(false);
     }
     //   }
     // } catch (e: any) {
@@ -89,12 +95,13 @@ const ProductDetails = ({
   };
 
   const getProducts = async () => {
+    setLoading(true);
     try {
       const details: any = await productsEndpoint.getProductDetails(slug);
       if (details.success && details.data.cross_sell_ids?.length > 0) {
         try {
           const result: any = await productsEndpoint.getWooProducts(
-            `include=${details.data.cross_sell_ids.join(",")}`
+            `include=${details.data.cross_sell_ids.join(",")}`,
           );
           if (result.success) {
             setProducts(result.data);
@@ -105,6 +112,8 @@ const ProductDetails = ({
       }
     } catch (e) {
       console.error(e);
+    } finally {
+      setLoading(false);
     }
   };
   // const [printfulProducts, setPrintfulProducts] = useState<SyncVariant>();
@@ -114,11 +123,11 @@ const ProductDetails = ({
       console.log(details.data);
       if (details.success) {
         const thisProduct = details.data.find(
-          (x: SyncVariant) => x.external_id === slug
+          (x: SyncVariant) => x.external_id === slug,
         );
         try {
           const res: any = await productsEndpoint.getPrintfulProductDetails(
-            thisProduct.id
+            thisProduct.id,
           );
 
           if (res.success) {
@@ -189,41 +198,71 @@ const ProductDetails = ({
     (x) =>
       x.slug === "noir-gold-collection" ||
       x.slug === "rhythm-thread-collection" ||
-      x.slug === "heritage-alchemy-collection"
+      x.slug === "heritage-alchemy-collection",
   );
+
+  if (loading)
+    return (
+      <Box
+        width="100%"
+        height="100%"
+        display="flex"
+        alignItems={"center"}
+        justifyContent={"center"}
+        my="200px"
+      >
+        <CircularProgress size={24} sx={{ color: "#000" }} />
+      </Box>
+    );
 
   return (
     <Box px={{ xs: "16px", sm: "20px", md: "50px" }}>
-      <Box display={"flex"} alignItems={"flex-start"} gap="60px" mb="90px">
+      <Box
+        display={"flex"}
+        alignItems={"flex-start"}
+        gap="60px"
+        mb="90px"
+        flexDirection={{ xs: "column", md: "row" }}
+      >
         <Box
           width="100%"
           maxWidth="654px"
-          height="752px"
+          height={{ xs: "500px", sm: "650px", md: "752px" }}
           borderRadius={"15px"}
           bgcolor="#F3EFE9"
           display={"flex"}
           alignItems={"center"}
           justifyContent={"center"}
+          sx={{
+            backgroundImage: `url(${
+              selectedVariant?.size
+                ? selectedVariant?.product?.image
+                : productDetails?.sync_product?.thumbnail_url || ""
+            })`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "contain",
+          }}
         >
-          <Image
+          {/* <Image
             src={
               selectedVariant?.size
                 ? selectedVariant?.product?.image
                 : productDetails?.sync_product?.thumbnail_url || ""
             }
             alt={productDetails?.sync_product?.name || ""}
-            width={500}
-            height={600}
+            width={mobile ? 300 : 500}
+            height={mobile ? 400 : 600}
             style={{ objectFit: "contain" }}
-          />
+          /> */}
         </Box>
         <Box width="100%" maxWidth="582px">
           <Box pb="25px" borderBottom={"1px solid #00000010"}>
-            <Typography fontSize={16} fontFamily={"Montserrat"} color="#2D2D2D">
+            <Typography fontSize={{xs: 14, sm: 16}} fontFamily={"Montserrat"} color="#2D2D2D">
               {collection?.name}
             </Typography>
             <Typography
-              fontSize={32}
+              fontSize={{xs: 24, sm: 32}}
               fontFamily={"Montserrat"}
               color="#000"
               fontWeight={700}
@@ -233,7 +272,7 @@ const ProductDetails = ({
               {productDetails?.sync_product?.name}
             </Typography>
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               color="#000"
               fontWeight={700}
@@ -243,7 +282,7 @@ const ProductDetails = ({
                 : getPriceRange(productDetails?.sync_variants)}
             </Typography>
           </Box>
-          {/* <Box py="25px" borderBottom={"1px solid #00000010"}>
+          {/* <Box py={{xs: '12px', sm: "25px"}} borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}
               fontFamily={"Montserrat"}
@@ -307,7 +346,7 @@ const ProductDetails = ({
               ))}
             </Box>
           </Box>
-          <Box py="25px" borderBottom={"1px solid #00000010"}>
+          <Box py={{xs: '12px', sm: "25px"}} borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}
               fontFamily={"Montserrat"}
@@ -373,7 +412,7 @@ const ProductDetails = ({
               ))}
             </Box>
           </Box> */}
-          <Box py="25px" borderBottom={"1px solid #00000010"}>
+          <Box py={{xs: '12px', sm: "25px"}} borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}
               fontFamily={"Montserrat"}
@@ -424,7 +463,7 @@ const ProductDetails = ({
               ))}
             </Box>
           </Box>
-          <Box py="25px" borderBottom={"1px solid #00000010"}>
+          <Box py={{xs: '12px', sm: "25px"}} borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}
               fontFamily={"Montserrat"}
@@ -469,7 +508,7 @@ const ProductDetails = ({
               ))}
             </Box>
           </Box>
-          <Box py="25px" borderBottom={"1px solid #00000010"}>
+          <Box py={{xs: '12px', sm: "25px"}} borderBottom={"1px solid #00000010"}>
             <Typography
               fontSize={16}
               fontFamily={"Montserrat"}
@@ -551,7 +590,7 @@ const ProductDetails = ({
       </Box>
       <Box mb="70px">
         <Typography
-          fontSize={32}
+          fontSize={{xs: 24, sm: 32}}
           fontFamily={"Montserrat"}
           color="#000"
           fontWeight={700}
@@ -582,7 +621,7 @@ const ProductDetails = ({
       </Box>
       <Box>
         <Typography
-          fontSize={32}
+          fontSize={{xs: 24, sm: 32}}
           fontFamily={"Montserrat"}
           color="#000"
           fontWeight={700}

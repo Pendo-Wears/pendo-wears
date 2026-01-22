@@ -41,7 +41,7 @@ const DetailsModal = ({
           <Typography
             flex={1}
             textAlign={"center"}
-            fontSize={24}
+            fontSize={{ xs: 18, sm: 24 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
             color="#000"

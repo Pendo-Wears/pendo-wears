@@ -21,7 +21,7 @@ const UserTag = () => {
       const result: any = await productsEndpoint.getOrders();
       if (result.success) {
         const userOrders = result.data.filter(
-          (order: any) => order.recipient.email === user?.email
+          (order: any) => order.recipient.email === user?.email,
         );
         setOrders(userOrders.length);
       }
@@ -60,7 +60,7 @@ const UserTag = () => {
       {
         method: "POST",
         body: formData,
-      }
+      },
     );
 
     const text = await response.text();
@@ -87,7 +87,7 @@ const UserTag = () => {
 
   const updateAvatar = async (url: string) => {
     const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+      typeof window !== "undefined" ? (localStorage.getItem("user") ?? "") : "";
     const thisUser: User = JSON.parse(raw);
     try {
       const result: any = await userEndpoints.updateUser(thisUser?.id, {
@@ -145,7 +145,7 @@ const UserTag = () => {
             <Image
               src={
                 (user?.meta_data?.find(
-                  (x: any) => x.key === "simple_local_avatar"
+                  (x: any) => x.key === "simple_local_avatar",
                 )?.value as any) || user?.avatar_url
               }
               alt="avatar"
@@ -187,7 +187,7 @@ const UserTag = () => {
             mt="22px"
             mb="4px"
             color={"#2D3436"}
-            fontSize={24}
+            fontSize={{ xs: 18, sm: 24 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
           >

@@ -56,7 +56,7 @@ const Search = () => {
 
       router.replace(`/search?${params.toString()}`);
       const result: any = await productsEndpoint.getWooProducts(
-        params.toString()
+        params.toString(),
       );
       if (result.status === 200) {
         setSearchResults(result.data);
@@ -446,7 +446,7 @@ const Search = () => {
             mb="12px"
           >
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"

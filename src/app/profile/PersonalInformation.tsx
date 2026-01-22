@@ -25,7 +25,6 @@ const PersonalInformation = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
-
     setFirstName(thisUser?.first_name!);
     setLastName(thisUser?.last_name!);
     setEmail(thisUser?.email!);
@@ -71,7 +70,7 @@ const PersonalInformation = () => {
       if (thisUser && thisUser.id) {
         const updateUser: any = await userEndpoints.updateUser(
           thisUser?.id,
-          updateBody
+          updateBody,
         );
         if (updateUser?.data.success) {
           setIsEditMode(false);
@@ -86,7 +85,7 @@ const PersonalInformation = () => {
                   ...updateUser.data.data.billing,
                   countryName: thisUser?.billing.countryName,
                 },
-              })
+              }),
             );
           }
         }
@@ -108,7 +107,7 @@ const PersonalInformation = () => {
       <Box display="flex" justifyContent={"space-between"} alignItems="center">
         <Typography
           color={"#2D3436"}
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontWeight={700}
           fontFamily={"Montserrat"}
         >

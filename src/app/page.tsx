@@ -22,6 +22,7 @@ const HomePage = () => {
   const { fireAlert } = useAuth();
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const tablet = useMediaQuery(theme.breakpoints.down("md"));
   const [categories, setCategories] = useState<
     {
       name: string;
@@ -65,7 +66,7 @@ const HomePage = () => {
       <Collections mobile={mobile} />
       <Products mobile={mobile} />
       <Shop mobile={mobile} />
-      <OurStory mobile={mobile} />
+      <OurStory mobile={mobile} tablet={tablet} />
       <Tribe mobile={mobile} />
     </Box>
   );
@@ -99,7 +100,7 @@ const Hero = ({ mobile }: { mobile: boolean }) => {
           zIndex={5}
         >
           <Typography
-            fontSize={{xs: 32, sm: 54}}
+            fontSize={{ xs: 32, sm: 54 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
             color="#fff"
@@ -111,7 +112,7 @@ const Hero = ({ mobile }: { mobile: boolean }) => {
           </Typography>
           <Typography
             mt="8px"
-            fontSize={{xs: 16, sm: 24}}
+            fontSize={{ xs: 16, sm: 24 }}
             fontWeight={500}
             fontFamily={"Montserrat"}
             textAlign={"center"}
@@ -194,7 +195,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
             width="100%"
           >
             <Typography
-              fontSize={{xs: 24, sm: 37}}
+              fontSize={{ xs: 24, sm: 37 }}
               fontWeight={700}
               fontFamily={"Montserrat"}
               color="#fff"
@@ -247,7 +248,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
             width="100%"
           >
             <Typography
-              fontSize={{xs: 24, sm: 37}}
+              fontSize={{ xs: 24, sm: 37 }}
               fontWeight={700}
               fontFamily={"Montserrat"}
               color="#fff"
@@ -277,7 +278,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
         mx="auto"
       >
         <Typography
-          fontSize={{xs: 24, sm: 32}}
+          fontSize={{ xs: 24, sm: 32 }}
           fontFamily={"Montserrat"}
           color="#2D2D2D"
           lineHeight={"100%"}
@@ -288,7 +289,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
         </Typography>
         <Typography
           mt="10px"
-          fontSize={{xs: 18, sm: 24}}
+          fontSize={{ xs: 18, sm: 24 }}
           fontFamily={"Montserrat"}
           color="#2D2D2D"
           lineHeight={"100%"}
@@ -572,7 +573,7 @@ const Shop = ({ mobile }: { mobile: boolean }) => {
   );
 };
 
-const OurStory = ({ mobile }: { mobile: boolean }) => {
+const OurStory = ({ mobile, tablet }: { mobile: boolean; tablet: boolean }) => {
   return (
     <Box
       px={{ xs: "16px", sm: "20px", md: "50px" }}
@@ -581,6 +582,7 @@ const OurStory = ({ mobile }: { mobile: boolean }) => {
       justifyContent={{ xs: "center", md: "space-between" }}
       flexWrap={{ xs: "wrap", md: "nowrap" }}
       alignItems={"center"}
+      gap={{ xs: "105px", md: "16px" }}
     >
       <Box
         width={{ xs: "100%", sm: "70%", md: "50%" }}
@@ -599,7 +601,11 @@ const OurStory = ({ mobile }: { mobile: boolean }) => {
         >
           OUR STORY
         </Typography>
-        <Typography fontSize={24} fontFamily={"Montserrat"} color="#656565">
+        <Typography
+          fontSize={{ xs: 18, sm: 24 }}
+          fontFamily={"Montserrat"}
+          color="#656565"
+        >
           Every thread tells a story. Every pattern carries the wisdom of our
           ancestors. At Pendo, we don't just create clothing — we craft cultural
           narratives that bridge the gap between ancient African artistry and
@@ -628,9 +634,11 @@ const OurStory = ({ mobile }: { mobile: boolean }) => {
         </Link>
       </Box>
       <Box
-        width={{ xs: "90%", sm: "642px" }}
-        height={{ xs: "500px", sm: "698px" }}
+        // width={{ xs: "90%", sm: "642px" }}
+        // height={{ xs: "500px", sm: "698px" }}
+        width={{ xs: "100%", sm: "70%", md: "50%" }}
         display={"flex"}
+        alignSelf={"flex-end"}
         flexDirection={"column"}
         justifyContent={"flex-end"}
         alignItems={"flex-end"}
@@ -639,18 +647,21 @@ const OurStory = ({ mobile }: { mobile: boolean }) => {
         <Image
           src={images.h5}
           alt="shirt"
-          width={mobile ? "270" : "456"}
-          height={mobile ? "400" : "684"}
+          width={tablet ? "270" : "456"}
+          height={tablet ? "400" : "684"}
           style={{
             position: "absolute",
-            right: mobile ? "50px" : "93px",
+            right: mobile ? "93px" : "23px",
           }}
         />
         <Box
-          width={{ xs: "100%", sm: "615px" }}
-          height={{ xs: "276px" }}
+          // width={{ xs: "100%", sm: "615px" }}
+          width="100%"
+          height={{ xs: "270px", md: "510px" }}
           bgcolor="#E3E0D6"
-          sx={{ borderTopLeftRadius: "200px" }}
+          sx={{
+            borderTopLeftRadius: "200px",
+          }}
         ></Box>
       </Box>
     </Box>
@@ -685,7 +696,13 @@ const Tribe = ({ mobile }: { mobile: boolean }) => {
       >
         Inspire me with all the latest Pendo news
       </Typography>
-      <Box display="flex" alignItems={"center"} gap="16px" width='100%' px='16px'>
+      <Box
+        display="flex"
+        alignItems={"center"}
+        gap="16px"
+        width="100%"
+        px="16px"
+      >
         <TextField
           fullWidth
           variant="outlined"
@@ -696,7 +713,7 @@ const Tribe = ({ mobile }: { mobile: boolean }) => {
           sx={{
             bgcolor: "transparent",
             borderRadius: "6px",
-            width: {xs: "69%", sm: "370px"},
+            width: { xs: "69%", sm: "370px" },
             height: "60px",
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
@@ -722,7 +739,7 @@ const Tribe = ({ mobile }: { mobile: boolean }) => {
           }}
         />
         <Box
-          width={{xs: "30%", sm: "180px"}}
+          width={{ xs: "30%", sm: "180px" }}
           height="62px"
           bgcolor="#fff"
           borderRadius={"5px"}

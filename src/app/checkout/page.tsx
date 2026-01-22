@@ -175,12 +175,12 @@ const Checkout = () => {
 
     const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
-      0
+      0,
     );
 
     const totalQty = cart.reduce(
       (sum: number, item: any) => sum + item.quantity,
-      0
+      0,
     );
 
     setTotal(totalPrice);
@@ -202,7 +202,7 @@ const Checkout = () => {
     } catch (err: any) {
       console.error(
         "OTP Verification error:",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
       fireAlert(err.response?.data || err.message, "error");
     }
@@ -256,7 +256,7 @@ const Checkout = () => {
               <StripeWrapper amount={amount} />
             )} */}
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               color="#000"
               fontWeight={600}
@@ -630,7 +630,7 @@ const Checkout = () => {
               justifyContent={"space-between"}
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={600}
@@ -661,7 +661,7 @@ const Checkout = () => {
               // px="30px"
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -747,7 +747,7 @@ const Checkout = () => {
                 borderBottom={"1px solid #00000010"}
               >
                 <Typography
-                  fontSize={24}
+                  fontSize={{ xs: 18, sm: 24 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}

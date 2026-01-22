@@ -30,7 +30,7 @@ export default function RootLayout({
         <AuthProvider>
           <Box sx={{ maxWidth: "1512px", margin: "0 auto " }}>
             <Navbar />
-            <Box mt="130px">{children}</Box>
+            <Box mt={{xs: '100px', sm: "130px"}}>{children}</Box>
             <Footer />
           </Box>
           <AlertUI />

@@ -15,14 +15,14 @@ const RecentOrders = () => {
 
   const getUserOrders = async () => {
     const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+      typeof window !== "undefined" ? (localStorage.getItem("user") ?? "") : "";
     const thisUser = JSON.parse(raw);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
       if (result.success) {
         const userOrders = result.data.filter(
-          (order: any) => order.recipient.email === thisUser?.email
+          (order: any) => order.recipient.email === thisUser?.email,
         );
         setOrders(userOrders);
       }
@@ -47,7 +47,7 @@ const RecentOrders = () => {
       >
         <Typography
           color={"#2D3436"}
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontWeight={700}
           fontFamily={"Montserrat"}
         >

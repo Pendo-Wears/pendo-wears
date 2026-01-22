@@ -261,7 +261,7 @@ const Navbar = () => {
                   height="45"
                   style={{ borderRadius: "100%", objectFit: "cover" }}
                 />
-                <Activity mode={mobile ? 'hidden' : 'visible'}>
+                <Activity mode={mobile ? "hidden" : "visible"}>
                   <Image
                     src={icons.arrowDown}
                     alt="arrow_down"
@@ -340,7 +340,7 @@ const Navbar = () => {
                     gap="12px"
                     mb="20px"
                     px="32px"
-                    fontSize={24}
+                    fontSize={{ xs: 18, sm: 24 }}
                     fontWeight={600}
                     color="#404040"
                     fontFamily={"Montserrat"}

@@ -254,7 +254,7 @@ const Cart = () => {
               borderBottom="1px solid #00000010"
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={700}
@@ -342,7 +342,7 @@ const Cart = () => {
           >
             <Box pb="30px" borderBottom={"1px solid #1A1A1A"}>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={700}
@@ -638,7 +638,7 @@ const Cart = () => {
             </Box>
             <Box mt="37px">
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -729,7 +729,7 @@ const Cart = () => {
               px="30px"
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -939,7 +939,7 @@ const Cart = () => {
             </Box>
             <Box>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -989,7 +989,7 @@ const Cart = () => {
             </Box>
             <Box>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -1030,7 +1030,7 @@ const Cart = () => {
             </Box>
             <Box>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -1191,7 +1191,7 @@ export const CartItem = ({
           </Typography>
         </Activity>
         <Typography
-          fontSize={{xs: 12, sm: 14}}
+          fontSize={{ xs: 12, sm: 14 }}
           fontFamily={"Montserrat"}
           color={isCheckout ? "#1A1A1A" : "#656565"}
           fontWeight={500}
@@ -1200,7 +1200,7 @@ export const CartItem = ({
           Quantity:{" "}
           <Activity mode={isCheckout || isConfirmed ? "visible" : "hidden"}>
             <Typography
-              fontSize={{xs: 12, sm: isCheckout ? 14 : 16}}
+              fontSize={{ xs: 12, sm: isCheckout ? 14 : 16 }}
               fontFamily={"Montserrat"}
               color="#1A1A1A"
               fontWeight={500}

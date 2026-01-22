@@ -27,7 +27,7 @@ export default function GoogleLoginButton() {
                 // redirect_uri:
                 //   "https://darkgray-heron-136669.hostingersite.com/?rest_route=/auth/v1/oauth/token&provider=google",
               },
-            }
+            },
           );
 
           const jwt = res.data?.data?.jwt;
@@ -68,7 +68,7 @@ export default function GoogleLoginButton() {
     >
       <Image src={icons.google} alt="google" width="32" height="32" />
       <Typography
-        fontSize={24}
+        fontSize={{ xs: 18, sm: 24 }}
         fontWeight={500}
         fontFamily={"Montserrat"}
         color="#000"
