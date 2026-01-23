@@ -1,20 +1,24 @@
 import React from "react";
 import DetailsModal from "../reusables/DetailsModal";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import { images } from "@/src/assets/images/images";
 
 const Story = ({ onClose }: { onClose: () => void }) => {
+  const theme = useTheme()
+  const mobile = theme.breakpoints.down('sm');
   return (
     <DetailsModal title="Our Story" onClose={onClose}>
-      <Box mt="30px" px="50px" width="700px">
-        <Image
-          src={images.abt}
-          alt="Our Story"
-          width="612"
-          height="400"
-          style={{ borderRadius: "16px", objectFit: "cover" }}
-        />
+      <Box mt="30px" px={{ xs: "16px", sm: "20px", md: "50px" }} maxWidth={'700px'}>
+        <Box height='400px' position="relative" width="100%">
+          <Image
+            src={images.abt}
+            alt="Our Story"
+            fill
+            sizes="(max-width: 600px) 100%,"
+            style={{ borderRadius: "16px", objectFit: "cover", objectPosition: mobile ? "center right" : "center" }}
+          />
+        </Box>
         <Box mt="30px">
           <Typography
             mb="2px"

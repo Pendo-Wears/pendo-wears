@@ -308,7 +308,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -334,7 +334,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -358,7 +358,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -388,7 +388,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -407,7 +407,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -426,7 +426,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -488,7 +488,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               Price Range
             </Typography>
             <Typography
-              fontSize={16}
+              fontSize={{ xs: 14, sm: 16 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -590,7 +590,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           <Box
             mt="30px"
             width="150px"
-            height="57px"
+            height={{ xs: "48px", sm: "57px" }}
             border={"1px solid #00000080"}
             borderRadius={"100px"}
             display="flex"
@@ -613,7 +613,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           <Box
             mt="30px"
             width="100%"
-            height="57px"
+            height={{ xs: "48px", sm: "57px" }}
             bgcolor="#000"
             borderRadius={"100px"}
             display="flex"

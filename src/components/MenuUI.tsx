@@ -29,9 +29,12 @@ const MenuUI = ({
       slotProps={{
         paper: {
           sx: {
-            width: "260px",
+            width: { xs: "200px", sm: "260px" },
             borderRadius: "12px",
             zIndex: 9999,
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
             ...style,
           },
         },

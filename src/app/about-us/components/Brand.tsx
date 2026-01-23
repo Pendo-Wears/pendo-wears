@@ -14,8 +14,9 @@ const Brand = ({ onClose }: { onClose: () => void }) => {
   ];
   return (
     <DetailsModal title="Meet the Brand" onClose={onClose}>
-          <Box
-        width="700px"
+      <Box
+        // width={{ xs: "100%", sm: "700px" }}
+        maxWidth={'850px'}
         mt="45px"
         px="16px"
         display="flex"
@@ -32,13 +33,13 @@ const Brand = ({ onClose }: { onClose: () => void }) => {
             alignItems={"center"}
             gap="24px"
           >
-            <Box width="100%">
+            <Box width="100%" height='320px' position="relative">
               <Image
                 src={item.image.src}
                 alt={item.name}
-                width="370"
-                height="320"
-                style={{ borderRadius: "16px", objectFit: 'cover' }}
+                fill
+                sizes="(max-width: 600px) 100%,"
+                style={{ borderRadius: "16px", objectFit: "cover" }}
               />
             </Box>
             <Typography

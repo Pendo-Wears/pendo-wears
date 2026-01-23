@@ -133,6 +133,7 @@ const Product = ({
           alignItems={"center"}
           justifyContent={"space-between"}
           width="100%"
+          overflow={"hidden"}
         >
           <Activity mode={showPrice ? "hidden" : "visible"}>
             <Typography
@@ -144,6 +145,7 @@ const Product = ({
                 WebkitLineClamp: 1,
                 WebkitBoxOrient: "vertical",
                 overflow: "hidden",
+                textOverflow: "ellipsis",
               }}
             >
               {product?.name}
@@ -241,7 +243,8 @@ const Product = ({
               display: "-webkit-box",
               WebkitLineClamp: 1,
               WebkitBoxOrient: "vertical",
-              overflow: "ellipsis",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {product?.name}

@@ -39,7 +39,7 @@ export const formatWoocommercePrice = (
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-  }).format(value);
+  }).format(value).slice(2);
 };
 
 export const formatPrice = (price: number) => {

@@ -282,7 +282,16 @@ const Navbar = () => {
           >
             <Box py="12px" borderRadius={"20px"}>
               {items.map((item: any) => (
-                <MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    item.action();
+                    setAnchorEl(null);
+                  }}
+                  key={item.label}
+                  sx={{
+                    p: 0,
+                  }}
+                >
                   {" "}
                   <Box
                     key={item.label}
@@ -291,15 +300,11 @@ const Navbar = () => {
                     gap="12px"
                     py="12px"
                     px="16px"
-                    fontSize={16}
+                    fontSize={{ xs: 14, sm: 16 }}
                     fontWeight={500}
                     color="#404040"
                     fontFamily={"Montserrat"}
                     sx={{ cursor: "pointer" }}
-                    onClick={() => {
-                      item.action();
-                      setAnchorEl(null);
-                    }}
                   >
                     <Image
                       src={item.icon}
@@ -322,7 +327,7 @@ const Navbar = () => {
               vertical: "bottom",
             }}
           >
-            <Box py="16px" borderRadius={"20px"} px="8px">
+            <Box py="16px" borderRadius={"20px"} px={{ xs: 0, sm: "8px" }}>
               {collections.map((collection, index) => (
                 <Box
                   py="24px"
@@ -339,7 +344,7 @@ const Navbar = () => {
                     alignItems="center"
                     gap="12px"
                     mb="20px"
-                    px="32px"
+                    px={{ xs: "16px", sm: "32px" }}
                     fontSize={{ xs: 18, sm: 24 }}
                     fontWeight={600}
                     color="#404040"
@@ -355,8 +360,8 @@ const Navbar = () => {
                         sx={{
                           color: "#404040",
                           fontFamily: "Montserrat",
-                          fontSize: 18,
-                          px: "32px",
+                          fontSize: { xs: 14, sm: 18 },
+                          px: { xs: "20px", sm: "32px" },
                         }}
                         onClick={() => {
                           router.push(item.to);

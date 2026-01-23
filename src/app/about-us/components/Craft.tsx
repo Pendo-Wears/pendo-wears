@@ -1,10 +1,12 @@
 import React from "react";
 import DetailsModal from "../reusables/DetailsModal";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import { icons } from "@/src/assets/icons/icons";
 import Image from "next/image";
 
 const Craft = ({ onClose }: { onClose: () => void }) => {
+  const theme = useTheme();
+  const mobile = theme.breakpoints.down("sm");
   const items = [
     {
       icon: icons.hand,
@@ -24,10 +26,15 @@ const Craft = ({ onClose }: { onClose: () => void }) => {
   ];
   return (
     <DetailsModal title="Our Craft" onClose={onClose}>
-      <Box mt="60px" width="850px" px='50px'>
-              <Typography
-                  maxWidth={'612px'}
-                  mx='auto'
+      <Box
+        mt="60px"
+        // width={{ xs: "100%", sm: "850px" }}
+        maxWidth={"850px"}
+        px={{ xs: "16px", sm: "20px", md: "50px" }}
+      >
+        <Typography
+          maxWidth={"612px"}
+          mx="auto"
           fontSize={16}
           fontWeight={400}
           fontFamily={"Montserrat"}
@@ -61,19 +68,19 @@ const Craft = ({ onClose }: { onClose: () => void }) => {
                 alignItems={"center"}
                 justifyContent={"center"}
                 borderRadius={"100px"}
-                width="60px"
-                height={"60px"}
+                width={mobile ? "54px" :"60px"}
+                height={mobile ? "54px" :"60px"}
                 bgcolor={"#D5AC4C33"}
               >
                 <Image
                   src={item.icon.src}
                   alt={item.title}
-                  width={"30"}
-                  height="30"
+                  width={mobile ? "25" : "30"}
+                  height={mobile ? "25" : "30"}
                 />
               </Box>
               <Typography
-                fontSize={20}
+                fontSize={{ xs: 16, sm: 20 }}
                 fontWeight={500}
                 fontFamily={"Montserrat"}
                 color="#000"

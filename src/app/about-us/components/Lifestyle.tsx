@@ -16,22 +16,29 @@ const Lifestyle = ({ onClose }: { onClose: () => void }) => {
   return (
     <DetailsModal title="The Pendo Lifestyle" onClose={onClose}>
       <Box
-        px="50px"
-              mt="60px"
-              width='700px'
+        px={{ xs: "16px", sm: "20px", md: "50px" }}
+        mt="60px"
+        // width={{ xs: "100%", sm: "700px" }}
+        maxWidth={"850px"}
         display="flex"
         alignItems={"center"}
+        justifyContent={"center"}
         gap="16px"
         flexWrap={"wrap"}
       >
         {gallery.map((image) => (
-          <Box>
+          <Box
+            key={image.src}
+            height={{xs: '350px', sm: "215px"}}
+            width={{ xs: `100%`, sm: `${90 / 2}%`, md: `${90 / 3}%` }}
+            position="relative"
+          >
             <Image
               src={image.src}
               alt={"gallery"}
-              width="186"
-              height="215"
-              style={{ borderRadius: "16px", objectFit: "cover" }}
+              sizes="100%,"
+              fill
+              style={{ borderRadius: "16px", objectFit: "cover", objectPosition: "center top" }}
             />
           </Box>
         ))}

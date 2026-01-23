@@ -1,5 +1,5 @@
 import { icons } from "@/src/assets/icons/icons";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 
@@ -11,7 +11,9 @@ const DetailsModal = ({
   title: string;
   children: React.ReactNode;
   onClose: () => void;
-}) => {
+  }) => {
+  const theme = useTheme()
+  const mobile = theme.breakpoints.down('sm');
   return (
     <Box
       position="fixed"
@@ -29,15 +31,27 @@ const DetailsModal = ({
             display: "none",
           },
         }}
-        // width="fit-content"
+        width={{ xs: "100%", sm: "600px", md: "850px" }}
         position="absolute"
         top={0}
         bottom={0}
         right={0}
         bgcolor="#fff"
+        py="45px"
         // maxWidth="850px"
       >
-        <Box display="flex" alignItems={"center"} px="50px" pt="40px">
+        <Box
+          display="flex"
+          alignItems={"center"}
+          px={{ xs: "16px", sm: "20px", md: "50px" }}
+          pt={{ xs: "25px", sm: "40px" }}
+          position={{xs: "fixed", sm: "relative"}}
+          bgcolor="#fff"
+          top={0}
+          left={0}
+          right={0}
+          zIndex={5}
+        >
           <Typography
             flex={1}
             textAlign={"center"}
@@ -51,8 +65,8 @@ const DetailsModal = ({
           <Image
             src={icons.close}
             alt="close"
-            width="40"
-            height="40"
+            width={mobile ? "36" :"40"}
+            height={mobile ? "36" :"40"}
             style={{ cursor: "pointer" }}
             onClick={onClose}
           />
