@@ -111,13 +111,30 @@ const OrderConfirmation = () => {
     try {
       const result: any = await productsEndpoint.getOrderDetails(id);
       if (result.success) {
-        setOrderDetails(result.data);
+        setOrderDetails(result.data.order);
       }
     } catch (e: any) {
       fireAlert(e.message, "error");
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadReceipt = async (id: string) => {
+    const res: any = await productsEndpoint.getOrderDetails(id);
+    const data = res.data;
+
+    if (!data.receiptImage) {
+      alert("Receipt not available");
+      return;
+    }
+
+    const a = document.createElement("a");
+    a.href = data.receiptImage;
+    a.download = `receipt-${id}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   };
 
   const onLoad = () => {
@@ -148,7 +165,7 @@ const OrderConfirmation = () => {
           justifyContent={"center"}
           my="200px"
         >
-          <CircularProgress size={24} sx={{color: "#000"}} />
+          <CircularProgress size={24} sx={{ color: "#000" }} />
         </Box>
       ) : (
         <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
@@ -241,7 +258,7 @@ const OrderConfirmation = () => {
                     </Typography>
                   </Box>
                   <Box display={"flex"} flexDirection={"column"} gap={"24px"}>
-                    {orderDetails?.items.map((cart: any, id: number) => (
+                    {orderDetails?.items?.map((cart: any, id: number) => (
                       <Box key={id}>
                         <CartItem cart={cart} isConfirmed />
                       </Box>
@@ -645,6 +662,7 @@ const OrderConfirmation = () => {
                 alignItems={"center"}
                 gap="15px"
                 sx={{ cursor: "pointer" }}
+                onClick={() => downloadReceipt(String(orderDetails?.id))}
               >
                 <Image
                   src={icons.download}
@@ -752,15 +770,17 @@ const OrderConfirmation = () => {
                 width="100%"
                 display="flex"
                 alignItems={"center"}
-                  justifyContent={"center"}
-                  flexWrap={'wrap'}
+                justifyContent={"center"}
+                flexWrap={"wrap"}
                 gap="16px"
               >
                 <Box
+                  component={"a"}
+                  href="mailto:support@pendowears.com"
                   display="flex"
                   alignItems={"center"}
                   gap="15px"
-                  sx={{ cursor: "pointer" }}
+                  sx={{ cursor: "pointer", textDecoration: "none" }}
                 >
                   <Image
                     src={icons.email}
@@ -783,7 +803,12 @@ const OrderConfirmation = () => {
                   display="flex"
                   alignItems={"center"}
                   gap="15px"
-                  sx={{ cursor: "pointer" }}
+                    sx={{ cursor: "pointer" }}
+                    onClick={async () => {
+                      const phoneNumber = "+1234567890";
+                      await navigator.clipboard.writeText(phoneNumber);
+                      fireAlert("Phone number copied to clipboard", "success");
+                    }}
                 >
                   <Image
                     src={icons.phone}

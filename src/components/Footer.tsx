@@ -1,9 +1,13 @@
+"use client"
+
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 import { icons } from "../assets/icons/icons";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
+  const router = useRouter();
   return (
     <Box bgcolor="#000" py="74px">
       <Box
@@ -148,6 +152,8 @@ const Footer = () => {
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            onClick={() => router.push("/refund-policy")}
+            sx={{ cursor: "pointer" }}
           >
             Returns
           </Typography>
@@ -174,6 +180,8 @@ const Footer = () => {
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            sx={{ cursor: "pointer" }}
+            onClick={() => router.push("/terms-of-use")}
           >
             Terms of service
           </Typography>
