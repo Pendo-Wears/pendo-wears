@@ -18,8 +18,15 @@ export async function generateMetadata({
   const title = product?.name ?? "Product";
   const description = stripHtml(product?.description).slice(0, 160);
 
+  const storeUrl = process.env.NEXT_PUBLIC_WOO_STORE_URL;
+
+  const imgUrl = product?.images?.[0]?.src?.replace(
+    new URL(product?.images?.[0]?.src).origin,
+    storeUrl!,
+  );
+
   const image =
-    product?.images?.[0]?.src ??
+    imgUrl ??
     "https://darkgray-heron-136669.hostingersite.com/wp-content/uploads/2026/01/cropped-about.png";
 
   return {
