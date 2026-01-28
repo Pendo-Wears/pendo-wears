@@ -2,10 +2,15 @@ import { productsEndpoint } from "@/src/lib/endpoints";
 import ProductDetailsClient from "./ProductDetailsClient";
 import { WooProductDetails } from "@/src/lib/types";
 
-export async function generateMetadata({ params }: { params: any }) {
-  const wooResult: any = await productsEndpoint.getWooProductDetails(
-    params.slug,
-  );
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string | number }>;
+}) {
+  const { slug } = await params;
+  const wooResult: any = await productsEndpoint.getWooProductDetails(slug);
+
+  console.log(wooResult, "QWERTYUIOP");
   const product: WooProductDetails = wooResult.data;
 
   const stripHtml = (html = "") => html.replace(/<[^>]*>/g, "").trim();
