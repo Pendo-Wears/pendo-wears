@@ -10,7 +10,7 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const wooResult: any = await productsEndpoint.getWooProductDetails(slug);
-  
+
   const product: WooProductDetails = wooResult.data;
 
   const stripHtml = (html = "") => html.replace(/<[^>]*>/g, "").trim();
@@ -26,8 +26,7 @@ export async function generateMetadata({
   );
 
   const image =
-    imgUrl ??
-    "https://darkgray-heron-136669.hostingersite.com/wp-content/uploads/2026/01/cropped-about.png";
+    imgUrl ?? `${storeUrl}/wp-content/uploads/2026/01/cropped-about.png`;
 
   return {
     title,

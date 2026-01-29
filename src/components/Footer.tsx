@@ -15,7 +15,7 @@ const Footer = () => {
         display="flex"
         alignItems={"center"}
       >
-        <Box
+        {/* <Box
           flex={1}
           display="flex"
           alignItems={{ xs: "flex-start", sm: "center" }}
@@ -59,13 +59,13 @@ const Footer = () => {
           >
             Accessories
           </Typography>
-        </Box>
-        <Box display="flex" alignItems={"center"} gap="16px">
+        </Box> */}
+        {/* <Box display="flex" alignItems={"center"} gap="16px">
           <Image src={icons.instagram} alt="instagram" width="17" height="28" />
           <Image src={icons.twitter} alt="X" width="20" height="28" />
           <Image src={icons.facebook} alt="facebook" width="20" height="28" />
           <Image src={icons.tiktok} alt="tiktok" width="17" height="28" />
-        </Box>
+        </Box> */}
       </Box>
       <Box
         display={"flex"}
@@ -110,7 +110,7 @@ const Footer = () => {
           flexDirection={{ xs: "column", sm: "row" }}
           flexWrap={"wrap"}
         >
-          <Typography
+          {/* <Typography
             fontSize={16}
             color="#9CA3AF"
             fontWeight={500}
@@ -145,7 +145,26 @@ const Footer = () => {
             textTransform={"uppercase"}
           >
             Affiliate Marketing
-          </Typography>
+          </Typography> */}
+          {/* <Typography
+            fontSize={16}
+            color="#9CA3AF"
+            fontWeight={500}
+            fontFamily={"Montserrat"}
+            textTransform={"uppercase"}
+            onClick={() => router.push("/refund-policy")}
+            sx={{ cursor: "pointer" }}
+          >
+            Returns
+          </Typography> */}
+        </Box>
+        <Box
+          display="flex"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"
@@ -157,14 +176,6 @@ const Footer = () => {
           >
             Returns
           </Typography>
-        </Box>
-        <Box
-          display="flex"
-          alignItems={{ xs: "flex-start", sm: "center" }}
-          flexDirection={{ xs: "column", sm: "row" }}
-          gap={{ xs: "16px", sm: "20px", md: "40px" }}
-          flexWrap={"wrap"}
-        >
           <Typography
             fontSize={16}
             color="#9CA3AF"

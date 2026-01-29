@@ -456,8 +456,8 @@ const ProductDetailsClient = ({
               {productDetails?.sync_variants?.map((variant: any) => (
                 <Box
                   key={variant.name}
-                  width="60px"
-                  height={"60px"}
+                  width="80px"
+                  height={"80px"}
                   borderRadius={"2px"}
                   border={`1px solid ${
                     selectedVariant?.name === variant.name
@@ -466,8 +466,10 @@ const ProductDetailsClient = ({
                   }`}
                   p="5px"
                   display="flex"
+                  flexDirection={'column'}
                   alignItems={"flex-start"}
                   justifyContent={"center"}
+                  sx={{ cursor: "pointer" }}
                   onClick={() => setSelectedVariant(variant)}
                 >
                   <Image
@@ -475,20 +477,21 @@ const ProductDetailsClient = ({
                     alt={variant?.product?.name || ""}
                     width={60}
                     height={60}
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "contain" }}
                   />
                   <Typography
                     fontSize={14}
                     fontFamily={"Montserrat"}
                     color={"#000"}
+                    whiteSpace={'nowrap'}
                   >
-                    /{variant.size}
+                    {variant.color} | {variant.size}
                   </Typography>
                 </Box>
               ))}
             </Box>
           </Box>
-          <Box
+          {/* <Box
             py={{ xs: "12px", sm: "25px" }}
             borderBottom={"1px solid #00000010"}
           >
@@ -535,7 +538,7 @@ const ProductDetailsClient = ({
                 </Box>
               ))}
             </Box>
-          </Box>
+          </Box> */}
           <Box
             py={{ xs: "12px", sm: "25px" }}
             borderBottom={"1px solid #00000010"}
@@ -571,6 +574,7 @@ const ProductDetailsClient = ({
                 pb="5px"
                 borderBottom={"1px solid black"}
                 display={"inline"}
+                sx={{ cursor: "pointer" }}
                 onClick={() => setShowFullDescription(!ShowFullDescription)}
               >
                 {ShowFullDescription ? "Read less" : "Read more"}
