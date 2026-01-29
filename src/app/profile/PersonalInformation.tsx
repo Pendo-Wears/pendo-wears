@@ -25,7 +25,6 @@ const PersonalInformation = () => {
   const [loading, setLoading] = useState(false);
 
   const getUserData = async () => {
-
     setFirstName(thisUser?.first_name!);
     setLastName(thisUser?.last_name!);
     setEmail(thisUser?.email!);
@@ -71,7 +70,7 @@ const PersonalInformation = () => {
       if (thisUser && thisUser.id) {
         const updateUser: any = await userEndpoints.updateUser(
           thisUser?.id,
-          updateBody
+          updateBody,
         );
         if (updateUser?.data.success) {
           setIsEditMode(false);
@@ -86,7 +85,7 @@ const PersonalInformation = () => {
                   ...updateUser.data.data.billing,
                   countryName: thisUser?.billing.countryName,
                 },
-              })
+              }),
             );
           }
         }
@@ -104,11 +103,11 @@ const PersonalInformation = () => {
     getUserData();
   }, []);
   return (
-    <Box width="72%" bgcolor="#f5f5f5" borderRadius={"16px"} p="32px">
+    <Box width={{xs: '100%', md: "72%"}} bgcolor="#f5f5f5" borderRadius={"16px"} p={{xs: '16px', sm: '20px', md: "32px"}}>
       <Box display="flex" justifyContent={"space-between"} alignItems="center">
         <Typography
           color={"#2D3436"}
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontWeight={700}
           fontFamily={"Montserrat"}
         >
@@ -168,7 +167,7 @@ const PersonalInformation = () => {
         >
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -216,7 +215,7 @@ const PersonalInformation = () => {
           </Box>
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -271,7 +270,7 @@ const PersonalInformation = () => {
         >
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -318,7 +317,7 @@ const PersonalInformation = () => {
           </Box>
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -373,7 +372,7 @@ const PersonalInformation = () => {
         >
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -421,7 +420,7 @@ const PersonalInformation = () => {
           </Box>
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}

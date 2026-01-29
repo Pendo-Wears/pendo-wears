@@ -11,12 +11,15 @@ import {
 } from "@/src/lib/priceFormatter";
 import { ProductDetailsType, SyncVariant } from "@/src/lib/types";
 import userEndpoints from "@/src/lib/userServices";
+
 import {
   Box,
   CircularProgress,
   MenuItem,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -43,6 +46,8 @@ const writeCart = (cart: any[]) => {
 
 const Cart = () => {
   const router = useRouter();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { fireAlert, setAmount, user, setUser, getUser } = useAuth();
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
@@ -94,12 +99,12 @@ const Cart = () => {
 
     const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
-      0
+      0,
     );
 
     const totalQty = cart.reduce(
       (sum: number, item: any) => sum + item.quantity,
-      0
+      0,
     );
 
     setTotal(totalPrice);
@@ -130,7 +135,7 @@ const Cart = () => {
       if (user && user.id) {
         const updateUser: any = await userEndpoints.updateUser(
           user?.id,
-          updateBody
+          updateBody,
         );
         if (updateUser?.data.success) {
           fireAlert("Shipping address updated successfully", "success");
@@ -143,7 +148,7 @@ const Cart = () => {
                   ...updateUser.data.data.billing,
                   countryName: country?.name,
                 },
-              })
+              }),
             );
 
             const profile = localStorage.getItem("user");
@@ -180,7 +185,7 @@ const Cart = () => {
   useEffect(() => {
     const totalPrice = cartItems?.reduce(
       (sum, item) => sum + Number(item.retail_price) * item.quantity,
-      0
+      0,
     );
     const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -213,7 +218,7 @@ const Cart = () => {
     <RequireAuth>
       <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">
         <Typography
-          fontSize={32}
+          fontSize={{ xs: 24, sm: 32 }}
           fontFamily={"Montserrat"}
           color="#000"
           fontWeight={700}
@@ -228,17 +233,18 @@ const Cart = () => {
         <Box
           mb="45px"
           mt="40px"
-          px={{ xs: "16px", sm: "20px", md: "50px" }}
+          px={{ xs: 0, sm: "20px", md: "50px" }}
           display="flex"
           alignItems={"flex-start"}
-          gap="65px"
+          flexWrap={"wrap"}
+          gap={{ xs: "24px", sm: "65px" }}
         >
           <Box
             flex={1}
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
-            py="45px"
-            px="30px"
+            py={{ xs: "20px", sm: "20px", md: "45px" }}
+            px={{ xs: "16px", sm: "30px" }}
             border="1px solid #00000010"
           >
             <Box
@@ -249,7 +255,7 @@ const Cart = () => {
               borderBottom="1px solid #00000010"
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={700}
@@ -328,16 +334,16 @@ const Cart = () => {
             </Activity>
           </Box>
           <Box
-            width="403px"
+            width={{ xs: "100%", md: "403px" }}
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
-            py="30px"
-            px="18px"
+            py={{ xs: "25px", sm: "30px" }}
+            px={{ xs: "16px", sm: "18px" }}
             border="1px solid #00000010"
           >
             <Box pb="30px" borderBottom={"1px solid #1A1A1A"}>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={700}
@@ -345,7 +351,11 @@ const Cart = () => {
               >
                 Calculated Shipping
               </Typography>
-              <Box display={"flex"} flexDirection={"column"} gap="20px">
+              <Box
+                display={"flex"}
+                flexDirection={"column"}
+                gap={{ xs: "12px", sm: "20px" }}
+              >
                 <TextField
                   fullWidth
                   variant="outlined"
@@ -355,7 +365,7 @@ const Cart = () => {
                   value={country?.name || ""} // controlled value
                   onChange={(e) => {
                     const selected = countries.find(
-                      (c) => c.name === e.target.value
+                      (c) => c.name === e.target.value,
                     );
                     setCountry(selected);
                     fetchStates();
@@ -419,7 +429,7 @@ const Cart = () => {
                     value={state?.name || ""} // controlled value
                     onChange={(e) => {
                       const selected = states.find(
-                        (c) => c.name === e.target.value
+                        (c) => c.name === e.target.value,
                       );
                       setState(selected);
                     }}
@@ -602,7 +612,7 @@ const Cart = () => {
                   }}
                 />
               </Box>
-              <Box px="28px" mt="30px">
+              <Box px={{ xs: 0, sm: "28px" }} mt={{ xs: "24px", sm: "30px" }}>
                 <Box
                   width="100%"
                   height="57px"
@@ -633,7 +643,7 @@ const Cart = () => {
             </Box>
             <Box mt="37px">
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -721,10 +731,10 @@ const Cart = () => {
               bgcolor="#E6E6E6"
               width="100%"
               py="26px"
-              px="30px"
+              px={{ xs: "16px", sm: "30px" }}
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -739,7 +749,7 @@ const Cart = () => {
                 mb="18px"
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -747,7 +757,7 @@ const Cart = () => {
                   Subtotal
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -762,7 +772,7 @@ const Cart = () => {
                 mb="18px"
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -770,7 +780,7 @@ const Cart = () => {
                   Shipping
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#16A34A"
                   fontWeight={700}
@@ -787,7 +797,7 @@ const Cart = () => {
                 borderBottom={"1px solid #00000010"}
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -795,7 +805,7 @@ const Cart = () => {
                   Tax
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -810,7 +820,7 @@ const Cart = () => {
                 mb="40px"
               >
                 <Typography
-                  fontSize={18}
+                  fontSize={{ xs: 16, sm: 18 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -818,7 +828,7 @@ const Cart = () => {
                   Total
                 </Typography>
                 <Typography
-                  fontSize={18}
+                  fontSize={{ xs: 16, sm: 18 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -849,7 +859,7 @@ const Cart = () => {
                   ) {
                     fireAlert(
                       "Update all shipping information fields",
-                      "warning"
+                      "warning",
                     );
                     return;
                   }
@@ -869,7 +879,7 @@ const Cart = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box px="28px">
+            <Box px={{ xs: "16px", sm: "28px" }}>
               <Box pt="30px" borderTop={"1px solid #00000010"}>
                 <Typography
                   fontSize={16}
@@ -909,7 +919,9 @@ const Cart = () => {
           px={{ xs: "16px", sm: "20px", md: "50px" }}
           display={"flex"}
           alignItems={"center"}
-          justifyContent={"space-between"}
+          justifyContent={"center"}
+          flexWrap={"wrap"}
+          gap="16px"
         >
           <Box
             p="20px"
@@ -918,7 +930,8 @@ const Cart = () => {
             display="flex"
             alignItems={"center"}
             gap="20px"
-            maxWidth="353px"
+            width="100%"
+            maxWidth={{ xs: "600px", sm: "353px" }}
           >
             <Box
               width="92px"
@@ -932,9 +945,9 @@ const Cart = () => {
             >
               <Image src={icons.contact} alt="contact" width="40" height="40" />
             </Box>
-            <Box>
+            <Box width="100%">
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -968,7 +981,8 @@ const Cart = () => {
             display="flex"
             alignItems={"center"}
             gap="20px"
-            maxWidth="353px"
+            width="100%"
+            maxWidth={{ xs: "600px", sm: "353px" }}
           >
             <Box
               width="92px"
@@ -984,7 +998,7 @@ const Cart = () => {
             </Box>
             <Box>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -1009,7 +1023,8 @@ const Cart = () => {
             display="flex"
             alignItems={"center"}
             gap="20px"
-            maxWidth="353px"
+            width="100%"
+            maxWidth={{ xs: "600px", sm: "353px" }}
           >
             <Box
               width="92px"
@@ -1025,7 +1040,7 @@ const Cart = () => {
             </Box>
             <Box>
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Cormorant Garamond"}
                 color="#000"
                 fontWeight={700}
@@ -1065,7 +1080,8 @@ export const CartItem = ({
   isConfirmed?: boolean;
 }) => {
   const { fireAlert } = useAuth();
-
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
   const removeFromCart = (key: number) => {
     const all = readCart();
     const cart = all.filter((item: any) => item.id !== key);
@@ -1083,7 +1099,7 @@ export const CartItem = ({
       writeCart(all.filter((i: any) => i.id !== cart.id));
     } else {
       writeCart(
-        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i))
+        all.map((i: any) => (i.id === cart.id ? { ...i, quantity } : i)),
       );
     }
 
@@ -1095,94 +1111,230 @@ export const CartItem = ({
 
   return (
     <Box
-      py={isCheckout || isConfirmed ? "13px" : "30px"}
-      px={isCheckout || isConfirmed ? "10px" : 0}
-      borderBottom={"1px solid #00000010"}
-      bgcolor={isCheckout ? "#fff" : "transparent"}
-      display="flex"
-      alignItems={"center"}
-      gap="24px"
+      borderBottom={{ xs: "1px solid #00000010", sm: "none" }}
+      pb={{ xs: 1, sm: 0 }}
     >
       <Box
-        width={isConfirmed ? "64px" : "128px"}
-        height={isConfirmed ? "64px" : isCheckout ? "152px" : "128px"}
-        borderRadius={"8px"}
-        bgcolor={"#F3F4F6"}
-        p="8px"
+        py={isCheckout || isConfirmed ? "13px" : { xs: "16px", sm: "30px" }}
+        px={{ xs: 0, sm: isCheckout || isConfirmed ? "10px" : 0 }}
+        borderBottom={{ xs: "none", sm: "1px solid #00000010" }}
+        bgcolor={isCheckout ? "#fff" : "transparent"}
         display="flex"
-        alignItems={"center"}
-        justifyContent={"center"}
+        alignItems={{ xs: "flex-start", md: "center" }}
+        gap={{ xs: "16px", sm: "24px" }}
       >
-        <Image
-          src={cart.product.image || ""}
-          alt={cart.product.name || ""}
-          style={{ objectFit: "contain" }}
-          width={isConfirmed ? "64" : "103"}
-          height={isConfirmed ? "64" : "103"}
-        />
-      </Box>
-      <Box flex={1}>
-        <Typography
-          fontSize={isConfirmed ? 20 : isCheckout ? 18 : 24}
-          fontFamily={"Montserrat"}
-          color="#1A1A1A"
-          fontWeight={500}
-          mb={isCheckout || isConfirmed ? 0 : "10px"}
+        <Box
+          // width={{
+          //   xs: isConfirmed ? "54px" : "100px",
+          //   sm: isConfirmed ? "64px" : "128px",
+          // }}
+          // height={{
+          //   xs: isConfirmed ? "54px" : isCheckout ? "142px" : "100px",
+          //   sm: isConfirmed ? "64px" : isCheckout ? "152px" : "128px",
+          // }}
+          borderRadius={"8px"}
+          // bgcolor={"#F3F4F6"}
+          // p="8px"
+          display="flex"
+          alignItems={"center"}
+          justifyContent={"center"}
         >
-          {cart.product.name}
-        </Typography>
-        <Activity mode={isCheckout ? "visible" : "hidden"}>
+          <Image
+            src={cart.product.image || ""}
+            alt={cart.product.name || ""}
+            style={{ objectFit: "cover", objectPosition: "center top" }}
+            width={
+              mobile ? (isConfirmed ? "54" : "80") : isConfirmed ? "64" : "103"
+            }
+            height={
+              mobile ? (isConfirmed ? "54" : "80") : isConfirmed ? "64" : "103"
+            }
+          />
+        </Box>
+        <Box flex={1}>
           <Typography
-            fontSize={isCheckout ? 16 : 18}
+            fontSize={{
+              xs: isConfirmed ? 14 : isCheckout ? 14 : 16,
+              sm: isConfirmed ? 20 : isCheckout ? 18 : 24,
+            }}
             fontFamily={"Montserrat"}
             color="#1A1A1A"
-            fontWeight={700}
-            mb="8px"
-          >
-            {formatPrice(Number(cart.retail_price) * cart.quantity)}
-          </Typography>
-        </Activity>
-        <Activity mode={isConfirmed ? "hidden" : "visible"}>
-          <Typography
-            fontSize={isCheckout ? 14 : 16}
-            fontFamily={"Montserrat"}
-            color={isCheckout ? "#1A1A1A" : "#656565"}
             fontWeight={500}
-            mb="0px"
-            textTransform={"capitalize"}
+            lineHeight={{ xs: "105%" }}
+            mb={{ xs: 0, sm: isCheckout || isConfirmed ? 0 : "10px" }}
+            sx={{
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+            }}
           >
-            Color: {cart.color}
+            {cart.product.name}
           </Typography>
-
-          <Typography
-            fontSize={isCheckout ? 14 : 16}
-            fontFamily={"Montserrat"}
-            color={isCheckout ? "#1A1A1A" : "#656565"}
-            fontWeight={500}
-            mb="0px"
-            textTransform={"capitalize"}
-          >
-            Size: {cart.size}
-          </Typography>
-        </Activity>
-        <Typography
-          fontSize={14}
-          fontFamily={"Montserrat"}
-          color={isCheckout ? "#1A1A1A" : "#656565"}
-          fontWeight={500}
-          mb="0px"
-        >
-          Quantity:{" "}
-          <Activity mode={isCheckout || isConfirmed ? "visible" : "hidden"}>
+          <Activity mode={isCheckout || mobile ? "visible" : "hidden"}>
             <Typography
-              fontSize={isCheckout ? 14 : 16}
+              fontSize={{ xs: 16, sm: isCheckout ? 16 : 18 }}
               fontFamily={"Montserrat"}
               color="#1A1A1A"
-              fontWeight={500}
-              display={"inline"}
+              fontWeight={700}
+              mb={{ xs: 0 }}
             >
-              {cart.quantity}
+              {formatPrice(Number(cart.retail_price) * cart.quantity)}
             </Typography>
+          </Activity>
+          <Activity mode={isConfirmed ? "hidden" : "visible"}>
+            <Typography
+              fontSize={{ xs: 14, sm: isCheckout ? 14 : 16 }}
+              fontFamily={"Montserrat"}
+              color={isCheckout ? "#1A1A1A" : "#656565"}
+              fontWeight={500}
+              mb="0px"
+              textTransform={"capitalize"}
+            >
+              Color: {cart.color}
+            </Typography>
+
+            <Typography
+              fontSize={{ xs: 14, sm: isCheckout ? 14 : 16 }}
+              fontFamily={"Montserrat"}
+              color={isCheckout ? "#1A1A1A" : "#656565"}
+              fontWeight={500}
+              mb="0px"
+              textTransform={"capitalize"}
+            >
+              Size: {cart.size}
+            </Typography>
+          </Activity>
+          <Activity mode={mobile ? "hidden" : "visible"}>
+            {" "}
+            <Typography
+              fontSize={{ xs: 12, sm: 14 }}
+              fontFamily={"Montserrat"}
+              color={isCheckout ? "#1A1A1A" : "#656565"}
+              fontWeight={500}
+              mb="0px"
+            >
+              Quantity:{" "}
+              <Activity mode={isCheckout || isConfirmed ? "visible" : "hidden"}>
+                <Typography
+                  fontSize={{ xs: 12, sm: isCheckout ? 14 : 16 }}
+                  fontFamily={"Montserrat"}
+                  color="#1A1A1A"
+                  fontWeight={500}
+                  display={"inline"}
+                >
+                  {cart.quantity}
+                </Typography>
+              </Activity>
+              <Activity mode={isCheckout || isConfirmed ? "hidden" : "visible"}>
+                <Box display="inline-flex" alignItems={"center"}>
+                  <Box
+                    width="34px"
+                    height="32px"
+                    border="1px solid #E5E7EB"
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    onClick={() => updateCart(cart.quantity - 1)}
+                    sx={{
+                      opacity: cart.quantity === 1 ? 0.5 : 1,
+                      pointerEvents: cart.quantity === 1 ? "none" : "all",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={400}
+                    >
+                      -
+                    </Typography>
+                  </Box>
+                  <Box
+                    width="40px"
+                    height="32px"
+                    border="1px solid #E5E7EB"
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                      fontWeight={500}
+                    >
+                      {cart.quantity}
+                    </Typography>
+                  </Box>
+                  <Box
+                    width="34px"
+                    height="32px"
+                    border="1px solid #E5E7EB"
+                    display="flex"
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    onClick={() => updateCart(cart.quantity + 1)}
+                    sx={{ cursor: "pointer" }}
+                  >
+                    <Typography
+                      fontSize={16}
+                      fontFamily={"Montserrat"}
+                      color="#1A1A1A"
+                    >
+                      +
+                    </Typography>
+                  </Box>
+                </Box>
+              </Activity>
+            </Typography>
+          </Activity>
+        </Box>
+        <Activity mode={isCheckout || mobile ? "hidden" : "visible"}>
+          <Box
+            display="flex"
+            alignItems={"flex-end"}
+            flexDirection={"column"}
+            gap="18px"
+          >
+            <Typography
+              fontSize={{ xs: 14, sm: 18 }}
+              fontFamily={"Montserrat"}
+              color="#1A1A1A"
+              fontWeight={700}
+            >
+              {formatPrice(Number(cart.retail_price) * cart.quantity)}
+            </Typography>
+
+            <Activity mode={isConfirmed || mobile ? "hidden" : "visible"}>
+              <Image
+                src={icons.redBin}
+                alt="delete"
+                style={{ objectFit: "contain", cursor: "pointer" }}
+                width="14"
+                height="20"
+                onClick={() => removeFromCart(cart.id)}
+              />
+            </Activity>
+          </Box>
+        </Activity>
+      </Box>
+      <Activity mode={mobile ? "visible" : "hidden"}>
+        <Box
+          display="flex"
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <Activity mode={isConfirmed || isCheckout ? "hidden" : "visible"}>
+            <Image
+              src={icons.redBin}
+              alt="delete"
+              style={{ objectFit: "contain", cursor: "pointer" }}
+              width="14"
+              height="20"
+              onClick={() => removeFromCart(cart.id)}
+            />
           </Activity>
           <Activity mode={isCheckout || isConfirmed ? "hidden" : "visible"}>
             <Box display="inline-flex" alignItems={"center"}>
@@ -1197,7 +1349,7 @@ export const CartItem = ({
                 sx={{
                   opacity: cart.quantity === 1 ? 0.5 : 1,
                   pointerEvents: cart.quantity === 1 ? "none" : "all",
-                  cursor: 'pointer'
+                  cursor: "pointer",
                 }}
               >
                 <Typography
@@ -1234,7 +1386,7 @@ export const CartItem = ({
                 alignItems={"center"}
                 justifyContent={"center"}
                 onClick={() => updateCart(cart.quantity + 1)}
-                sx={{cursor: 'pointer'}}
+                sx={{ cursor: "pointer" }}
               >
                 <Typography
                   fontSize={16}
@@ -1245,34 +1397,6 @@ export const CartItem = ({
                 </Typography>
               </Box>
             </Box>
-          </Activity>
-        </Typography>
-      </Box>
-      <Activity mode={isCheckout ? "hidden" : "visible"}>
-        <Box
-          display="flex"
-          alignItems={"flex-end"}
-          flexDirection={"column"}
-          gap="18px"
-        >
-          <Typography
-            fontSize={18}
-            fontFamily={"Montserrat"}
-            color="#1A1A1A"
-            fontWeight={700}
-          >
-            {formatPrice(Number(cart.retail_price) * cart.quantity)}
-          </Typography>
-
-          <Activity mode={isConfirmed ? "hidden" : "visible"}>
-            <Image
-              src={icons.redBin}
-              alt="delete"
-              style={{ objectFit: "contain", cursor: 'pointer' }}
-              width="14"
-              height="20"
-              onClick={() => removeFromCart(cart.id)}
-            />
           </Activity>
         </Box>
       </Activity>

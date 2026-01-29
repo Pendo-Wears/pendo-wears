@@ -51,7 +51,7 @@ const AboutUs = () => {
     <>
       {" "}
       <Box
-        px={{ xs: "16px", sm: "20px", md: "50px" }}
+        px={{ xs: 0, sm: "20px", md: "50px" }}
         pb="45px"
         sx={{ pointerEvents: lock ? "none" : "all" }}
       >
@@ -66,30 +66,32 @@ const AboutUs = () => {
           }}
           mb="60px"
         ></Box>
-        <Typography
-          color="#1A1A1A"
-          fontSize={32}
-          fontWeight={500}
-          fontFamily={"Montserrat"}
-          textAlign={"center"}
-          mx="auto"
-        >
-          Redefining African Luxury.
-        </Typography>
-        <Typography
-          my="30px"
-          color="#000000CC"
-          fontSize={16}
-          fontFamily={"Montserrat"}
-          textAlign={"center"}
-          maxWidth={"1097px"}
-          mx="auto"
-        >
-          Pendo is a luxury African-inspired streetwear brand that celebrates
-          heritage through modern design. Each piece is crafted to reflect the
-          strength, pride, and beauty of African culture — reimagined for
-          today's generation.
-        </Typography>
+        <Box px={'16px'}>
+          <Typography
+            color="#1A1A1A"
+            fontSize={32}
+            fontWeight={500}
+            fontFamily={"Montserrat"}
+            textAlign={"center"}
+            mx="auto"
+          >
+            Redefining African Luxury.
+          </Typography>
+          <Typography
+            my="30px"
+            color="#000000CC"
+            fontSize={16}
+            fontFamily={"Montserrat"}
+            textAlign={"center"}
+            maxWidth={"1097px"}
+            mx="auto"
+          >
+            Pendo is a luxury African-inspired streetwear brand that celebrates
+            heritage through modern design. Each piece is crafted to reflect the
+            strength, pride, and beauty of African culture — reimagined for
+            today's generation.
+          </Typography>
+        </Box>
         <Grid
           container
           width="100%"

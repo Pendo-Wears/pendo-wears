@@ -1,9 +1,13 @@
+"use client"
+
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
 import React from "react";
 import { icons } from "../assets/icons/icons";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
+  const router = useRouter();
   return (
     <Box bgcolor="#000" py="74px">
       <Box
@@ -11,7 +15,14 @@ const Footer = () => {
         display="flex"
         alignItems={"center"}
       >
-        <Box flex={1} display="flex" alignItems={"center"} gap="40px">
+        {/* <Box
+          flex={1}
+          display="flex"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", md: "row" }}
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"
@@ -48,13 +59,13 @@ const Footer = () => {
           >
             Accessories
           </Typography>
-        </Box>
-        <Box display="flex" alignItems={"center"} gap="16px">
+        </Box> */}
+        {/* <Box display="flex" alignItems={"center"} gap="16px">
           <Image src={icons.instagram} alt="instagram" width="17" height="28" />
           <Image src={icons.twitter} alt="X" width="20" height="28" />
           <Image src={icons.facebook} alt="facebook" width="20" height="28" />
           <Image src={icons.tiktok} alt="tiktok" width="17" height="28" />
-        </Box>
+        </Box> */}
       </Box>
       <Box
         display={"flex"}
@@ -72,7 +83,7 @@ const Footer = () => {
           <Typography
             key={index}
             color="#D0950F"
-            fontSize={200}
+            fontSize={{ xs: 80, md: 200 }}
             fontFamily="Cormorant Garamond"
             letterSpacing={"10%"}
             fontWeight={700}
@@ -86,11 +97,20 @@ const Footer = () => {
       <Box
         px={{ xs: "16px", sm: "20px", md: "68px" }}
         display="flex"
-        alignItems={"center"}
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        flexDirection={{ xs: "column", md: "row" }}
         mb="30px"
+        gap={{ xs: "16px", sm: 0 }}
       >
-        <Box flex={1} display="flex" alignItems={"center"} gap="40px">
-          <Typography
+        <Box
+          flex={1}
+          display="flex"
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          flexWrap={"wrap"}
+        >
+          {/* <Typography
             fontSize={16}
             color="#9CA3AF"
             fontWeight={500}
@@ -125,24 +145,45 @@ const Footer = () => {
             textTransform={"uppercase"}
           >
             Affiliate Marketing
-          </Typography>
+          </Typography> */}
+          {/* <Typography
+            fontSize={16}
+            color="#9CA3AF"
+            fontWeight={500}
+            fontFamily={"Montserrat"}
+            textTransform={"uppercase"}
+            onClick={() => router.push("/refund-policy")}
+            sx={{ cursor: "pointer" }}
+          >
+            Returns
+          </Typography> */}
+        </Box>
+        <Box
+          display="flex"
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          flexDirection={{ xs: "column", sm: "row" }}
+          gap={{ xs: "16px", sm: "20px", md: "40px" }}
+          flexWrap={"wrap"}
+        >
           <Typography
             fontSize={16}
             color="#9CA3AF"
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            onClick={() => router.push("/refund-policy")}
+            sx={{ cursor: "pointer" }}
           >
             Returns
           </Typography>
-        </Box>
-        <Box display="flex" alignItems={"center"} gap="40px">
           <Typography
             fontSize={16}
             color="#9CA3AF"
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            onClick={() => router.push("/privacy-policy")}
+            sx={{ cursor: "pointer" }}
           >
             Privacy Policy
           </Typography>
@@ -152,6 +193,8 @@ const Footer = () => {
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            sx={{ cursor: "pointer" }}
+            onClick={() => router.push("/terms-of-use")}
           >
             Terms of service
           </Typography>

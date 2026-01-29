@@ -15,14 +15,14 @@ const RecentOrders = () => {
 
   const getUserOrders = async () => {
     const raw =
-      typeof window !== "undefined" ? localStorage.getItem("user") ?? "" : "";
+      typeof window !== "undefined" ? (localStorage.getItem("user") ?? "") : "";
     const thisUser = JSON.parse(raw);
     setLoading(true);
     try {
       const result: any = await productsEndpoint.getOrders();
       if (result.success) {
         const userOrders = result.data.filter(
-          (order: any) => order.recipient.email === thisUser?.email
+          (order: any) => order.recipient.email === thisUser?.email,
         );
         setOrders(userOrders);
       }
@@ -38,7 +38,12 @@ const RecentOrders = () => {
   }, []);
 
   return (
-    <Box width="72%" bgcolor="#f5f5f5" borderRadius={"16px"} p="32px">
+    <Box
+      width={{ xs: "100%", md: "72%" }}
+      bgcolor="#f5f5f5"
+      borderRadius={"16px"}
+      p={{ xs: "16px", sm: "20px", md: "32px" }}
+    >
       <Box
         display="flex"
         alignItems={"center"}
@@ -47,7 +52,7 @@ const RecentOrders = () => {
       >
         <Typography
           color={"#2D3436"}
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontWeight={700}
           fontFamily={"Montserrat"}
         >
@@ -55,7 +60,7 @@ const RecentOrders = () => {
         </Typography>
         <Typography
           color={"#D0950F"}
-          fontSize={16}
+          fontSize={{xs: 14, sm: 16}}
           fontWeight={500}
           fontFamily={"Montserrat"}
           onClick={() => router.push("/profile/orders")}

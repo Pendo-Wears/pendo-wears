@@ -16,15 +16,29 @@ const page = () => {
       width="100%"
       maxWidth="1296px"
       alignItems={"center"}
-     
+      px={{ xs: "16px", sm: "20px", md: "50px" }}
       mx="auto"
-      pb='70px'
+      pb="70px"
     >
-      <Box display={"flex"} gap={4} width="100%" mx="auto">
+      <Box
+        display={"flex"}
+        flexWrap={{ xs: "wrap", md: "nowrap" }}
+        justifyContent={{ xs: "center", md: undefined }}
+        gap={4}
+        width="100%"
+        mx="auto"
+      >
         <UserTag />
         <PersonalInformation />
       </Box>
-      <Box display={"flex"} gap={4} width="100%" mx="auto">
+      <Box
+        display={"flex"}
+        flexWrap={{ xs: "wrap", md: "nowrap" }}
+        justifyContent={{ xs: "center", md: undefined }}
+        gap={4}
+        width="100%"
+        mx="auto"
+      >
         <SavedAddresses />
         <RecentOrders />
       </Box>

@@ -1,6 +1,12 @@
 "use client";
 
-import { Box, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import MultilinkUI from "../components/MultilinkUI";
@@ -11,9 +17,13 @@ import { productsEndpoint } from "../lib/endpoints";
 import { useAuth } from "../context/AuthContext";
 import { AxiosError } from "axios";
 import RequireAuth from "../components/RequireAuth";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
   const { fireAlert } = useAuth();
+  const theme = useTheme();
+  const mobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const tablet = useMediaQuery(theme.breakpoints.down("md"));
   const [categories, setCategories] = useState<
     {
       name: string;
@@ -46,24 +56,24 @@ const HomePage = () => {
             (x) =>
               x.slug !== "noir-gold-collection" &&
               x.slug !== "rhythm-thread-collection" &&
-              x.slug !== "heritage-alchemy-collection"
+              x.slug !== "heritage-alchemy-collection",
           )
           .map((category) => ({
             name: category.name,
             to: `/collection/${category.slug}?id=${category.id}`,
           }))}
       />
-      <Hero />
-      <Collections />
-      <Products />
-      <Shop />
-      <OurStory />
-      <Tribe />
+      <Hero mobile={mobile} />
+      <Collections mobile={mobile} />
+      <Products mobile={mobile} />
+      <Shop mobile={mobile} />
+      <OurStory mobile={mobile} tablet={tablet} />
+      <Tribe mobile={mobile} />
     </Box>
   );
 };
 
-const Hero = () => {
+const Hero = ({ mobile }: { mobile: boolean }) => {
   return (
     <Box position={"relative"} mt="30px">
       <Box
@@ -91,20 +101,22 @@ const Hero = () => {
           zIndex={5}
         >
           <Typography
-            fontSize={54}
+            fontSize={{ xs: 32, sm: 54 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
             color="#fff"
             lineHeight={"100%"}
+            textAlign={"center"}
             zIndex={5}
           >
             HERITAGE ALCHEMY COLLECTION
           </Typography>
           <Typography
             mt="8px"
-            fontSize={24}
+            fontSize={{ xs: 16, sm: 24 }}
             fontWeight={500}
             fontFamily={"Montserrat"}
+            textAlign={"center"}
             zIndex={5}
             color="#fff"
           >
@@ -138,7 +150,8 @@ const Hero = () => {
   );
 };
 
-const Collections = () => {
+const Collections = ({ mobile }: { mobile: boolean }) => {
+  const router = useRouter();
   return (
     <Box pt="45px" px={{ xs: "16px", sm: "20px", md: "50px" }}>
       <Box
@@ -151,20 +164,26 @@ const Collections = () => {
         <Box
           maxWidth="650px"
           width="100%"
-          height="754px"
+          height={{ xs: "350px", sm: "754px" }}
           borderRadius={"10px"}
           sx={{
             backgroundImage: `url(${images.h6.src})`,
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
+            cursor: "pointer",
           }}
           position={"relative"}
           px="43px"
-          pb="80px"
+          pb={{ xs: "40px", sm: "80px" }}
           display="flex"
           alignItems={"flex-end"}
           overflow={"hidden"}
+          onClick={() =>
+            router.push(
+              "/shop?type=Noir Gold Collection&category=noir-gold-collection",
+            )
+          }
         >
           <Box
             position={"absolute"}
@@ -184,7 +203,7 @@ const Collections = () => {
             width="100%"
           >
             <Typography
-              fontSize={37}
+              fontSize={{ xs: 24, sm: 37 }}
               fontWeight={700}
               fontFamily={"Montserrat"}
               color="#fff"
@@ -204,20 +223,26 @@ const Collections = () => {
         <Box
           maxWidth="650px"
           width="100%"
-          height="754px"
+          height={{ xs: "350px", sm: "754px" }}
           borderRadius={"10px"}
           sx={{
             backgroundImage: `url(${images.h3.src})`,
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
+            cursor: "pointer",
           }}
           position={"relative"}
           px="43px"
-          pb="80px"
+          pb={{ xs: "40px", sm: "80px" }}
           display="flex"
           alignItems={"flex-end"}
           overflow={"hidden"}
+          onClick={() =>
+            router.push(
+              "/shop?type=Rhythm Thread Collection&category=rhythm-thread-collection",
+            )
+          }
         >
           <Box
             position={"absolute"}
@@ -237,7 +262,7 @@ const Collections = () => {
             width="100%"
           >
             <Typography
-              fontSize={37}
+              fontSize={{ xs: 24, sm: 37 }}
               fontWeight={700}
               fontFamily={"Montserrat"}
               color="#fff"
@@ -267,7 +292,7 @@ const Collections = () => {
         mx="auto"
       >
         <Typography
-          fontSize={32}
+          fontSize={{ xs: 24, sm: 32 }}
           fontFamily={"Montserrat"}
           color="#2D2D2D"
           lineHeight={"100%"}
@@ -278,12 +303,20 @@ const Collections = () => {
         </Typography>
         <Typography
           mt="10px"
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontFamily={"Montserrat"}
           color="#2D2D2D"
           lineHeight={"100%"}
           p="10px"
-          borderBottom={"2px solid #2D2D2D"}
+          sx={{
+            cursor: "pointer",
+            borderBottom: "2px solid transparent",
+            transition: "all .5 ease",
+            "&:hover": {
+              borderBottom: "2px solid #2D2D2D",
+            },
+          }}
+          onClick={() => router.push("/shop")}
         >
           Discover all our collections
         </Typography>
@@ -292,11 +325,12 @@ const Collections = () => {
   );
 };
 
-const Products = () => {
+const Products = ({ mobile }: { mobile: boolean }) => {
+  const router = useRouter()
   return (
     <Box bgcolor="#000" pb="112px">
       <Typography
-        fontSize={150}
+        fontSize={{ xs: 37.5, sm: 75, md: 150 }}
         fontFamily={"Cormorant Garamond"}
         fontWeight={600}
         color="#D0950F"
@@ -341,6 +375,10 @@ const Products = () => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/hoodie?id=54")}
         >
           See More
         </Typography>
@@ -352,7 +390,7 @@ const Products = () => {
         sx={{
           // backgroundColor: "#F3EFE9",
           backgroundImage: `url(${images.h4.src})`,
-          // backgroundPosition: "center",
+          backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           display: "flex",
@@ -380,6 +418,10 @@ const Products = () => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/tee?id=55")}
         >
           See More
         </Typography>
@@ -418,6 +460,10 @@ const Products = () => {
           lineHeight={"140%"}
           p="15px"
           borderBottom={"1px solid #fff"}
+          sx={{
+            cursor: "pointer",
+          }}
+          onClick={() => router.push("/collection/joggers?id=58")}
         >
           See More
         </Typography>
@@ -426,7 +472,7 @@ const Products = () => {
   );
 };
 
-const Shop = () => {
+const Shop = ({ mobile }: { mobile: boolean }) => {
   return (
     <Box py="100px" px={{ xs: "16px", sm: "20px", md: "50px" }}>
       <Box
@@ -448,29 +494,30 @@ const Shop = () => {
           height="134"
           style={{
             position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            left: "72px",
+            top: mobile ? "10px" : "50%",
+            transform: mobile ? undefined : "translateY(-50%)",
+            left: mobile ? "10px" : "72px",
           }}
         />
 
         <Image
           src={images.s2}
           alt="shirt"
-          width="242"
-          height="261"
+          width={mobile ? "128" : "242"}
+          height={mobile ? "134" : "261"}
           style={{
             position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            left: "162px",
+            top: mobile ? "10px" : "50%",
+            transform: mobile ? undefined : "translateY(-50%)",
+            right: mobile ? "10px" : undefined,
+            left: mobile ? undefined : "162px",
           }}
         />
         <Image
           src={images.s3}
           alt="shirt"
-          width="546"
-          height="474"
+          width={mobile ? "128" : "546"}
+          height={mobile ? "134" : "474"}
           style={{
             position: "absolute",
             top: "50%",
@@ -481,25 +528,28 @@ const Shop = () => {
         <Image
           src={images.s4}
           alt="shirt"
-          width="234"
-          height="236"
+          width={mobile ? "128" : "234"}
+          height={mobile ? "134" : "236"}
           style={{
             position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            right: "183px",
+            top: mobile ? undefined : "50%",
+            bottom: mobile ? "10px" : undefined,
+            transform: mobile ? undefined : "translateY(-50%)",
+            right: mobile ? undefined : "183px",
+            left: mobile ? "10px" : undefined,
           }}
         />
         <Image
           src={images.c1}
           alt="shirt"
-          width="133"
-          height="129"
+          width={mobile ? "128" : "133"}
+          height={mobile ? "134" : "129"}
           style={{
             position: "absolute",
-            top: "50%",
-            transform: "translateY(-50%)",
-            right: "44px",
+            top: mobile ? undefined : "50%",
+            bottom: mobile ? "10px" : undefined,
+            transform: mobile ? undefined : "translateY(-50%)",
+            right: mobile ? "10px" : "44px",
           }}
         />
         <Box
@@ -509,20 +559,22 @@ const Shop = () => {
           zIndex={5}
         >
           <Typography
-            fontSize={54}
+            fontSize={{ xs: 32, sm: 54 }}
             fontWeight={700}
             fontFamily={"Montserrat"}
             color="#fff"
             lineHeight={"100%"}
+            textAlign={"center"}
             zIndex={5}
           >
             FEEL THE VIBES
           </Typography>
           <Typography
             mt="8px"
-            fontSize={24}
+            fontSize={{ xs: 18, sm: 24 }}
             fontWeight={500}
             fontFamily={"Montserrat"}
+            textAlign={"center"}
             zIndex={5}
             color="#fff"
           >
@@ -556,25 +608,27 @@ const Shop = () => {
   );
 };
 
-const OurStory = () => {
+const OurStory = ({ mobile, tablet }: { mobile: boolean; tablet: boolean }) => {
   return (
     <Box
       px={{ xs: "16px", sm: "20px", md: "50px" }}
       pb="169px"
       display={"flex"}
-      justifyContent={"space-between"}
-      flexWrap={"wrap"}
+      justifyContent={{ xs: "center", md: "space-between" }}
+      flexWrap={{ xs: "wrap", md: "nowrap" }}
       alignItems={"center"}
+      gap={{ xs: "105px", md: "16px" }}
     >
       <Box
-        width="575px"
-        height="698px"
+        width={{ xs: "100%", sm: "70%", md: "50%" }}
+        height={{ xs: "fit-content", md: "698px" }}
         display={"flex"}
         flexDirection={"column"}
         justifyContent={"space-between"}
+        gap={{ xs: 2, md: 0 }}
       >
         <Typography
-          fontSize={150}
+          fontSize={{ xs: 37.5, sm: 75, md: 150 }}
           fontWeight={700}
           fontFamily={"Montserrat"}
           color="#E3E3DA"
@@ -582,7 +636,11 @@ const OurStory = () => {
         >
           OUR STORY
         </Typography>
-        <Typography fontSize={24} fontFamily={"Montserrat"} color="#656565">
+        <Typography
+          fontSize={{ xs: 18, sm: 24 }}
+          fontFamily={"Montserrat"}
+          color="#656565"
+        >
           Every thread tells a story. Every pattern carries the wisdom of our
           ancestors. At Pendo, we don't just create clothing — we craft cultural
           narratives that bridge the gap between ancient African artistry and
@@ -611,9 +669,11 @@ const OurStory = () => {
         </Link>
       </Box>
       <Box
-        width="642px"
-        height="698px"
+        // width={{ xs: "90%", sm: "642px" }}
+        // height={{ xs: "500px", sm: "698px" }}
+        width={{ xs: "100%", sm: "70%", md: "50%" }}
         display={"flex"}
+        alignSelf={"flex-end"}
         flexDirection={"column"}
         justifyContent={"flex-end"}
         alignItems={"flex-end"}
@@ -622,25 +682,28 @@ const OurStory = () => {
         <Image
           src={images.h5}
           alt="shirt"
-          width="456"
-          height="684"
+          width={tablet ? "270" : "456"}
+          height={tablet ? "400" : "684"}
           style={{
             position: "absolute",
-            right: "93px",
+            right: mobile ? "93px" : "23px",
           }}
         />
         <Box
-          width="615px"
-          height="510px"
+          // width={{ xs: "100%", sm: "615px" }}
+          width="100%"
+          height={{ xs: "270px", md: "510px" }}
           bgcolor="#E3E0D6"
-          sx={{ borderTopLeftRadius: "200px" }}
+          sx={{
+            borderTopLeftRadius: "200px",
+          }}
         ></Box>
       </Box>
     </Box>
   );
 };
 
-const Tribe = () => {
+const Tribe = ({ mobile }: { mobile: boolean }) => {
   return (
     <Box
       width="100%"
@@ -668,7 +731,14 @@ const Tribe = () => {
       >
         Inspire me with all the latest Pendo news
       </Typography>
-      <Box display="flex" alignItems={"center"} gap="16px">
+      <Box
+        display="flex"
+        alignItems={"center"}
+        gap="16px"
+        justifyContent={'center'}
+        width="100%"
+        px="16px"
+      >
         <TextField
           fullWidth
           variant="outlined"
@@ -679,7 +749,7 @@ const Tribe = () => {
           sx={{
             bgcolor: "transparent",
             borderRadius: "6px",
-            width: "370px",
+            width: { xs: "69%", sm: "370px" },
             height: "60px",
             "& .MuiOutlinedInput-root": {
               "& fieldset": {
@@ -705,7 +775,7 @@ const Tribe = () => {
           }}
         />
         <Box
-          width="180px"
+          width={{ xs: "30%", sm: "180px" }}
           height="62px"
           bgcolor="#fff"
           borderRadius={"5px"}

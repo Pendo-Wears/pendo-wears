@@ -38,7 +38,8 @@ const Checkout = () => {
       const response = await payWithFlutterwave();
       console.log(response, "RESPONSEEEEE");
     } catch (err: any) {
-      alert(err.message || "Payment failed");
+      console.log(err)
+      fireAlert(err.response.data.error || err.message || "Payment failed", "error");
     } finally {
       setLoading(false);
     }
@@ -110,6 +111,14 @@ const Checkout = () => {
     // const userCountry = await getCountryData();
 
     if (!userData.id) return;
+    if (!amount) {
+      fireAlert("Cannot perform transaction with 0 amount", "error");
+      return;
+    }
+    if (!cardNumber || !cvc || !expiryMonth || !expiryYear) {
+      fireAlert("Please fill out card details completely", "error");
+      return;
+    }
 
     const response = await axios.post("/api/flutterwave/pay", {
       tx_ref: `${crypto.randomUUID()}`,
@@ -175,12 +184,12 @@ const Checkout = () => {
 
     const totalPrice = cart.reduce(
       (sum: number, item: any) => sum + item.retail_price * item.quantity,
-      0
+      0,
     );
 
     const totalQty = cart.reduce(
       (sum: number, item: any) => sum + item.quantity,
-      0
+      0,
     );
 
     setTotal(totalPrice);
@@ -202,7 +211,7 @@ const Checkout = () => {
     } catch (err: any) {
       console.error(
         "OTP Verification error:",
-        err.response?.data || err.message
+        err.response?.data || err.message,
       );
       fireAlert(err.response?.data || err.message, "error");
     }
@@ -233,17 +242,18 @@ const Checkout = () => {
         <Box
           mb="45px"
           mt="40px"
-          px={{ xs: "16px", sm: "20px", md: "50px" }}
+          px={{ xs: 0, sm: "20px", md: "50px" }}
           display="flex"
           alignItems={"flex-start"}
-          gap="65px"
+          flexWrap={"wrap"}
+          gap={{ xs: "30px", sm: "65px" }}
         >
           <Box
             flex={1}
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
-            py="30px"
-            px="30px"
+            py={{ xs: "25px", sm: "30px" }}
+            px={{ xs: "16px", sm: "30px" }}
             border="1px solid #00000010"
           >
             {/* {country?.region === "Africa" ? (
@@ -256,7 +266,7 @@ const Checkout = () => {
               <StripeWrapper amount={amount} />
             )} */}
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               color="#000"
               fontWeight={600}
@@ -345,7 +355,7 @@ const Checkout = () => {
                     InputProps={{
                       endAdornment: (
                         <Box
-                          display="flex"
+                          display={{xs: 'none', sm: "flex"}}
                           alignItems={"center"}
                           gap="12px"
                           position="relative"
@@ -590,14 +600,19 @@ const Checkout = () => {
                 </Box>
               </Box>
               <Box
-                width="50%"
+                width="100%"
+                maxWidth="300px"
                 height="57px"
                 bgcolor="#000"
                 borderRadius={"100px"}
                 display="flex"
                 alignItems={"center"}
                 justifyContent={"center"}
-                sx={{ cursor: "pointer" }}
+                sx={{
+                  cursor: "pointer",
+                  pointerEvents: loading ? "none" : "auto",
+                  opacity: loading ? 0.2 : 1,
+                }}
                 onClick={pay}
               >
                 <Typography
@@ -617,8 +632,8 @@ const Checkout = () => {
             width="403px"
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
-            py="30px"
-            px="18px"
+            py={{ xs: "25px", sm: "30px" }}
+            px={{ xs: "16px", sm: "18px" }}
             border="1px solid #00000010"
           >
             <Box
@@ -630,7 +645,7 @@ const Checkout = () => {
               justifyContent={"space-between"}
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#000"
                 fontWeight={600}
@@ -653,15 +668,15 @@ const Checkout = () => {
               ))}
             </Box>
             <Box
-              my="37px"
+              my={{ xs: "16px", sm: "37px" }}
               borderRadius={"10px"}
               // bgcolor="#E6E6E6"
               width="100%"
               // py="26px"
-              // px="30px"
+              // px={{xs: '16px', sm: "30px"}}
             >
               <Typography
-                fontSize={24}
+                fontSize={{ xs: 18, sm: 24 }}
                 fontFamily={"Montserrat"}
                 color="#1A1A1A"
                 fontWeight={500}
@@ -676,7 +691,7 @@ const Checkout = () => {
                 mb="18px"
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -684,7 +699,7 @@ const Checkout = () => {
                   Subtotal
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -699,7 +714,7 @@ const Checkout = () => {
                 mb="18px"
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -707,7 +722,7 @@ const Checkout = () => {
                   Shipping
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#16A34A"
                   fontWeight={700}
@@ -722,7 +737,7 @@ const Checkout = () => {
                 mb="18px"
               >
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={500}
@@ -730,7 +745,7 @@ const Checkout = () => {
                   Tax
                 </Typography>
                 <Typography
-                  fontSize={16}
+                  fontSize={{ xs: 14, sm: 16 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -743,11 +758,11 @@ const Checkout = () => {
                 alignItems={"center"}
                 justifyContent={"space-between"}
                 mb="20px"
-                pb="37px"
+                pb={{ xs: "16px", sm: "37px" }}
                 borderBottom={"1px solid #00000010"}
               >
                 <Typography
-                  fontSize={24}
+                  fontSize={{ xs: 18, sm: 24 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -755,7 +770,7 @@ const Checkout = () => {
                   Total
                 </Typography>
                 <Typography
-                  fontSize={20}
+                  fontSize={{ xs: 18, sm: 20 }}
                   fontFamily={"Montserrat"}
                   color="#1A1A1A"
                   fontWeight={700}
@@ -763,9 +778,14 @@ const Checkout = () => {
                   {formatPrice(Number(total + tax + shippingFee))}
                 </Typography>
               </Box>
-              <Box display="flex" flexDirection={"column"} px="18px" mb="18px">
+              <Box
+                display="flex"
+                flexDirection={"column"}
+                px={{ xs: 0, sm: "18px" }}
+                mb={{ xs: 0, sm: "18px" }}
+              >
                 <Typography
-                  fontSize={20}
+                  fontSize={{ xs: 18, sm: 20 }}
                   fontFamily={"Montserrat"}
                   color="#000"
                   fontWeight={500}

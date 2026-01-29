@@ -76,7 +76,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
       const result: any = await productsEndpoint.getWooProducts(
         param.toString().includes("category")
           ? param.toString()
-          : `category=${param.get("id")}`
+          : `category=${param.get("id")}`,
       );
       if (result.success) {
         setProducts(result.data);
@@ -129,7 +129,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
   const getCategory = async () => {
     try {
       const result: any = await productsEndpoint.getCategory(
-        searchParams.get("id") || ""
+        searchParams.get("id") || "",
       );
       if (result.status === 200) {
         setCategory(result.data);
@@ -143,7 +143,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
   const getProducts = async () => {
     try {
       const result: any = await productsEndpoint.getWooProducts(
-        `category=${param.get("id")}`
+        `category=${param.get("id")}`,
       );
       if (result.success) {
         setProducts(result.data);
@@ -166,7 +166,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
 
   const imgUrl = category?.image?.src?.replace(
     new URL(category?.image?.src).origin,
-    storeUrl!
+    storeUrl!,
   );
 
   console.log(imgUrl, "ASDFGHJKL");
@@ -178,10 +178,12 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         justifyContent={"space-between"}
         width="100%"
         mb="30px"
+        flexWrap={{ xs: "wrap", sm: "nowrap" }}
         px={{ xs: "16px", sm: "20px", md: "50px" }}
+        gap={{ xs: 2 }}
       >
         <Typography
-          fontSize={24}
+          fontSize={{ xs: 18, sm: 24 }}
           fontFamily={"Montserrat"}
           width="fit-content"
           sx={{ whiteSpace: "noWrap" }}
@@ -194,7 +196,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               (x) =>
                 x.slug !== "noir-gold-collection" &&
                 x.slug !== "rhythm-thread-collection" &&
-                x.slug !== "heritage-alchemy-collection"
+                x.slug !== "heritage-alchemy-collection",
             )
             .map((category) => ({
               name: category.name,
@@ -204,6 +206,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
         <Box
           display="flex"
           alignItems={"center"}
+          ml="auto"
           justifyContent={"space-around"}
           minWidth="114px"
           minHeight="45px"
@@ -305,7 +308,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -331,7 +334,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -355,7 +358,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -385,7 +388,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -404,7 +407,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -423,7 +426,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -475,7 +478,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
             mb="12px"
           >
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -485,7 +488,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
               Price Range
             </Typography>
             <Typography
-              fontSize={16}
+              fontSize={{ xs: 14, sm: 16 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -587,7 +590,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           <Box
             mt="30px"
             width="150px"
-            height="57px"
+            height={{ xs: "48px", sm: "57px" }}
             border={"1px solid #00000080"}
             borderRadius={"100px"}
             display="flex"
@@ -610,7 +613,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           <Box
             mt="30px"
             width="100%"
-            height="57px"
+            height={{ xs: "48px", sm: "57px" }}
             bgcolor="#000"
             borderRadius={"100px"}
             display="flex"

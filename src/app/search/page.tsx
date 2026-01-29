@@ -1,7 +1,14 @@
 "use client";
 
 import { icons } from "@/src/assets/icons/icons";
-import { Box, Grid, Radio, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  Radio,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
@@ -26,6 +33,7 @@ const Search = () => {
     attribute: "",
     price: ["", ""],
   });
+  const [loading, setLoading] = useState(false);
 
   const handleMenuFilter = (event: React.MouseEvent<HTMLElement>) => {
     getCollectionData();
@@ -56,9 +64,10 @@ const Search = () => {
 
       router.replace(`/search?${params.toString()}`);
       const result: any = await productsEndpoint.getWooProducts(
-        params.toString()
+        params.toString(),
       );
-      if (result.status === 200) {
+      console.log(result)
+      if (result.success) {
         setSearchResults(result.data);
       }
     } catch (e: any) {
@@ -101,6 +110,7 @@ const Search = () => {
   };
 
   const getProducts = async (query: any) => {
+    setLoading(true);
     try {
       const result: any = await productsEndpoint.searchProducts(query);
       if (result.status === 200) {
@@ -108,6 +118,8 @@ const Search = () => {
       }
     } catch (e: any) {
       fireAlert(e.message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,6 +146,7 @@ const Search = () => {
       });
     } else getProducts(params.toString());
   }, [search, filterOptions]);
+
   return (
     <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="139px">
       <Box width="100%" display="flex" justifyContent={"center"}>
@@ -152,10 +165,10 @@ const Search = () => {
                   display="flex"
                   alignItems={"center"}
                   justifyContent={"center"}
-                  minWidth="45px"
-                  maxWidth="45px"
-                  minHeight="45px"
-                  maxHeight="45px"
+                  minWidth={{ xs: "36px", sm: "45px" }}
+                  maxWidth={{ xs: "36px", sm: "45px" }}
+                  minHeight={{ xs: "36px", sm: "45px" }}
+                  maxHeight={{ xs: "36px", sm: "45px" }}
                   borderRadius={"100%"}
                   border="1px solid #000"
                 >
@@ -194,8 +207,8 @@ const Search = () => {
             },
             input: {
               fontFamily: "Montserrat",
-              pl: "40px",
-              py: "23px",
+              pl: { xs: "25px", sm: "40px" },
+              py: { xs: "16px", sm: "23px" },
               pr: "12px",
               borderRadius: "100px",
               "&::placeholder": {
@@ -209,14 +222,30 @@ const Search = () => {
           }}
         />
       </Box>
-      <Activity mode={searchResults?.length > 0 ? "visible" : "hidden"}>
-        <Grid container spacing="30px">
+      <Activity mode={loading ? "visible" : "hidden"}>
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems={"center"}
+          justifyContent={"center"}
+          my="200px"
+        >
+          <CircularProgress size={24} sx={{ color: "#000" }} />
+        </Box>
+      </Activity>
+      <Activity
+        mode={searchResults?.length > 0 && !loading ? "visible" : "hidden"}
+      >
+        <Grid container spacing="30px" overflow={"hidden"}>
           {searchResults.map((product, index) => (
             <Product product={product} key={index} />
           ))}
         </Grid>
       </Activity>
-      <Activity mode={searchResults?.length === 0 ? "visible" : "hidden"}>
+      <Activity
+        mode={searchResults?.length === 0 && !loading ? "visible" : "hidden"}
+      >
         <Typography
           textAlign={"center"}
           style={{
@@ -238,15 +267,15 @@ const Search = () => {
           vertical: "bottom",
         }}
       >
-        <Box pb="30px" borderRadius={"20px"} px="48px">
+        <Box pb="30px" borderRadius={"20px"} px={{ xs: "16px", sm: "48px" }}>
           <Box
-            py="48px"
+            py={{ xs: "25px", sm: "48px" }}
             display="flex"
             alignItems={"center"}
             justifyContent={"space-between"}
           >
             <Typography
-              fontSize={20}
+              fontSize={{ xs: 18, sm: 20 }}
               fontFamily={"Montserrat"}
               width="fit-content"
               sx={{ whiteSpace: "noWrap" }}
@@ -281,7 +310,7 @@ const Search = () => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -300,11 +329,11 @@ const Search = () => {
               alignItems={"center"}
               justifyContent={"space-between"}
               onClick={() =>
-                setFilterOptions((prev) => ({ ...prev, category: "noir-gold" }))
+                setFilterOptions((prev) => ({ ...prev, category: "noir-gold-collection" }))
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -312,7 +341,7 @@ const Search = () => {
               >
                 Noir Gold
               </Typography>
-              <Radio checked={filterOptions.category === "noir-gold"} />
+              <Radio checked={filterOptions.category === "noir-gold-collection"} />
             </Box>
             <Box
               display="flex"
@@ -326,7 +355,7 @@ const Search = () => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -356,7 +385,7 @@ const Search = () => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -375,7 +404,7 @@ const Search = () => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -394,7 +423,7 @@ const Search = () => {
               }
             >
               <Typography
-                fontSize={18}
+                fontSize={{ xs: 14, sm: 18 }}
                 fontFamily={"Montserrat"}
                 width="fit-content"
                 sx={{ whiteSpace: "noWrap" }}
@@ -413,8 +442,18 @@ const Search = () => {
             pb="30px"
             borderBottom={"1px solid #00000010"}
             mb="19px"
+            overflow={"auto"}
           >
-            {["red", "white", "yellow", "orange", "grey"].map((color) => (
+            {[
+              "red",
+              "white",
+              "yellow",
+              "orange",
+              "grey",
+              "grey",
+              "grey",
+              "grey",
+            ].map((color) => (
               <Box
                 key={color}
                 border={`2px solid ${
@@ -446,7 +485,7 @@ const Search = () => {
             mb="12px"
           >
             <Typography
-              fontSize={24}
+              fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -456,7 +495,7 @@ const Search = () => {
               Price Range
             </Typography>
             <Typography
-              fontSize={16}
+              fontSize={{xs: 14, sm: 16}}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -558,7 +597,7 @@ const Search = () => {
           <Box
             mt="30px"
             width="150px"
-            height="57px"
+            height={{xs: '48px', sm: "57px"}}
             border={"1px solid #00000080"}
             borderRadius={"100px"}
             display="flex"

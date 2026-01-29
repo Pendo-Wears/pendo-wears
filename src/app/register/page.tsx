@@ -117,7 +117,8 @@ const Register = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      py={"90px"}
+      py={{xs: '45px', sm: "90px"}}
+      px={2}
     >
       <Box textAlign={"center"} mb="54px">
         {success && (
@@ -132,7 +133,7 @@ const Register = () => {
             <Typography
               textAlign={"left"}
               color="#fff"
-              fontSize={16}
+              fontSize={{xs: 14, sm: 16}}
               fontWeight={500}
               fontFamily={"Montserrat"}
             >
@@ -145,13 +146,13 @@ const Register = () => {
         )}
         <Typography
           color="#1A1A1A"
-          fontSize={56}
+          fontSize={{xs: 32, sm: 56}}
           fontWeight={900}
           fontFamily={"Montserrat"}
         >
           Register Now!
         </Typography>
-        <Typography fontSize={18} fontWeight={500} fontFamily={"Montserrat"}>
+        <Typography fontSize={{xs: 16, sm: 18}} fontWeight={500} fontFamily={"Montserrat"}>
           Create your account to have access to a personalized experience.
         </Typography>
       </Box>
@@ -161,11 +162,11 @@ const Register = () => {
         display="flex"
         flexDirection="column"
         gap="24px"
-        mb="76px"
+        mb={{ xs: 2, sm: "76px"}}
       >
         <Box>
           <Typography
-            fontSize={18}
+            fontSize={{xs: 16, sm: 18}}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -210,7 +211,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={18}
+            fontSize={{xs: 16, sm: 18}}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -255,7 +256,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={18}
+            fontSize={{xs: 16, sm: 18}}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -300,7 +301,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={18}
+            fontSize={{xs: 16, sm: 18}}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -358,7 +359,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={18}
+            fontSize={{xs: 16, sm: 18}}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -450,7 +451,7 @@ const Register = () => {
           </Box>
           <Box width="100%">
             <Typography
-              fontSize={18}
+              fontSize={{xs: 16, sm: 18}}
               color="#586166"
               fontWeight={500}
               fontFamily={"Montserrat"}
@@ -494,8 +495,8 @@ const Register = () => {
         </Box> */}
       </Box>
       <Typography
-        textAlign={"center"}
-        fontSize={20}
+        textAlign={{xs: 'left', sm: "center"}}
+        fontSize={{xs: 14, sm: 20}}
         color="#707070"
         fontFamily={"Montserrat"}
         mb="40px"
@@ -503,7 +504,7 @@ const Register = () => {
         By creating the account you accept the Terms and Conditions.
       </Typography>
       <Box
-        width="90%"
+        width={{xs: "100%", sm: "90%"}}
         maxWidth="852px"
         bgcolor="#000"
         height="52px"
@@ -531,7 +532,7 @@ const Register = () => {
       <Typography
         textAlign={"center"}
         fontWeight={500}
-        fontSize={18}
+        fontSize={{xs: 16, sm: 18}}
         color="#707070"
         fontFamily={"Montserrat"}
         mb="40px"
@@ -539,6 +540,7 @@ const Register = () => {
         Already have an Account?{" "}
         <Link href="/login" style={{ textDecoration: "none" }}>
           <Typography
+            fontSize={16}
             component={"span"}
             display="inline"
             fontWeight={700}
