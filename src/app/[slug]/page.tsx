@@ -1,6 +1,7 @@
 import { productsEndpoint } from "@/src/lib/endpoints";
 import ProductDetailsClient from "./ProductDetailsClient";
 import { WooProductDetails } from "@/src/lib/types";
+import { url } from "inspector";
 
 export async function generateMetadata({
   params,
@@ -9,8 +10,7 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const wooResult: any = await productsEndpoint.getWooProductDetails(slug);
-
-  console.log(wooResult, "QWERTYUIOP");
+  
   const product: WooProductDetails = wooResult.data;
 
   const stripHtml = (html = "") => html.replace(/<[^>]*>/g, "").trim();
@@ -34,6 +34,10 @@ export async function generateMetadata({
     description,
 
     openGraph: {
+      type: "website",
+      siteName: "Pendo Wears",
+      locale: "en_US",
+      // url: `/${slug}`,
       title,
       description,
       images: [

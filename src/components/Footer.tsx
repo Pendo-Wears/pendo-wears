@@ -171,6 +171,8 @@ const Footer = () => {
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
+            onClick={() => router.push("/privacy-policy")}
+            sx={{ cursor: "pointer" }}
           >
             Privacy Policy
           </Typography>

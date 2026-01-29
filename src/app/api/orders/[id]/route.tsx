@@ -26,7 +26,7 @@ export async function GET(
     // 🧾 Generate receipt image
     const receiptImage = generateReceiptImage(order);
 
-    console.log(receiptImage);
+    // console.log(receiptImage);
 
     return NextResponse.json({
       order,

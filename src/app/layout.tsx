@@ -10,6 +10,7 @@ import "@/src/assets/css/App.css";
 import ThemeRegistry from "../ThemeRegistry";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pendowears.vercel.app"),
   title: {
     default: "Pendo Wears",
     template: "%s | Pendo Wears",
