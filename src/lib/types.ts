@@ -264,5 +264,6 @@ export interface Billing {
   email: string;
   phone: string;
   countryName?: string;
+  stateCode?: string;
 }
 

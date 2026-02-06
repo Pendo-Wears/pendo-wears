@@ -1,7 +1,7 @@
 "use client";
 
 import { count } from "console";
-import { GetCountries } from "react-country-state-city";
+import { GetCountries, GetState } from "react-country-state-city";
 import { Country } from "react-country-state-city/dist/esm/types";
 import { useAuth } from "../context/AuthContext";
 
@@ -18,7 +18,12 @@ export const getCountryData = async (code: string) => {
     return result;
   });
   country = countries.find((c: any) => c.iso2 === code);
-  return country;
+
+  const states = await GetState(country?.id!).then((result) => {
+    return result;
+  });
+
+  return { country, states };
 };
 
 // getCountryData();
@@ -27,27 +32,31 @@ export const getCountryData = async (code: string) => {
 //   country = res;
 // });
 
-// console.log(country, " COUNTRYYYYYYYYYYYYYYYY");
+console.log(country, " COUNTRYYYYYYYYYYYYYYYY");
 
 export const formatWoocommercePrice = (
   price: number | string,
-  minorUnit = 2
+  minorUnit = 2,
 ) => {
   const value = Number(price) / Math.pow(10, minorUnit);
 
-  return new Intl.NumberFormat(`en-${country?.iso2 || "NG"}`, {
+  return new Intl.NumberFormat(`en-US`, {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-  }).format(value).slice(2);
+  })
+    .format(value)
+    // .slice(2);
 };
 
 export const formatPrice = (price: number) => {
-  return new Intl.NumberFormat(`en-${country?.iso2 || "NG"}`, {
+  return new Intl.NumberFormat(`en-US`, {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0, // remove decimals if you want
-  }).format(price).slice(2);
+  })
+    .format(price)
+    // .slice(2);
 };
 
 export const getPriceRange = (items: any): string => {

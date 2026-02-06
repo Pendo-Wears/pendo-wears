@@ -191,9 +191,9 @@ const Shop = () => {
         </Box>
         <Box
           width="100%"
-          maxWidth={"900px"}
+          maxWidth={"1300px"}
           height={{ xs: "500px", sm: "auto" }}
-          flex={{xs: undefined, sm: 1}}
+          flex={{ xs: undefined, sm: 1 }}
           bgcolor="#F3EFE9"
           // display="flex"
           // alignItems={"flex-end"}
@@ -232,6 +232,76 @@ const Shop = () => {
             ))}
           </Grid>
         </Activity>
+        <Activity mode={openGallery ? "visible" : "hidden"}>
+          <Box
+            width="100%"
+            height={{xs: "fit-content", md: "788px"}}
+            display="flex"
+            flexWrap={{ xs: "wrap", md: "nowrap" }}
+            alignItems={"center"}
+            gap="40px"
+
+            mt="60px"
+          >
+            <Box
+              width={{ xs: "100%", md: "40%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery3.src})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+            <Box
+              width={{ xs: "100%", md: "60%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery1.src})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+          </Box>
+        </Activity>
+        <Activity mode={openGallery ? "visible" : "hidden"}>
+          <Box
+            width="100%"
+            height={{xs: "fit-content", md: "788px"}}
+            display="flex"
+            flexWrap={{ xs: "wrap", md: "nowrap" }}
+            alignItems={"center"}
+            gap="40px"
+
+            mt="60px"
+          >
+            <Box
+              width={{ xs: "100%", md: "60%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery6.src})`,
+                backgroundPosition: "center bottom",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+            <Box
+              width={{ xs: "100%", md: "40%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery5.src})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+          </Box>
+        </Activity>
       </Box>
       <Box
         my="60px"
@@ -251,6 +321,41 @@ const Shop = () => {
               <Product product={product} showPrice={false} key={index} />
             ))}
           </Grid>
+        </Activity>
+        <Activity mode={openGallery ? "visible" : "hidden"}>
+          <Box
+            width="100%"
+            height={{xs: "fit-content", md: "788px"}}
+            display="flex"
+            flexWrap={{ xs: "wrap", md: "nowrap" }}
+            alignItems={"center"}
+            gap="40px"
+
+            mt="60px"
+          >
+            <Box
+              width={{ xs: "100%", md: "40%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery2.src})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+            <Box
+              width={{ xs: "100%", md: "60%" }}
+              bgcolor="#F3EFE9"
+              height={{xs: '400px', md: "100%"}}
+              sx={{
+                backgroundImage: `url(${images.gallery4.src})`,
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "contain",
+              }}
+            ></Box>
+          </Box>
         </Activity>
       </Box>
       <MenuUI

@@ -72,7 +72,7 @@ const OrderConfirmation = () => {
         userId: user?.id,
         txRef: data?.txRef,
         paymentMethod:
-          userCountry?.region === "Africa"
+          userCountry?.country?.region === "Africa"
             ? "CARD | FLUTTERWAVE"
             : "CARD | STRIPE",
         recipient: {
@@ -80,10 +80,10 @@ const OrderConfirmation = () => {
           address1: user?.billing?.address_1 || "",
           state_name: user?.billing?.state || "",
           city: user?.billing?.state || "",
-          country_code: userCountry?.iso2 || "",
-          country_name: userCountry?.name || "",
+          country_code: userCountry?.country?.iso2 || "",
+          country_name: userCountry?.country?.name || "",
           zip: user?.billing?.postcode || "",
-          phone: userCountry?.phone_code! + user?.billing?.phone || "",
+          phone: userCountry?.country?.phone_code! + user?.billing?.phone || "",
           email: user?.email || "",
         },
         items: allCart,
@@ -803,12 +803,12 @@ const OrderConfirmation = () => {
                   display="flex"
                   alignItems={"center"}
                   gap="15px"
-                    sx={{ cursor: "pointer" }}
-                    onClick={async () => {
-                      const phoneNumber = "+1234567890";
-                      await navigator.clipboard.writeText(phoneNumber);
-                      fireAlert("Phone number copied to clipboard", "success");
-                    }}
+                  sx={{ cursor: "pointer" }}
+                  onClick={async () => {
+                    const phoneNumber = "+1234567890";
+                    await navigator.clipboard.writeText(phoneNumber);
+                    fireAlert("Phone number copied to clipboard", "success");
+                  }}
                 >
                   <Image
                     src={icons.phone}

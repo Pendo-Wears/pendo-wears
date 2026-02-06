@@ -8,6 +8,14 @@ import { useRouter } from "next/navigation";
 
 const Footer = () => {
   const router = useRouter();
+
+  function handleCookieSettings(e: React.MouseEvent<HTMLAnchorElement>) {
+    e.preventDefault();
+    const overlay = document.getElementById("consent-modal-overlay");
+    if (overlay) {
+      overlay.classList.add("show");
+    }
+  }
   return (
     <Box bgcolor="#000" py="74px">
       <Box
@@ -165,13 +173,25 @@ const Footer = () => {
           gap={{ xs: "16px", sm: "20px", md: "40px" }}
           flexWrap={"wrap"}
         >
+         
           <Typography
             fontSize={16}
             color="#9CA3AF"
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
-            onClick={() => router.push("/refund-policy")}
+            onClick={handleCookieSettings}
+            sx={{ cursor: "pointer" }}
+          >
+            Cookie settings
+          </Typography>
+          <Typography
+            fontSize={16}
+            color="#9CA3AF"
+            fontWeight={500}
+            fontFamily={"Montserrat"}
+            textTransform={"uppercase"}
+            onClick={handleCookieSettings}
             sx={{ cursor: "pointer" }}
           >
             Returns
