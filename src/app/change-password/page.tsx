@@ -43,7 +43,7 @@ const ChangePassword = () => {
   }
 
   return (
-    <RequireAuth>
+    // <RequireAuth>
       <Box
         bgcolor="#fff"
         width="100%"
@@ -160,7 +160,7 @@ const ChangePassword = () => {
           </Box>
         </Box>
       </Box>
-    </RequireAuth>
+    // </RequireAuth>
   );
 };
 

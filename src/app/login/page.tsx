@@ -5,7 +5,7 @@ import { icons } from "@/src/assets/icons/icons";
 import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import { handleLogin } from "@/src/services/authUsage";
+import { handleLogin, resetUserPassword } from "@/src/services/authUsage";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 import { getCountryData } from "@/src/lib/priceFormatter";
@@ -112,7 +112,7 @@ const Login = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      py={{xs: '45px', sm: "90px"}}
+      py={{ xs: "45px", sm: "90px" }}
       px="16px"
     >
       <Box width="100%" maxWidth="589px">
@@ -268,6 +268,8 @@ const Login = () => {
               fontFamily={"Montserrat"}
               mt="12px"
               textAlign="right"
+              sx={{ cursor: "pointer" }}
+              onClick={() => router.push("/reset-password")}
             >
               Forgot Password?
             </Typography>
@@ -327,7 +329,7 @@ const Login = () => {
           fontSize={{ xs: 14, sm: 18 }}
           color="#707070"
           fontFamily={"Montserrat"}
-          my={{xs: 3, sm: "40px"}}
+          my={{ xs: 3, sm: "40px" }}
         >
           Don’t have an Account?{" "}
           <Link href="/register" style={{ textDecoration: "none" }}>
