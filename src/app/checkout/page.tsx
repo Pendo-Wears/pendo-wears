@@ -18,7 +18,7 @@ import { SyncVariant } from "@/src/lib/types";
 const Checkout = () => {
   const router = useRouter();
   const params = useSearchParams();
-  const { amount, fireAlert, user, setUser } = useAuth();
+  const { amount, fireAlert, user, setUser, shipping } = useAuth();
   const [country, setCountry] = useState<any>(null);
 
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
@@ -38,8 +38,11 @@ const Checkout = () => {
       const response = await payWithFlutterwave();
       console.log(response, "RESPONSEEEEE");
     } catch (err: any) {
-      console.log(err)
-      fireAlert(err.response.data.error || err.message || "Payment failed", "error");
+      console.log(err);
+      fireAlert(
+        err.response.data.error || err.message || "Payment failed",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -51,7 +54,7 @@ const Checkout = () => {
   //   const response = await axios.post("/api/payment-intent", {
   //     paymentMethodId,
   //     amount,
-  //     currency: country?.currency.toLowerCase(),
+  //     currency: country?.country?.currency.toLowerCase(),
   //     redirect: `${window.location.origin}/order-confirmation`,
   //     receipt_email: user.email,
   //   });
@@ -74,10 +77,10 @@ const Checkout = () => {
   //         address1: userData?.billing?.address_1 || "",
   //         state_name: userData?.billing?.state || "",
   //         city: userData?.billing?.state || "",
-  //         country_code: userCountry?.iso2 || "",
-  //         country_name: userCountry?.name || "",
+  //         country_code: usercountry?.country?.iso2 || "",
+  //         country_name: usercountry?.country?.name || "",
   //         zip: userData?.billing?.postcode || "",
-  //         phone: userCountry?.phone_code + userData?.billing?.phone || "",
+  //         phone: usercountry?.country?.phone_code + userData?.billing?.phone || "",
   //         email: userData?.email || "",
   //       },
   //       items: allCart,
@@ -256,7 +259,7 @@ const Checkout = () => {
             px={{ xs: "16px", sm: "30px" }}
             border="1px solid #00000010"
           >
-            {/* {country?.region === "Africa" ? (
+            {/* {country?.country?.region === "Africa" ? (
               <FlutterwavePayButton
                 name={`${user?.first_name || ""} ${user?.last_name || ""}`}
                 email={user?.email || ""}
@@ -275,14 +278,18 @@ const Checkout = () => {
               Payment Information
             </Typography>
 
-            <Activity
-              mode={country?.region === "Africa" ? "hidden" : "visible"}
+            {/* <Activity
+              mode={
+                country?.country?.region === "Africa" ? "hidden" : "visible"
+              }
             >
               <StripeWrapper amount={amount} />
-            </Activity>
-            <Activity
-              mode={country?.region === "Africa" ? "visible" : "hidden"}
-            >
+            </Activity> */}
+            {/* <Activity
+              mode={
+                country?.country?.region === "Africa" ? "visible" : "hidden"
+              }
+            > */}
               <Box display="flex" flexDirection={"column"} gap="20px" mb="45px">
                 {/* <Box width="100%">
                   <Typography
@@ -355,7 +362,7 @@ const Checkout = () => {
                     InputProps={{
                       endAdornment: (
                         <Box
-                          display={{xs: 'none', sm: "flex"}}
+                          display={{ xs: "none", sm: "flex" }}
                           alignItems={"center"}
                           gap="12px"
                           position="relative"
@@ -626,7 +633,7 @@ const Checkout = () => {
                   Pay {loading ? "..." : formatPrice(amount)}
                 </Typography>
               </Box>
-            </Activity>
+            {/* </Activity> */}
           </Box>
           <Box
             width="403px"
@@ -727,7 +734,7 @@ const Checkout = () => {
                   color="#16A34A"
                   fontWeight={700}
                 >
-                  {shippingFee === 0 ? "Free" : formatPrice(shippingFee)}
+                  {shipping === 0 ? "Free" : formatPrice(shipping)}
                 </Typography>
               </Box>
               <Box
@@ -799,7 +806,7 @@ const Checkout = () => {
                 >
                   {`${user?.billing?.address_1 || ""} ${
                     user?.billing?.state || ""
-                  }, ${country?.name || ""}`}
+                  }, ${country?.country?.name || ""}`}
                 </Typography>
               </Box>
             </Box>

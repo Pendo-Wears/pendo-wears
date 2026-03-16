@@ -25,6 +25,12 @@ import abt5 from "./abt5.png";
 import abt6 from "./abt6.png";
 import abt from "./abt.png";
 import usr1 from "./usr1.png";
+import gallery1 from "./gallery1.png";
+import gallery2 from "./gallery2.png";
+import gallery3 from "./gallery3.png";
+import gallery4 from "./gallery4.png";
+import gallery5 from "./gallery5.png";
+import gallery6 from "./gallery6.png";
 
 export const images = {
   shirt,
@@ -53,5 +59,11 @@ export const images = {
   abt5,
   abt6,
   abt,
-  usr1
+  usr1,
+  gallery1,
+  gallery2,
+  gallery3,
+  gallery4,
+  gallery5,
+  gallery6,
 };

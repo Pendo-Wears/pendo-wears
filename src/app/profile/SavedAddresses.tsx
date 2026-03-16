@@ -11,12 +11,12 @@ import { Country } from "react-country-state-city/dist/esm/types";
 import { useAuth } from "@/src/context/AuthContext";
 
 const SavedAddresses = () => {
-  const {user, setUser} = useAuth();
-  const [country, setCountry] = useState<Country>()
+  const { user, setUser } = useAuth();
+  const [country, setCountry] = useState<Country>();
 
   const getUser = async () => {
     const countryData = await getCountryData(user?.billing?.country!);
-    setCountry(countryData)
+    setCountry(countryData?.country);
   };
 
   useEffect(() => {
@@ -30,8 +30,8 @@ const SavedAddresses = () => {
       maxHeight={"512px"}
       bgcolor="#f5f5f5"
       borderRadius={"16px"}
-      px={{xs: '16px', sm: "22px"}}
-      py={{xs: '16px', sm: "32px"}}
+      px={{ xs: "16px", sm: "22px" }}
+      py={{ xs: "16px", sm: "32px" }}
     >
       <Box
         display="flex"

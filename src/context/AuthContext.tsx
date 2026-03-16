@@ -17,6 +17,8 @@ interface AuthContextType {
   ) => void;
   amount: number;
   setAmount: (x: number) => void;
+  shipping: number;
+  setShipping: (x: number) => void;
   user: User | undefined;
   setUser: (x: User) => void;
   getUser: () => void;
@@ -33,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   >("success");
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [amount, setAmount] = useState(0);
+  const [shipping, setShipping] = useState(0);
   const [user, setUser] = useState<User>();
 
   const getUserAuth = () => {
@@ -100,6 +103,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser,
         getUser,
         getUserAuth,
+        shipping,
+        setShipping,
       }}
     >
       {children}

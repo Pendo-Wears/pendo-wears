@@ -3,7 +3,7 @@
 import { icons } from "@/src/assets/icons/icons";
 import { images } from "@/src/assets/images/images";
 import MultilinkUI from "@/src/components/MultilinkUI";
-import { Box, Grid, Radio, TextField, Typography } from "@mui/material";
+import { Box, CircularProgress, Grid, Radio, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import React, { Activity, use, useEffect, useState } from "react";
 import Product from "../../products/reusables/Product";
@@ -140,7 +140,10 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
     }
   };
 
+  const [loading, setLoading] = useState(false);
+
   const getProducts = async () => {
+    setLoading(true);
     try {
       const result: any = await productsEndpoint.getWooProducts(
         `category=${param.get("id")}`,
@@ -150,6 +153,8 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
       }
     } catch (e: any) {
       fireAlert(e.message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -247,15 +252,28 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
           </Activity>
         </Box>
       </Box>
-      <Grid
-        container
-        spacing="30px"
-        px={{ xs: "16px", sm: "20px", md: "50px" }}
-      >
-        {products.map((product, index) => (
-          <Product product={product} key={index} />
-        ))}
-      </Grid>
+      {loading ? (
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems={"center"}
+          justifyContent={"center"}
+          my="200px"
+        >
+          <CircularProgress size={24} sx={{ color: "#000" }} />
+        </Box>
+      ) : (
+        <Grid
+          container
+          spacing="30px"
+          px={{ xs: "16px", sm: "20px", md: "50px" }}
+        >
+          {products.map((product, index) => (
+            <Product product={product} key={index} />
+          ))}
+        </Grid>
+      )}
       <MenuUI
         onClose={() => setAnchorEl(null)}
         anchorEl={anchorEl}

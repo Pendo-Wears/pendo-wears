@@ -1,6 +1,6 @@
 import { productsEndpoint } from "./endpoints";
 import userEndpoints from "./userServices";
-import { privateApi } from "./woocommerce";
+import { privateApi, publicApi } from "./woocommerce";
 
 const AUTH_KEY = process.env.NEXT_PUBLIC_AUTH_KEY!;
 
@@ -150,7 +150,7 @@ export async function login(identifier: string, password: string) {
 
     if (user?.meta_data?.[0]?.value === "0") {
       throw new Error(
-        "Account not verified. Please check your email to verify your account."
+        "Account not verified. Please check your email to verify your account.",
       );
     }
 
@@ -168,16 +168,28 @@ export async function login(identifier: string, password: string) {
 }
 
 export const resetPassword = async (email: string) => {
-  const reset = await privateApi.post(
-    `/auth/v1/auth/reset_password&email=${email}`
-  );
+  const reset = await publicApi.post(`/auth/v1/user/reset_password`, {
+    email,
+  });
 
   return reset;
 };
 
-export const changePassword = async (
-  newPassword: string
+export const completeResetPassword = async (
+  email: string,
+  new_password: string,
+  code: string,
 ) => {
+  const reset = await publicApi.put(`/auth/v1/user/reset_password`, {
+    email,
+    new_password,
+    code,
+  });
+
+  return reset;
+};
+
+export const changePassword = async (newPassword: string) => {
   const reset = await privateApi.post(`/wp/v2/users/me`, {
     password: newPassword,
   });

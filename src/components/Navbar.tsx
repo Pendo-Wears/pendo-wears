@@ -122,14 +122,20 @@ const Navbar = () => {
       icon: icons.change,
       action: () => router.push("/change-password"),
     },
-    {
-      label: "Logout",
-      icon: icons.logout,
-      action: () => {
-        logoutUser();
-        getUserAuth();
-      },
-    },
+    mobile && !isAuthenticated
+      ? {
+          label: "Sign In",
+          icon: icons.logout,
+          action: () => router.push("/login"),
+        }
+      : {
+          label: "Logout",
+          icon: icons.logout,
+          action: () => {
+            logoutUser();
+            getUserAuth();
+          },
+        },
   ].filter(Boolean);
   return (
     <Box
@@ -215,7 +221,7 @@ const Navbar = () => {
                 </>
               )}
             </Box>
-            {!isAuthenticated ? (
+            {!isAuthenticated && !mobile ? (
               <Link
                 href="/login"
                 style={{

@@ -3,6 +3,7 @@ import {
   login,
   resetPassword,
   changePassword,
+  completeResetPassword,
 } from "../lib/authServices";
 
 export async function handleSignup(formData: {
@@ -87,7 +88,55 @@ export async function changeUserPassword(password: string) {
 
     console.log("Reset successful", reset);
 
-    return { success: true, dats: reset.data };
+    return { success: true, data: reset.data };
+  } catch (error: any) {
+    console.error("Login failed:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function resetUserPassword(
+  email: string,
+) {
+  // if (!email || email.trim() === "") {
+  //   return { success: false, error: "Email or username is required" };
+  // }
+
+  if (!email || email.trim() === "") {
+    return { success: false, error: "email is required" };
+  }
+
+  try {
+    const reset = await resetPassword(email);
+
+    console.log("Reset successful", reset);
+
+    return { success: true, data: reset.data };
+  } catch (error: any) {
+    console.error("Login failed:", error.message);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function completeResetUserPassword(
+  email: string,
+  password: string,
+  code: string,
+) {
+  // if (!email || email.trim() === "") {
+  //   return { success: false, error: "Email or username is required" };
+  // }
+
+  if (!email || email.trim() === "") {
+    return { success: false, error: "email is required" };
+  }
+
+  try {
+    const reset = await completeResetPassword(email, password, code);
+
+    console.log("Reset successful", reset);
+
+    return { success: true, data: reset.data };
   } catch (error: any) {
     console.error("Login failed:", error.message);
     return { success: false, error: error.message };

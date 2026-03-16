@@ -3,7 +3,7 @@ import Flutterwave from "flutterwave-node-v3";
 
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUBLIC_KEY!,
-  process.env.FLUTTERWAVE_SECRET_KEY!
+  process.env.FLUTTERWAVE_SECRET_KEY!,
 );
 
 // Handle preflight OPTIONS
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
           required: ["tx_ref", "amount", "email", "card", "user"],
           received: { tx_ref, amount, email, card, user },
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -48,8 +48,7 @@ export async function POST(req: NextRequest) {
       email,
       tx_ref,
       enckey: process.env.FLW_ENCRYPTION_KEY!,
-      redirect_url: redirect,
-      phone_number: user.phone_number || "",
+      redirect_url: redirect
     };
 
     // Charge the card using SDK (handles 3DES internally)
@@ -66,7 +65,7 @@ export async function POST(req: NextRequest) {
         message: "Flutterwave payment failed",
         error: error?.response?.data || error.message,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

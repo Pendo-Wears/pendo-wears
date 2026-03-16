@@ -21,6 +21,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { Activity, useEffect, useState } from "react";
@@ -48,7 +49,8 @@ const Cart = () => {
   const router = useRouter();
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { fireAlert, setAmount, user, setUser, getUser } = useAuth();
+  const { fireAlert, setAmount, user, setUser, getUser, setShipping } =
+    useAuth();
   const [cartItems, setCartItems] = useState<SyncVariant[]>([]);
   const [tax, setTax] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
@@ -72,7 +74,8 @@ const Cart = () => {
   };
 
   const fetchStates = async () => {
-    const res = await GetState(parseInt(country?.id));
+    const res = await GetState(parseInt(country?.country?.id));
+
     setStates(res);
   };
 
@@ -109,6 +112,7 @@ const Cart = () => {
 
     setTotal(totalPrice);
     setQuantity(totalQty);
+    // getShippingRates();
   }, []);
 
   // const clearCart = () => {
@@ -125,7 +129,7 @@ const Cart = () => {
       const updateBody = {
         billing: {
           state: state?.name || "",
-          country: country?.iso2 || "",
+          country: country?.country?.iso2 || "",
           postcode: zipCode,
           address_1: address,
           phone: phone,
@@ -146,13 +150,17 @@ const Cart = () => {
                 ...updateUser.data.data,
                 billing: {
                   ...updateUser.data.data.billing,
-                  countryName: country?.name,
+                  countryName: country?.country?.name,
+                  stateCode: state?.state_code,
                 },
               }),
             );
 
             const profile = localStorage.getItem("user");
             if (profile) setUser(JSON.parse(profile));
+            if (user) {
+              getShippingRates();
+            }
           }
         }
       }
@@ -191,21 +199,58 @@ const Cart = () => {
 
     setTotal(totalPrice);
     setQuantity(totalQty);
+    getShippingRates();
   }, [cartItems]);
 
   useEffect(() => {
-    if (country?.id) {
-      GetState(parseInt(country.id)).then(setStates);
+    fetchStates();
+    if (country?.states?.length > 0) {
+      setState(
+        country?.states?.find((c: any) => c.name === user?.billing?.state),
+      );
     }
   }, [country]);
+
+  const getShippingRates = async () => {
+    try {
+      if (cartItems.length === 0) return;
+      const response = await axios.post("/api/printful/shipping", {
+        recipient: {
+          address_1: address,
+          state_code: state?.state_code || "",
+          country_code: country?.country?.iso2 || "",
+          zip: zipCode,
+        },
+        items: cartItems.map((item) => ({
+          variant_id: item.variant_id,
+          quantity: item.quantity,
+        })),
+      });
+
+      const data = response.data;
+
+      setShippingFee(data?.find((x: any) => x.id === "STANDARD")?.rate || 0);
+      setShipping(data?.find((x: any) => x.id === "STANDARD")?.rate || 0);
+      console.log("Shipping rates:", data);
+    } catch (error) {
+      console.error("Error fetching shipping rates:", error);
+    }
+  };
 
   useEffect(() => {
     if (!user) return;
     setAddress(user?.billing?.address_1 || "");
     setPhone(user?.billing?.phone || "");
     setZipCode(user?.billing?.postcode || "");
-    setState({ name: user?.billing?.state || "" });
+    // alert("here");
+
+    // setState({ name: user?.billing?.state || "" });
   }, [user]);
+  console.log(state, "STATEEEEEE");
+
+  useEffect(() => {
+    getShippingRates();
+  }, [country, state]);
 
   /* -------------------- Actions -------------------- */
 
@@ -284,7 +329,10 @@ const Cart = () => {
                 <CartItem
                   cart={cart}
                   key={cart.id}
-                  onUpdate={() => setCartItems(readCart())}
+                  onUpdate={() => {
+                    setCartItems(readCart());
+                    getShippingRates();
+                  }}
                 />
               ))}
             </Activity>
@@ -362,12 +410,16 @@ const Cart = () => {
                   select
                   type={"text"}
                   placeholder="Country"
-                  value={country?.name || ""} // controlled value
+                  value={country?.country?.name || ""} // controlled value
                   onChange={(e) => {
                     const selected = countries.find(
                       (c) => c.name === e.target.value,
                     );
-                    setCountry(selected);
+                    setCountry({
+                      ...country,
+                      country: selected,
+                    });
+                    setState(null);
                     fetchStates();
                   }}
                   sx={{
@@ -432,6 +484,7 @@ const Cart = () => {
                         (c) => c.name === e.target.value,
                       );
                       setState(selected);
+                      console.log(selected);
                     }}
                     sx={{
                       bgcolor: "transparent",
@@ -571,9 +624,9 @@ const Cart = () => {
                   value={phone} // only store user-typed part
                   onChange={(e) => setPhone(e.target.value)}
                   InputProps={{
-                    startAdornment: country?.phone_code ? (
+                    startAdornment: country?.country?.phone_code ? (
                       <span style={{ marginRight: 8 }}>
-                        {country.phone_code}
+                        {country?.country?.phone_code}
                       </span>
                     ) : null,
                   }}
@@ -833,7 +886,9 @@ const Cart = () => {
                   color="#1A1A1A"
                   fontWeight={700}
                 >
-                  {formatPrice(Number(total + tax + shippingFee))}
+                  {formatPrice(
+                    Number(total) + Number(tax) + Number(shippingFee),
+                  )}
                 </Typography>
               </Box>
               <Box
@@ -855,7 +910,7 @@ const Cart = () => {
                     !user?.billing?.state ||
                     !user?.billing?.country ||
                     !user?.billing?.address_1 ||
-                    !user?.billing?.phone
+                    !user?.billing?.phone || !shippingFee
                   ) {
                     fireAlert(
                       "Update all shipping information fields",
@@ -863,7 +918,7 @@ const Cart = () => {
                     );
                     return;
                   }
-                  setAmount(Number(total + tax + shippingFee));
+                  setAmount(Number(total) + Number(tax) + Number(shippingFee));
                   router.push("/checkout");
                 }}
               >
