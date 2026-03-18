@@ -106,61 +106,49 @@ const Checkout = () => {
         ? localStorage.getItem("user") || "null"
         : "null";
     const userData = JSON.parse(profile);
+
     const raw =
       typeof window !== "undefined"
         ? localStorage.getItem("cart") || "[]"
         : "[]";
     const allCart = JSON.parse(raw);
-    // const userCountry = await getCountryData();
 
-    if (!userData.id) return;
+    if (!userData?.id) return;
+
     if (!amount) {
       fireAlert("Cannot perform transaction with 0 amount", "error");
       return;
     }
-    if (!cardNumber || !cvc || !expiryMonth || !expiryYear) {
-      fireAlert("Please fill out card details completely", "error");
-      return;
-    }
 
-    const response = await axios.post("/api/flutterwave/pay", {
-      tx_ref: `${crypto.randomUUID()}`,
-      amount,
-      email: user?.email || "",
-      currency: "USD",
-      card: {
-        number: cardNumber,
-        cvv: cvc,
-        expiry_month: expiryMonth,
-        expiry_year: expiryYear,
-      },
-      redirect:
-        typeof window !== "undefined"
-          ? `${window.location.origin}/order-confirmation`
-          : "",
-      user: {
-        email: user?.email,
-        phone_number: user?.billing?.phone || "",
+    try {
+      const response = await axios.post("/api/flutterwave/pay", {
+        tx_ref: `${crypto.randomUUID()}`,
+        amount: amount,
+        currency: "NGN",
+        email: user?.email || "",
         name: `${user?.first_name || ""} ${user?.last_name || ""}`,
-      },
-    });
+        redirect_url:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/order-confirmation`
+            : "",
+      });
 
-    console.log("Stripe response:", response);
+      console.log("response:", response);
 
-    if (response.data.data.status === "pending") {
-      const auth = response.data?.meta?.authorization;
+      // ✅ NEW: Redirect user to Flutterwave checkout page
+      const paymentLink = response.data?.link;
 
-      if (auth?.mode === "redirect" && typeof window !== "undefined") {
-        // Redirect to bank-hosted 3DS page
-        window.location.href = auth.redirect;
-      } else if (auth?.mode === "otp") {
-        // Show OTP input form in your app
-        // TODO: HANDLE OTP VERIFICATION
-        handleVerify(response.data.data.flw_ref, response.data.data.otp);
+      if (paymentLink && typeof window !== "undefined") {
+        window.location.href = paymentLink;
+      } else {
+        fireAlert("Unable to initialize payment", "error");
       }
-    } else if (response.data.data?.status === "successful") {
-      // Payment done
-      router.push(`/order-confirmation`);
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      fireAlert(
+        error?.response?.data?.message || "Payment initialization failed",
+        "error",
+      );
     }
   };
 

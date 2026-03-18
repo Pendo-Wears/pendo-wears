@@ -10,6 +10,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import RequireAuth from "@/src/components/RequireAuth";
 import Image from "next/image";
 import { icons } from "@/src/assets/icons/icons";
+import axios from "axios";
 
 const OrderConfirmation = () => {
   const { fireAlert, user } = useAuth();
@@ -20,6 +21,7 @@ const OrderConfirmation = () => {
   const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [orderDetails, setOrderDetails] = useState<any | null>(null);
+  const [currentProccess, setCurrentProccess] = useState("");
 
   const getAllCart = () => {
     if (typeof window === "undefined") return [];
@@ -31,33 +33,7 @@ const OrderConfirmation = () => {
     setCartItems(result);
   };
 
-  const createOrder = async () => {
-    if (loading) return;
-
-    let data;
-
-    const encoded = searchParams.get("response");
-    if (encoded) {
-      try {
-        const decoded = decodeURIComponent(encoded);
-        data = JSON.parse(decoded);
-        setResponseData(data);
-        //  if (data.status === "successful" && data.txRef) {
-        //    getOrderDetails(data.txRef.split("-")[1]);
-        //  }
-        console.log(data, "ORDER CONFIRMATION DATA");
-      } catch (error) {
-        console.error("Failed to parse response param:", error);
-      }
-    }
-
-    console.log(data.txRef);
-
-    // const profile =
-    //   typeof window !== "undefined"
-    //     ? localStorage.getItem("user") || "null"
-    //     : "null";
-    // const userData = JSON.parse(profile);
+  const orderCreate = async (transactionId: string) => {
     const raw =
       typeof window !== "undefined"
         ? localStorage.getItem("cart") || "[]"
@@ -66,19 +42,18 @@ const OrderConfirmation = () => {
     const userCountry = await getCountryData(user?.billing?.country!);
     if (!user?.id || allCart.length === 0) return;
 
+    setCurrentProccess("Creating order");
+
     try {
-      setLoading(true);
       const orderPayload = {
         userId: user?.id,
-        txRef: data?.txRef,
-        paymentMethod:
-          userCountry?.country?.region === "Africa"
-            ? "CARD | FLUTTERWAVE"
-            : "CARD | STRIPE",
+        txRef: transactionId,
+        paymentMethod: "CARD | FLUTTERWAVE",
         recipient: {
           name: `${user?.first_name || ""} ${user?.last_name || ""}`,
           address1: user?.billing?.address_1 || "",
           state_name: user?.billing?.state || "",
+          state: user?.billing?.state || "",
           city: user?.billing?.state || "",
           country_code: userCountry?.country?.iso2 || "",
           country_name: userCountry?.country?.name || "",
@@ -103,6 +78,60 @@ const OrderConfirmation = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const verifyPayment = async () => {
+    if (loading) return;
+
+    setLoading(true);
+    let data;
+
+    // const encoded = searchParams.get("response");
+    // if (encoded) {
+    //   try {
+    //     const decoded = decodeURIComponent(encoded);
+    //     data = JSON.parse(decoded);
+    //     setResponseData(data);
+    //     //  if (data.status === "successful" && data.txRef) {
+    //     //    getOrderDetails(data.txRef.split("-")[1]);
+    //     //  }
+    //     console.log(data, "ORDER CONFIRMATION DATA");
+    //   } catch (error) {
+    //     console.error("Failed to parse response param:", error);
+    //   }
+    // }
+
+    const transaction_id = searchParams.get("transaction_id");
+    const txRef = searchParams.get("tx_ref");
+
+    if (transaction_id) {
+      setCurrentProccess("Verifying payment");
+      await axios
+        .get(`/api/flutterwave/verify?transaction_id=${transaction_id}`)
+        .then((res) => {
+          console.log("Verification:", res.data);
+
+          if (res.data.message === "Payment verified successfully") {
+            // ✅ success
+            // save order, clear cart, etc.
+            orderCreate(txRef!);
+          } else {
+            fireAlert("Payment verification failed", "error");
+          }
+        })
+        .catch(() => {
+          fireAlert("Verification error", "error");
+          setLoading(false)
+        });
+    }
+
+    console.log(transaction_id);
+
+    // const profile =
+    //   typeof window !== "undefined"
+    //     ? localStorage.getItem("user") || "null"
+    //     : "null";
+    // const userData = JSON.parse(profile);
   };
 
   const getOrderDetails = async (id: string) => {
@@ -142,7 +171,7 @@ const OrderConfirmation = () => {
     const id = raw ? JSON.parse(raw) : null;
     console.log(id, "ZXCVBNM");
 
-    if (id === null) createOrder();
+    if (id === null) verifyPayment();
     else getOrderDetails(id);
   };
 
@@ -163,9 +192,13 @@ const OrderConfirmation = () => {
           display="flex"
           alignItems={"center"}
           justifyContent={"center"}
+          gap='12px'
           my="200px"
         >
           <CircularProgress size={24} sx={{ color: "#000" }} />
+          <Typography fontSize={12} fontFamily={"Montserrat"} color="#000">
+            {currentProccess}...
+          </Typography>
         </Box>
       ) : (
         <Box px={{ xs: "16px", sm: "20px", md: "50px" }} pb="70px">

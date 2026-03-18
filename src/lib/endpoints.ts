@@ -15,13 +15,13 @@ const productsEndpoint = {
     } catch (error: any) {
       console.error(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return []; // fallback empty array
     }
   },
 
-  getWooProducts: async (queries: string="") => {
+  getWooProducts: async (queries: string = "") => {
     try {
       // Call your serverless endpoint instead of WooCommerce
       const url = `/wc/store/v1/products?${queries}`;
@@ -33,7 +33,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.error(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return []; // fallback empty array
     }
@@ -46,7 +46,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -59,7 +59,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -68,13 +68,13 @@ const productsEndpoint = {
   getCategory: async (id: number | string) => {
     try {
       const response = await publicApi.get(
-        `/wc/store/v1/products/categories/${id}`
+        `/wc/store/v1/products/categories/${id}`,
       );
       return response;
     } catch (error: any) {
       console.log(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -90,7 +90,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching product details:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -106,7 +106,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching product details:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -122,7 +122,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching product details:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -135,7 +135,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error searching product:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -144,7 +144,7 @@ const productsEndpoint = {
   addToCart: async (
     id: number,
     quantity: number,
-    variation: { attribute: string; value: string }[]
+    variation: { attribute: string; value: string }[],
   ) => {
     try {
       const response = await privateApi.post(`/wc/store/v1/cart/add-item`, {
@@ -156,7 +156,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error searching product:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -165,13 +165,13 @@ const productsEndpoint = {
   removeFromCart: async (key: string) => {
     try {
       const response = await privateApi.get(
-        `wc/store/v1/cart/remove-item?key=${key}`
+        `wc/store/v1/cart/remove-item?key=${key}`,
       );
       return response.data.data;
     } catch (error: any) {
       console.log(
         "Error searching product:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -190,7 +190,7 @@ const productsEndpoint = {
   getCollectionData: async () => {
     try {
       const response = await publicApi.get(
-        `wc/store/v1/products/collection-data?calculate_price_range=true`
+        `wc/store/v1/products/collection-data?calculate_price_range=true`,
       );
       return response;
     } catch (error: any) {
@@ -214,9 +214,13 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error creating order:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
-      return [];
+      throw new Error(
+        error.response?.data?.message ||
+          error.message ||
+          "Error creating order",
+      );
     }
   },
 
@@ -231,7 +235,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching order:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -247,7 +251,7 @@ const productsEndpoint = {
     } catch (error: any) {
       console.log(
         "Error fetching order details:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }

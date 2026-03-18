@@ -58,6 +58,7 @@ export async function POST(req: Request) {
           address_1: body.recipient.address1,
           city: body.recipient.city,
           country: body.recipient.country_code,
+          state: body.recipient.state_name,
           email: body.recipient.email,
           phone: body.recipient.phone || "",
         },
