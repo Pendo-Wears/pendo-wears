@@ -1,9 +1,16 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 
 export default function PageTracker() {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <Tracker />
+    </Suspense>
+  );
+}
+function Tracker() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
