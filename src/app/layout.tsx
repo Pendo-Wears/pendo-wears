@@ -8,6 +8,7 @@ import { AuthProvider } from "../context/AuthContext";
 import AlertUI from "../components/AlertUI";
 import "@/src/assets/css/App.css";
 import PageTracker from "./PageTracker";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pendowears.com"),
@@ -601,7 +602,7 @@ export default function RootLayout({
           <AlertUI />
         </AuthProvider>
         {/* Consent Manager Script */}
-        <script>{`
+         <Script id="ga-init" strategy="afterInteractive">{`
           (function() {
             const CONSENT_KEY = 'portfolio-consent-v1';
             const COOKIE_SETTINGS_ID = 'cookie-settings-modal';
@@ -884,7 +885,7 @@ export default function RootLayout({
             loadScripts();
             showBanner();
           })();
-        `}</script>
+        `}</Script>
         {/* <ThemeRegistry> */}
         <script src="https://accounts.google.com/gsi/client" async defer />
 
