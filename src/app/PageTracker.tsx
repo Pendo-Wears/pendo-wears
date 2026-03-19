@@ -16,11 +16,13 @@ export default function PageTracker() {
         const url =
           pathname + (searchParams?.toString() ? `?${searchParams}` : "");
 
-        window.gtag("event", "page_view", {
-          page_path: url,
-          page_title: document.title,
-          page_location: window.location.href,
-        });
+        if (window && (window as any).gtag) {
+          (window as any).gtag("event", "page_view", {
+            page_path: url,
+            page_title: document.title,
+            page_location: window.location.href,
+          });
+        }
       }
     }
   };
