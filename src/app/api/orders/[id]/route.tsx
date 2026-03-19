@@ -77,19 +77,11 @@ function generateReceiptImage(order: any) {
     y += 26;
   });
 
-  ctx.fillText(
-    `Shipping: ${formatPrice(order.retail_costs?.shipping)}`,
-    40,
-    y,
-  );
-  
+  ctx.fillText(`Shipping: ${formatPrice(order.retail_costs?.shipping)}`, 40, y);
+
   y += 40;
   ctx.font = "bold 20px Arial";
-  ctx.fillText(
-    `Total: ${formatPrice(order.retail_costs?.total)}`,
-    40,
-    y,
-  );
+  ctx.fillText(`Total: ${formatPrice(order.retail_costs?.total)}`, 40, y);
 
   // Return base64 PNG
   return canvas.toDataURL("image/png");
@@ -100,5 +92,7 @@ export const formatPrice = (price: number) => {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0, // remove decimals if you want
-  }).format(price).slice(2);
+  })
+    .format(price)
+    .slice(2);
 };

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
@@ -13,10 +13,10 @@ export async function GET(
 
   try {
     const response = await publicApi.get(
-      `/wc/v3/customers/${id}?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`
+      `/wc/v3/customers/${id}?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`,
     );
 
-    console.log("Single user response:", response);
+    // console.log("Single user response:", response);
 
     const user = response ?? null;
 
@@ -33,14 +33,14 @@ export async function GET(
     console.error("Users API error:", error.response?.data || error.message);
     return NextResponse.json(
       { message: error.response?.data || error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
   const body = await req.json();
@@ -52,7 +52,7 @@ export async function PUT(
   try {
     const response = await publicApi.put(
       `/wc/v3/customers/${id}?consumer_key=${process.env.WOO_CONSUMER_KEY}&consumer_secret=${process.env.WOO_CONSUMER_SECRET}`,
-      body
+      body,
     );
 
     const user = response ?? null;
@@ -69,11 +69,11 @@ export async function PUT(
   } catch (error: any) {
     console.error(
       "Profile update API error:",
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     return NextResponse.json(
       { message: error.response?.data || error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

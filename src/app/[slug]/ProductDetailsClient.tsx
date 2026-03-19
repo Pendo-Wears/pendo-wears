@@ -31,7 +31,7 @@ const ProductDetailsClient = ({
 }: {
   params: Promise<{ slug: string | number }>;
 }) => {
-    const { slug } = use(params);
+  const { slug } = use(params);
   const { fireAlert } = useAuth();
   const theme = useTheme();
   const mobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -126,6 +126,27 @@ const ProductDetailsClient = ({
       fireAlert(e.message, "error");
     }
   };
+
+  const tractProductView = (data: ProductDetailsType) => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "view_item", data);
+      }
+    }
+  };
+  const tractCart = (data: SyncVariant) => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "add_to_cart", data);
+      }
+    }
+  };
   // const [printfulProducts, setPrintfulProducts] = useState<SyncVariant>();
   const getPrintfulProducts = async () => {
     setLoading(true);
@@ -144,6 +165,7 @@ const ProductDetailsClient = ({
 
           if (res.success) {
             setProductDetails(res.data);
+            tractProductView(res.data);
           }
         } catch (e: any) {
           fireAlert(e.message, "error");
@@ -199,6 +221,7 @@ const ProductDetailsClient = ({
       localStorage.setItem("cart", JSON.stringify(cart));
     }
     fireAlert("Item successfully added to cart", "success");
+    tractCart(item);
   };
 
   useEffect(() => {
@@ -466,7 +489,7 @@ const ProductDetailsClient = ({
                   }`}
                   p="5px"
                   display="flex"
-                  flexDirection={'column'}
+                  flexDirection={"column"}
                   alignItems={"flex-start"}
                   justifyContent={"center"}
                   sx={{ cursor: "pointer" }}
@@ -483,7 +506,7 @@ const ProductDetailsClient = ({
                     fontSize={14}
                     fontFamily={"Montserrat"}
                     color={"#000"}
-                    whiteSpace={'nowrap'}
+                    whiteSpace={"nowrap"}
                   >
                     {variant.color} | {variant.size}
                   </Typography>

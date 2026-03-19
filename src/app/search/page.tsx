@@ -66,7 +66,7 @@ const Search = () => {
       const result: any = await productsEndpoint.getWooProducts(
         params.toString(),
       );
-      console.log(result)
+      // console.log(result)
       if (result.success) {
         setSearchResults(result.data);
       }
@@ -135,7 +135,7 @@ const Search = () => {
   };
 
   useEffect(() => {
-    console.log(collectionData, "tttt");
+    // console.log(collectionData, "tttt");
     if (search.length === 0) {
       setSearchResults([]);
       setFilterOptions({
@@ -329,7 +329,10 @@ const Search = () => {
               alignItems={"center"}
               justifyContent={"space-between"}
               onClick={() =>
-                setFilterOptions((prev) => ({ ...prev, category: "noir-gold-collection" }))
+                setFilterOptions((prev) => ({
+                  ...prev,
+                  category: "noir-gold-collection",
+                }))
               }
             >
               <Typography
@@ -341,7 +344,9 @@ const Search = () => {
               >
                 Noir Gold
               </Typography>
-              <Radio checked={filterOptions.category === "noir-gold-collection"} />
+              <Radio
+                checked={filterOptions.category === "noir-gold-collection"}
+              />
             </Box>
             <Box
               display="flex"
@@ -495,7 +500,7 @@ const Search = () => {
               Price Range
             </Typography>
             <Typography
-              fontSize={{xs: 14, sm: 16}}
+              fontSize={{ xs: 14, sm: 16 }}
               fontFamily={"Montserrat"}
               fontWeight={600}
               color="#1B1B1B"
@@ -597,7 +602,7 @@ const Search = () => {
           <Box
             mt="30px"
             width="150px"
-            height={{xs: '48px', sm: "57px"}}
+            height={{ xs: "48px", sm: "57px" }}
             border={"1px solid #00000080"}
             borderRadius={"100px"}
             display="flex"

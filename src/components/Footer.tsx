@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Box, Typography } from "@mui/material";
 import Image from "next/image";
@@ -13,6 +13,21 @@ const Footer = () => {
     e.preventDefault();
     const overlay = document.getElementById("consent-modal-overlay");
     if (overlay) {
+      const preferencesToggle = document.getElementById("toggle-preferences");
+      const analyticsToggle = document.getElementById("toggle-analytics");
+      const marketingToggle = document.getElementById("toggle-marketing");
+      const CONSENT_KEY = "portfolio-consent-v1";
+      const stored = localStorage.getItem(CONSENT_KEY);
+      if (stored) {
+        let currentConsent = JSON.parse(stored); // Deep copy for comparison
+        preferencesToggle?.classList.toggle(
+          "active",
+          currentConsent.preferences,
+        );
+        analyticsToggle?.classList.toggle("active", currentConsent.analytics);
+        marketingToggle?.classList.toggle("active", currentConsent.marketing);
+      }
+
       overlay.classList.add("show");
     }
   }
@@ -173,7 +188,6 @@ const Footer = () => {
           gap={{ xs: "16px", sm: "20px", md: "40px" }}
           flexWrap={"wrap"}
         >
-         
           <Typography
             fontSize={16}
             color="#9CA3AF"

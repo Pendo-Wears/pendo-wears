@@ -326,7 +326,7 @@ const Collections = ({ mobile }: { mobile: boolean }) => {
 };
 
 const Products = ({ mobile }: { mobile: boolean }) => {
-  const router = useRouter()
+  const router = useRouter();
   return (
     <Box bgcolor="#000" pb="112px">
       <Typography
@@ -735,7 +735,7 @@ const Tribe = ({ mobile }: { mobile: boolean }) => {
         display="flex"
         alignItems={"center"}
         gap="16px"
-        justifyContent={'center'}
+        justifyContent={"center"}
         width="100%"
         px="16px"
       >

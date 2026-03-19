@@ -28,6 +28,19 @@ const Login = () => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
 
+  const tractLogin = () => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "login", {
+          method: "email",
+        });
+      }
+    }
+  };
+
   async function submitForm() {
     setLoading(true);
 
@@ -35,7 +48,7 @@ const Login = () => {
 
     setLoading(false);
 
-    console.log(result, "RESULTTTTT");
+    // console.log(result, "RESULTTTTT");
 
     if (!result.success) {
       fireAlert(result.error, "error");
@@ -46,6 +59,7 @@ const Login = () => {
     setIsAuthenticated(true);
     getUserAuth();
     getUser();
+    tractLogin();
     if (typeof window !== "undefined") {
       const path = localStorage.getItem("path") || "";
       const parsedPath = path ? JSON.parse(path) : "";

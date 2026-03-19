@@ -44,7 +44,7 @@ const productsEndpoint = {
       const response = await publicApi.get("/wc/store/v1/products/categories");
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
         error.response?.data || error.message,
       );
@@ -57,7 +57,7 @@ const productsEndpoint = {
       const response = await publicApi.get("/wc/store/v1/products/tags");
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
         error.response?.data || error.message,
       );
@@ -72,7 +72,7 @@ const productsEndpoint = {
       );
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
         error.response?.data || error.message,
       );
@@ -88,7 +88,7 @@ const productsEndpoint = {
         success: response.status === 200,
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching product details:",
         error.response?.data || error.message,
       );
@@ -104,7 +104,7 @@ const productsEndpoint = {
         success: response.status === 200,
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching product details:",
         error.response?.data || error.message,
       );
@@ -120,7 +120,7 @@ const productsEndpoint = {
         success: response.status === 200,
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching product details:",
         error.response?.data || error.message,
       );
@@ -133,7 +133,7 @@ const productsEndpoint = {
       const response = await publicApi.get(`/wc/store/v1/products?${params}`);
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error searching product:",
         error.response?.data || error.message,
       );
@@ -169,7 +169,7 @@ const productsEndpoint = {
       );
       return response.data.data;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error searching product:",
         error.response?.data || error.message,
       );
@@ -182,7 +182,7 @@ const productsEndpoint = {
       const response = await privateApi.get(`wc/store/v1/cart`);
       return response.data.data;
     } catch (error: any) {
-      console.log("Error getting cart:", error.response?.data || error.message);
+      // console.log("Error getting cart:", error.response?.data || error.message);
       return [];
     }
   },
@@ -194,7 +194,7 @@ const productsEndpoint = {
       );
       return response;
     } catch (error: any) {
-      console.log("Error getting data:", error.response?.data || error.message);
+      // console.log("Error getting data:", error.response?.data || error.message);
       return [];
     }
   },
@@ -212,10 +212,10 @@ const productsEndpoint = {
         message: "Order created successfully",
       };
     } catch (error: any) {
-      console.log(
-        "Error creating order:",
-        error.response?.data || error.message,
-      );
+      //  console.log(
+      //   "Error creating order:",
+      //   error.response?.data || error.message,
+      // );
       throw new Error(
         error.response?.data?.message ||
           error.message ||
@@ -233,7 +233,7 @@ const productsEndpoint = {
         message: "Orders fetched successfully",
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching order:",
         error.response?.data || error.message,
       );
@@ -249,7 +249,7 @@ const productsEndpoint = {
         success: response.status === 200,
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching order details:",
         error.response?.data || error.message,
       );

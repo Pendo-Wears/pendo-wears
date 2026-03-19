@@ -16,7 +16,7 @@ export default function PaymentComplete() {
         transaction_id,
       });
 
-      console.log("Verification result:", verify.data);
+      // console.log("Verification result:", verify.data);
     }
   };
   useEffect(() => {

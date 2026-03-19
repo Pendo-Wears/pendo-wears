@@ -37,7 +37,20 @@ const Register = () => {
     });
   }, []);
 
-  console.log(firstName, email, password, country, avatar);
+  // console.log(firstName, email, password, country, avatar);
+
+  const tractSignup = () => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "sign_up", {
+          method: "email",
+        });
+      }
+    }
+  };
 
   async function submitForm() {
     setLoading(true);
@@ -53,7 +66,7 @@ const Register = () => {
 
     setLoading(false);
 
-    console.log(result, "RESULTTTTT");
+    // console.log(result, "RESULTTTTT");
 
     if (!result.success) {
       fireAlert(result.error, "error");
@@ -68,9 +81,10 @@ const Register = () => {
     setPassword("");
     setCountry("");
     setAvatar("");
+    tractSignup();
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
-   }
+    }
   }
 
   useEffect(() => {
@@ -84,7 +98,7 @@ const Register = () => {
     formData.append("file", file);
     try {
       const result: any = await userEndpoints.uploadImage(formData);
-      console.log(result);
+      // console.log(result);
     } catch (e: any) {
       fireAlert(e.message, "error");
     }
@@ -93,7 +107,7 @@ const Register = () => {
   // const updateAvatar = async (url: string) => {
   //   try {
   //     const result: any = await userEndpoints.updateAvatar(51, url);
-  //     console.log(result);
+  // console.log(result);
   //   } catch (e: any) {
   //     fireAlert(e.message, "error");
   //   }
@@ -117,7 +131,7 @@ const Register = () => {
       flexDirection="column"
       justifyContent="center"
       alignItems="center"
-      py={{xs: '45px', sm: "90px"}}
+      py={{ xs: "45px", sm: "90px" }}
       px={2}
     >
       <Box textAlign={"center"} mb="54px">
@@ -133,7 +147,7 @@ const Register = () => {
             <Typography
               textAlign={"left"}
               color="#fff"
-              fontSize={{xs: 14, sm: 16}}
+              fontSize={{ xs: 14, sm: 16 }}
               fontWeight={500}
               fontFamily={"Montserrat"}
             >
@@ -146,13 +160,17 @@ const Register = () => {
         )}
         <Typography
           color="#1A1A1A"
-          fontSize={{xs: 32, sm: 56}}
+          fontSize={{ xs: 32, sm: 56 }}
           fontWeight={900}
           fontFamily={"Montserrat"}
         >
           Register Now!
         </Typography>
-        <Typography fontSize={{xs: 16, sm: 18}} fontWeight={500} fontFamily={"Montserrat"}>
+        <Typography
+          fontSize={{ xs: 16, sm: 18 }}
+          fontWeight={500}
+          fontFamily={"Montserrat"}
+        >
           Create your account to have access to a personalized experience.
         </Typography>
       </Box>
@@ -162,11 +180,11 @@ const Register = () => {
         display="flex"
         flexDirection="column"
         gap="24px"
-        mb={{ xs: 2, sm: "76px"}}
+        mb={{ xs: 2, sm: "76px" }}
       >
         <Box>
           <Typography
-            fontSize={{xs: 16, sm: 18}}
+            fontSize={{ xs: 16, sm: 18 }}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -211,7 +229,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={{xs: 16, sm: 18}}
+            fontSize={{ xs: 16, sm: 18 }}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -256,7 +274,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={{xs: 16, sm: 18}}
+            fontSize={{ xs: 16, sm: 18 }}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -301,7 +319,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={{xs: 16, sm: 18}}
+            fontSize={{ xs: 16, sm: 18 }}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -359,7 +377,7 @@ const Register = () => {
         </Box>
         <Box>
           <Typography
-            fontSize={{xs: 16, sm: 18}}
+            fontSize={{ xs: 16, sm: 18 }}
             color="#586166"
             fontWeight={500}
             fontFamily={"Montserrat"}
@@ -495,8 +513,8 @@ const Register = () => {
         </Box> */}
       </Box>
       <Typography
-        textAlign={{xs: 'left', sm: "center"}}
-        fontSize={{xs: 14, sm: 20}}
+        textAlign={{ xs: "left", sm: "center" }}
+        fontSize={{ xs: 14, sm: 20 }}
         color="#707070"
         fontFamily={"Montserrat"}
         mb="40px"
@@ -504,7 +522,7 @@ const Register = () => {
         By creating the account you accept the Terms and Conditions.
       </Typography>
       <Box
-        width={{xs: "100%", sm: "90%"}}
+        width={{ xs: "100%", sm: "90%" }}
         maxWidth="852px"
         bgcolor="#000"
         height="52px"
@@ -532,7 +550,7 @@ const Register = () => {
       <Typography
         textAlign={"center"}
         fontWeight={500}
-        fontSize={{xs: 16, sm: 18}}
+        fontSize={{ xs: 16, sm: 18 }}
         color="#707070"
         fontFamily={"Montserrat"}
         mb="40px"

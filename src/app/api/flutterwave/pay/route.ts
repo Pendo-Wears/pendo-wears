@@ -65,9 +65,9 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
         },
       },
-    );;
+    );
 
-    console.log("Flutterwave v3 response:", response);
+    // console.log("Flutterwave v3 response:", response);
 
     return NextResponse.json(
       {

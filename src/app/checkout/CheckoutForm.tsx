@@ -81,7 +81,7 @@ export default function CheckoutForm({ amount }: Props) {
       if (typeof window !== "undefined") {
         localStorage.setItem(
           "stripeCustomerId",
-          JSON.stringify(data.customerId)
+          JSON.stringify(data.customerId),
         );
       }
       const clientSecret = data.clientSecret;
@@ -111,14 +111,14 @@ export default function CheckoutForm({ amount }: Props) {
 
       if (stripeError) throw stripeError;
 
-      console.log(paymentIntent, "paymentIntent");
+      // console.log(paymentIntent, "paymentIntent");
 
       if (paymentIntent?.status === "succeeded") {
         router.replace(
           `/order-confirmation?response=${JSON.stringify({
             ...paymentIntent,
             txRef: `${paymentIntent.id}`,
-          })}`
+          })}`,
         );
         fireAlert("Payment successful!", "success");
       }

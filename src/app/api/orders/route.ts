@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       items: body.items,
     });
 
-    console.log(order, "ORDER DATA");
+    // console.log(order, "ORDER DATA");
 
     const { id, status, costs } = order;
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     };
 
     // save to DB later
-    console.log("Order record:", orderRecord);
+    // console.log("Order record:", orderRecord);
 
     const printfulOrderId = id; // replace with actual ID from above
 
@@ -80,10 +80,10 @@ export async function POST(req: Request) {
             value: `#PF${printfulOrderId}`,
           },
         ],
-      }
+      },
     );
 
-    console.log("WP Response:", wpRes.data);
+    // console.log("WP Response:", wpRes.data);
 
     return NextResponse.json(order);
   } catch (err: any) {
@@ -96,14 +96,14 @@ export async function GET(req: Request) {
   if (!process.env.PRINTFUL_API_KEY) {
     return NextResponse.json(
       { message: "Missing PRINTFUL_API_KEY" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
   try {
     const orders: any = await printfulClient.get("/orders");
 
-    console.log(orders, "ORDER DATA");
+    // console.log(orders, "ORDER DATA");
 
     return NextResponse.json(orders ?? []);
   } catch (err: any) {

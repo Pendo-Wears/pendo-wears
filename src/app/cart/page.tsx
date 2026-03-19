@@ -231,7 +231,7 @@ const Cart = () => {
 
       setShippingFee(data?.find((x: any) => x.id === "STANDARD")?.rate || 0);
       setShipping(data?.find((x: any) => x.id === "STANDARD")?.rate || 0);
-      console.log("Shipping rates:", data);
+      // console.log("Shipping rates:", data);
     } catch (error) {
       console.error("Error fetching shipping rates:", error);
     }
@@ -246,7 +246,7 @@ const Cart = () => {
 
     // setState({ name: user?.billing?.state || "" });
   }, [user]);
-  console.log(state, "STATEEEEEE");
+  // console.log(state, "STATEEEEEE");
 
   useEffect(() => {
     getShippingRates();
@@ -484,7 +484,7 @@ const Cart = () => {
                         (c) => c.name === e.target.value,
                       );
                       setState(selected);
-                      console.log(selected);
+                      // console.log(selected);
                     }}
                     sx={{
                       bgcolor: "transparent",
@@ -905,12 +905,13 @@ const Cart = () => {
                     fireAlert("Your cart is currently empty", "warning");
                     return;
                   }
-                  console.log(user?.billing, "23456789");
+                  // console.log(user?.billing, "23456789");
                   if (
                     !user?.billing?.state ||
                     !user?.billing?.country ||
                     !user?.billing?.address_1 ||
-                    !user?.billing?.phone || !shippingFee
+                    !user?.billing?.phone ||
+                    !shippingFee
                   ) {
                     fireAlert(
                       "Update all shipping information fields",

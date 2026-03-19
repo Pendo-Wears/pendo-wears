@@ -33,6 +33,17 @@ const OrderConfirmation = () => {
     setCartItems(result);
   };
 
+  const tractPurchase = (data: any) => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "purchase", data);
+      }
+    }
+  };
+
   const orderCreate = async (transactionId: string) => {
     const raw =
       typeof window !== "undefined"
@@ -65,10 +76,11 @@ const OrderConfirmation = () => {
       };
 
       const order: any = await productsEndpoint.createOrder(orderPayload);
-      console.log("Order created successfully:", order);
+      // console.log("Order created successfully:", order);
       if (order.success) {
         fireAlert(order.message, "success");
         setOrderDetails(order.data);
+        tractPurchase(order.data);
         localStorage.removeItem("cart");
         localStorage.setItem("orderId", order.data.id);
       }
@@ -95,7 +107,7 @@ const OrderConfirmation = () => {
     //     //  if (data.status === "successful" && data.txRef) {
     //     //    getOrderDetails(data.txRef.split("-")[1]);
     //     //  }
-    //     console.log(data, "ORDER CONFIRMATION DATA");
+    // console.log(data, "ORDER CONFIRMATION DATA");
     //   } catch (error) {
     //     console.error("Failed to parse response param:", error);
     //   }
@@ -109,7 +121,7 @@ const OrderConfirmation = () => {
       await axios
         .get(`/api/flutterwave/verify?transaction_id=${transaction_id}`)
         .then((res) => {
-          console.log("Verification:", res.data);
+          // console.log("Verification:", res.data);
 
           if (res.data.message === "Payment verified successfully") {
             // ✅ success
@@ -121,11 +133,11 @@ const OrderConfirmation = () => {
         })
         .catch(() => {
           fireAlert("Verification error", "error");
-          setLoading(false)
+          setLoading(false);
         });
     }
 
-    console.log(transaction_id);
+    // console.log(transaction_id);
 
     // const profile =
     //   typeof window !== "undefined"
@@ -169,7 +181,7 @@ const OrderConfirmation = () => {
   const onLoad = () => {
     const raw = localStorage.getItem("orderId");
     const id = raw ? JSON.parse(raw) : null;
-    console.log(id, "ZXCVBNM");
+    // console.log(id, "ZXCVBNM");
 
     if (id === null) verifyPayment();
     else getOrderDetails(id);
@@ -192,7 +204,7 @@ const OrderConfirmation = () => {
           display="flex"
           alignItems={"center"}
           justifyContent={"center"}
-          gap='12px'
+          gap="12px"
           my="200px"
         >
           <CircularProgress size={24} sx={{ color: "#000" }} />

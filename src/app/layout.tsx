@@ -1,4 +1,4 @@
-import { Box, createTheme, ThemeProvider } from "@mui/material";
+import { Box } from "@mui/material";
 import { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -7,13 +7,10 @@ import "@fontsource/cormorant-garamond";
 import { AuthProvider } from "../context/AuthContext";
 import AlertUI from "../components/AlertUI";
 import "@/src/assets/css/App.css";
-import ThemeRegistry from "../ThemeRegistry";
-import Script from "next/script";
-import ConsentManager from "../components/ConsentManager";
-import CustomConsentUi from "../components/CustomConsentUi";
+import PageTracker from "./PageTracker";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pendowears.vercel.app"),
+  metadataBase: new URL("https://pendowears.com"),
   title: {
     default: "Pendo Wears",
     template: "%s | Pendo Wears",
@@ -29,10 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="stylesheet"
-          href="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.css"
-        />
+        
         <style>{`
           * {
             box-sizing: border-box;
@@ -611,6 +605,9 @@ export default function RootLayout({
           (function() {
             const CONSENT_KEY = 'portfolio-consent-v1';
             const COOKIE_SETTINGS_ID = 'cookie-settings-modal';
+              
+
+              // clg('Initializing consent manager with GA Measurement ID:', G-Y8YN12RW15);
             
             // Detect region (simplified - in production, use proper geolocation)
             function getRegion() {
@@ -716,37 +713,36 @@ export default function RootLayout({
 
             function loadScripts() {
               if (currentConsent.preferences) {
-                console.log('Preferences/Functional consent given');
+                // console.log('Preferences/Functional consent given');
                 // Example: Load font preferences, theme persistence, or regional settings
                 // const script = document.createElement('script');
                 // script.src = 'https://cdn.example.com/preferences.js';
                 // document.head.appendChild(script);
               }
               if (currentConsent.analytics) {
-                console.log('Analytics consent given - loading analytics service');
-                // Example: load Google Analytics
-                const gaScript = document.createElement('script');
-                gaScript.async = true;
-                gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=GA_ID';
-                document.head.appendChild(gaScript);
-                
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'GA_ID', {
-                  'anonymize_ip': true
-                });
-                
-                // Alternative: Plausible Analytics
-                // const plausibleScript = document.createElement('script');
-                // plausibleScript.async = true;
-                // plausibleScript.defer = true;
-                // plausibleScript.src = 'https://plausible.io/js/script.js';
-                // plausibleScript.setAttribute('data-domain', 'yourdomain.com');
-                // document.head.appendChild(plausibleScript);
-              }
+              if (window.__gaLoaded) return;
+
+              // console.log('Analytics consent given - loading analytics service');
+
+              window.__gaLoaded = true;
+
+              const gaScript = document.createElement('script');
+              gaScript.async = true;
+              gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y8YN12RW15';
+              document.head.appendChild(gaScript);
+
+              window.dataLayer = window.dataLayer || [];
+              window.gtag = function () {
+                window.dataLayer.push(arguments);
+              };
+
+              window.gtag('js', new Date());
+              window.gtag('config', 'G-Y8YN12RW15', {
+                anonymize_ip: true,
+              });
+            }
               if (currentConsent.marketing) {
-                console.log('Marketing/Advertising consent given - loading marketing pixels');
+                // console.log('Marketing/Advertising consent given - loading marketing pixels');
                 // Example: load Meta Pixel (Facebook)
                 const metaScript = document.createElement('script');
                 metaScript.innerHTML = \`
@@ -892,21 +888,7 @@ export default function RootLayout({
         {/* <ThemeRegistry> */}
         <script src="https://accounts.google.com/gsi/client" async defer />
 
-        <Script src="/klaro.config.js" strategy="beforeInteractive" />
-
-        <Script
-          src="https://cdn.kiprotect.com/klaro/v0.7/klaro.min.js"
-          strategy="afterInteractive"
-        />
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=UA-XXXXX"
-          type="text/plain" // Prevents auto-execution
-          data-type="application/javascript"
-          data-name="googleAnalytics" // Matches the name in klaro-config.ts
-        />
-        {/* <ConsentManager /> */}
-        {/* <CustomConsentUi /> */}
+        <PageTracker />
       </body>
     </html>
   );

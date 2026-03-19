@@ -7,9 +7,9 @@ const userEndpoints = {
       const response = await axios.get(`/api/users`);
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -20,9 +20,9 @@ const userEndpoints = {
       const response = await axios.get(`/api/users/${userId}`);
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -35,9 +35,9 @@ const userEndpoints = {
         data: response.data,
       };
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error fetching products:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -48,9 +48,9 @@ const userEndpoints = {
       const response = await axios.post(`/api/media`, data);
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error uploading image:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }
@@ -63,9 +63,9 @@ const userEndpoints = {
       });
       return response;
     } catch (error: any) {
-      console.log(
+      console.error(
         "Error uploading image:",
-        error.response?.data || error.message
+        error.response?.data || error.message,
       );
       return [];
     }

@@ -34,13 +34,13 @@ export async function handleSignup(formData: {
   }
   try {
     // optional loading UI
-    console.log("Signing up...");
+    // console.log("Signing up...");
 
     const { token, user } = await signup(formData);
 
-    console.log("Signup successful");
-    console.log("User:", user);
-    console.log("Token:", token);
+    // console.log("Signup successful");
+    // console.log("User:", user);
+    // console.log("Token:", token);
 
     return { success: true, user, token };
   } catch (error: any) {
@@ -59,13 +59,13 @@ export async function handleLogin(identifier: string, password: string) {
   }
 
   try {
-    console.log("Logging in...");
+    // console.log("Logging in...");
 
     const { token, user } = await login(identifier, password);
 
-    console.log("Login successful");
-    console.log("User:", user);
-    console.log("Token:", token);
+    // console.log("Login successful");
+    // console.log("User:", user);
+    // console.log("Token:", token);
 
     return { success: true, user, token };
   } catch (error: any) {
@@ -86,7 +86,7 @@ export async function changeUserPassword(password: string) {
   try {
     const reset = await changePassword(password);
 
-    console.log("Reset successful", reset);
+    // console.log("Reset successful", reset);
 
     return { success: true, data: reset.data };
   } catch (error: any) {
@@ -95,9 +95,7 @@ export async function changeUserPassword(password: string) {
   }
 }
 
-export async function resetUserPassword(
-  email: string,
-) {
+export async function resetUserPassword(email: string) {
   // if (!email || email.trim() === "") {
   //   return { success: false, error: "Email or username is required" };
   // }
@@ -109,7 +107,7 @@ export async function resetUserPassword(
   try {
     const reset = await resetPassword(email);
 
-    console.log("Reset successful", reset);
+    // console.log("Reset successful", reset);
 
     return { success: true, data: reset.data };
   } catch (error: any) {
@@ -134,7 +132,7 @@ export async function completeResetUserPassword(
   try {
     const reset = await completeResetPassword(email, password, code);
 
-    console.log("Reset successful", reset);
+    // console.log("Reset successful", reset);
 
     return { success: true, data: reset.data };
   } catch (error: any) {

@@ -3,7 +3,14 @@
 import { icons } from "@/src/assets/icons/icons";
 import { images } from "@/src/assets/images/images";
 import MultilinkUI from "@/src/components/MultilinkUI";
-import { Box, CircularProgress, Grid, Radio, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Grid,
+  Radio,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Image from "next/image";
 import React, { Activity, use, useEffect, useState } from "react";
 import Product from "../../products/reusables/Product";
@@ -174,7 +181,7 @@ const Collections = ({ params }: { params: Promise<{ slug: string }> }) => {
     storeUrl!,
   );
 
-  console.log(imgUrl, "ASDFGHJKL");
+  // console.log(imgUrl, "ASDFGHJKL");
   return (
     <Box pb="46px">
       <Box
