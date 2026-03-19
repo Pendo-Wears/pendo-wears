@@ -6,7 +6,7 @@ import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { handleLogin, resetUserPassword } from "@/src/services/authUsage";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 import { getCountryData } from "@/src/lib/priceFormatter";
 import GoogleLoginButton from "@/src/components/GoogleButton";
@@ -25,8 +25,6 @@ const Login = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
 
   const tractLogin = () => {
     const CONSENT_KEY = "portfolio-consent-v1";

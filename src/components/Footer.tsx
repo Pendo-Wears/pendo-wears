@@ -5,12 +5,12 @@ import Image from "next/image";
 import React from "react";
 import { icons } from "../assets/icons/icons";
 import { useRouter } from "next/navigation";
-import { useConsent } from "../app/ConsentManager";
+import { useAuth } from "../context/AuthContext";
 
 
 const Footer = () => {
   const router = useRouter();
-  const { openCookieSettings } = useConsent();
+  const { setShowModal } = useAuth();
   // function handleCookieSettings(e: React.MouseEvent<HTMLAnchorElement>) {
   //   e.preventDefault();
   //   const overlay = document.getElementById("consent-modal-overlay");
@@ -196,7 +196,7 @@ const Footer = () => {
             fontWeight={500}
             fontFamily={"Montserrat"}
             textTransform={"uppercase"}
-            onClick={openCookieSettings}
+            onClick={() => setShowModal(true)}
             sx={{ cursor: "pointer" }}
           >
             Cookie settings

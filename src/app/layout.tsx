@@ -9,7 +9,7 @@ import AlertUI from "../components/AlertUI";
 import "@/src/assets/css/App.css";
 import PageTracker from "./PageTracker";
 import Script from "next/script";
-import ConsentManager, { ConsentProvider } from "./ConsentManager";
+import ConsentManager from "./ConsentManager";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pendowears.com"),
@@ -29,19 +29,15 @@ export default function RootLayout({
     <html lang="en">
       <body suppressHydrationWarning style={{ background: "#fff" }}>
         <AuthProvider>
-          <ConsentProvider>
-            <div className="main-content">
-              <Box
-                component="div"
-                sx={{ maxWidth: "1512px", margin: "0 auto" }}
-              >
-                <Navbar />
-                <Box mt={{ xs: "100px", sm: "130px" }}>{children}</Box>
-                <Footer />
-              </Box>
-            </div>
-            <AlertUI />
-          </ConsentProvider>
+          <div className="main-content">
+            <Box component="div" sx={{ maxWidth: "1512px", margin: "0 auto" }}>
+              <Navbar />
+              <Box mt={{ xs: "100px", sm: "130px" }}>{children}</Box>
+              <Footer />
+            </Box>
+          </div>
+          <AlertUI />
+        <ConsentManager />
         </AuthProvider>
         {/* Consent Manager Script */}
         {/* <ThemeRegistry> */}
@@ -49,7 +45,6 @@ export default function RootLayout({
 
         <PageTracker />
       </body>
-      <ConsentManager />
     </html>
   );
 }

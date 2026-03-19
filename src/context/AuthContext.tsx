@@ -23,6 +23,8 @@ interface AuthContextType {
   setUser: (x: User) => void;
   getUser: () => void;
   getUserAuth: () => void;
+  showModal: boolean;
+  setShowModal: (x: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [amount, setAmount] = useState(0);
   const [shipping, setShipping] = useState(0);
   const [user, setUser] = useState<User>();
+    const [showModal, setShowModal] = useState(false);
 
   const getUserAuth = () => {
     if (typeof window !== "undefined") {
@@ -105,6 +108,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         getUserAuth,
         shipping,
         setShipping,
+        showModal,
+        setShowModal,
       }}
     >
       {children}

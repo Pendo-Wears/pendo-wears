@@ -1,13 +1,6 @@
 "use client";
-
-import {
-  useState,
-  useEffect,
-  useRef,
-  createContext,
-  useContext,
-  type ReactNode,
-} from "react";
+import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 
 interface ConsentState {
   strictly_necessary: boolean;
@@ -17,36 +10,14 @@ interface ConsentState {
   timestamp: string;
 }
 
-interface ConsentContextType {
-  openCookieSettings: () => void;
-  closeCookieSettings: () => void;
-  showBanner: boolean;
-  showModal: boolean;
-}
-
-const ConsentContext = createContext<ConsentContextType | undefined>(undefined);
-
-export const useConsent = () => {
-  const context = useContext(ConsentContext);
-  if (!context) {
-    throw new Error("useConsent must be used within ConsentProvider");
-  }
-  return context;
-};
-
-export const ConsentProvider = ({
-  children: _children,
-}: {
-  children: ReactNode;
-}) => {
+const ConsentManager = () => {
   const CONSENT_KEY = "portfolio-consent-v1";
 
   // State for banner, modal, and toast visibility
+  const { showModal, setShowModal } = useAuth();
   const [showBanner, setShowBanner] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [pageBlocker, setPageBlocker] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   // Consent state
   const [consent, setConsent] = useState<ConsentState>({
@@ -87,7 +58,6 @@ export const ConsentProvider = ({
   const saveConsentToStorage = (consentData: ConsentState) => {
     try {
       localStorage.setItem(CONSENT_KEY, JSON.stringify(consentData));
-      setShowBanner(false);
     } catch (e) {
       console.error("Error saving consent to localStorage:", e);
     }
@@ -96,7 +66,7 @@ export const ConsentProvider = ({
   // Load external scripts based on consent
   const loadScripts = (consentData: ConsentState) => {
     // Load Google Analytics
-    if (consentData.analytics && !(window as any).__gaLoaded) {
+    if (consentData.analytics && !window.__gaLoaded) {
       (window as any).__gaLoaded = true;
 
       const gaScript = document.createElement("script");
@@ -122,11 +92,10 @@ export const ConsentProvider = ({
           page_title: document.title,
         });
       }
-      setShowBanner(false);
     }
 
     // Load Meta Pixel
-    if (consentData.marketing && !(window as any).__fbLoaded) {
+    if (consentData.marketing && !window.__fbLoaded) {
       (window as any).__fbLoaded = true;
 
       const metaScript = document.createElement("script");
@@ -143,14 +112,11 @@ export const ConsentProvider = ({
         fbq('track', 'PageView');
       `;
       document.head.appendChild(metaScript);
-
-      setShowBanner(false);
     }
   };
 
   // Initialize on mount
   useEffect(() => {
-    setIsClient(true);
     const storedConsent = getStoredConsent();
     setConsent(storedConsent);
     initialConsentRef.current = storedConsent;
@@ -178,10 +144,8 @@ export const ConsentProvider = ({
     saveConsentToStorage(newConsent);
     loadScripts(newConsent);
     setShowBanner(false);
-    setShowModal(false);
     setPageBlocker(false);
     showToastNotification();
-    console.log(showBanner);
   };
 
   // Handle Reject Optional
@@ -196,7 +160,6 @@ export const ConsentProvider = ({
     setConsent(newConsent);
     saveConsentToStorage(newConsent);
     setShowBanner(false);
-    setShowModal(false);
     setPageBlocker(false);
     showToastNotification();
   };
@@ -204,25 +167,18 @@ export const ConsentProvider = ({
   // Handle Manage Cookies
   const handleManageCookies = () => {
     initialConsentRef.current = { ...consent };
-    setShowBanner(false);
-    setPageBlocker(false);
     setShowModal(true);
   };
 
   // Handle Modal Close
   const handleModalClose = () => {
     setShowModal(false);
-    // Show banner again if no changes made AND still need consent
-    setTimeout(() => {
-      if (
-        JSON.stringify(consent) === JSON.stringify(initialConsentRef.current)
-      ) {
-        if (!hasConsent()) {
-          setShowBanner(true);
-          setPageBlocker(true);
-        }
+    // Show banner again if no changes made
+    if (JSON.stringify(consent) === JSON.stringify(initialConsentRef.current)) {
+      if (!hasConsent()) {
+        setShowBanner(true);
       }
-    }, 0);
+    }
   };
 
   // Handle Modal Reject Optional
@@ -293,22 +249,6 @@ export const ConsentProvider = ({
     if (e.target === e.currentTarget) {
       handleModalClose();
     }
-  };
-
-  // Context methods
-  const openCookieSettings = () => {
-    handleManageCookies();
-  };
-
-  const closeCookieSettings = () => {
-    handleModalClose();
-  };
-
-  const contextValue: ConsentContextType = {
-    openCookieSettings,
-    closeCookieSettings,
-    showBanner,
-    showModal,
   };
 
   const styles = `
@@ -654,258 +594,224 @@ export const ConsentProvider = ({
     }
   `;
 
-  // Inject styles on mount
-  useEffect(() => {
-    if (typeof window !== "undefined" && isClient) {
-      // Check if styles already injected
-      if (!document.getElementById("consent-manager-styles")) {
-        const styleElement = document.createElement("style");
-        styleElement.id = "consent-manager-styles";
-        styleElement.textContent = styles;
-        document.head.appendChild(styleElement);
-      }
-    }
-  }, [isClient]);
-
-  // Don't render UI elements during SSR
-  if (!isClient) {
-    return (
-      <ConsentContext.Provider value={contextValue}>
-        {_children}
-      </ConsentContext.Provider>
-    );
-  }
-
   return (
-    <ConsentContext.Provider value={contextValue}>
-      <>
-        {/* Page Blocker - Only show if isClient and pageBlocker is true */}
-        {isClient && pageBlocker && (
-          <div className="consent-page-blocker"></div>
-        )}
+    <>
+      <style>{styles}</style>
 
-        {/* Consent Banner - Only show if isClient and showBanner is true */}
-        { showBanner && (
-          <div className="consent-banner">
-            <div className="consent-container">
-              <div className="consent-header">Your privacy choices</div>
-              <div className="consent-body">
-                We use cookies and similar technologies to make this site work,
-                keep it secure, measure performance, and—if you choose—help us
-                personalize ads.
-                <br />
-                <br />
-                Strictly necessary cookies are always on. You can accept all,
-                reject optional cookies, or manage your choices. You can change
-                your settings at any time.
-              </div>
-              <div className="consent-buttons">
-                <button
-                  className="consent-btn consent-btn-primary"
-                  onClick={handleAcceptAll}
-                >
-                  Accept all
-                </button>
-                <button
-                  className="consent-btn consent-btn-secondary"
-                  onClick={handleRejectOptional}
-                >
-                  Reject optional
-                </button>
-                <button
-                  className="consent-btn consent-btn-tertiary"
-                  onClick={handleManageCookies}
-                >
-                  Manage cookies
-                </button>
-              </div>
-              <div className="consent-footer">
-                By selecting "Accept all," you agree to our use of optional
-                cookies. See our <a href="/privacy-policy">Privacy Policy</a>{" "}
-                and{" "}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleManageCookies();
-                  }}
-                >
-                  Cookie Settings
-                </a>{" "}
-                for more information.
-              </div>
+      {/* Page Blocker */}
+      {pageBlocker && <div className="consent-page-blocker"></div>}
+
+      {/* Consent Banner */}
+      {showBanner && (
+        <div className="consent-banner">
+          <div className="consent-container">
+            <div className="consent-header">Your privacy choices</div>
+            <div className="consent-body">
+              We use cookies and similar technologies to make this site work,
+              keep it secure, measure performance, and—if you choose—help us
+              personalize ads.
+              <br />
+              <br />
+              Strictly necessary cookies are always on. You can accept all,
+              reject optional cookies, or manage your choices. You can change
+              your settings at any time.
             </div>
-          </div>
-        )}
-
-        {/* Consent Modal */}
-        {isClient && showModal && (
-          <div
-            className="consent-modal-overlay"
-            onClick={handleModalOverlayClick}
-          >
-            <div className="consent-modal">
+            <div className="consent-buttons">
               <button
-                className="consent-modal-close"
-                onClick={handleModalClose}
-                aria-label="Close cookie settings"
+                className="consent-btn consent-btn-primary"
+                onClick={handleAcceptAll}
               >
-                ✕
+                Accept all
               </button>
-              <div className="consent-modal-title">Cookie settings</div>
-              <div className="consent-modal-intro">
-                Choose which cookies we can use. Strictly necessary cookies are
-                required for the site to function and can't be switched off.
-                Your choices apply to this browser/device and can be changed at
-                any time.
-              </div>
-
-              {/* Strictly Necessary */}
-              <div className="consent-category">
-                <div className="consent-category-header">
-                  <div>
-                    <div className="consent-category-label">
-                      Strictly necessary
-                    </div>
-                    <div className="consent-category-badge">Always on</div>
-                  </div>
-                </div>
-                <div className="consent-category-description">
-                  These cookies are required to run the website and checkout,
-                  keep the site secure, prevent fraud, and remember items in
-                  your cart. You can block them in your browser, but parts of
-                  the site may not work.
-                </div>
-              </div>
-
-              {/* Preferences / Functional */}
-              <div className="consent-category">
-                <div className="consent-category-header">
-                  <div className="consent-category-label">
-                    Preferences / Functional
-                  </div>
-                  <button
-                    className={`consent-toggle ${consent.preferences ? "active" : ""}`}
-                    onClick={() => toggleCategory("preferences")}
-                    aria-label="Toggle preferences cookies"
-                  >
-                    <div className="consent-toggle-knob"></div>
-                  </button>
-                </div>
-                <div className="consent-category-description">
-                  These cookies remember your choices (such as language or
-                  region) and provide enhanced features to improve your
-                  experience.
-                </div>
-              </div>
-
-              {/* Analytics */}
-              <div className="consent-category">
-                <div className="consent-category-header">
-                  <div className="consent-category-label">Analytics</div>
-                  <button
-                    className={`consent-toggle ${consent.analytics ? "active" : ""}`}
-                    onClick={() => toggleCategory("analytics")}
-                    aria-label="Toggle analytics cookies"
-                  >
-                    <div className="consent-toggle-knob"></div>
-                  </button>
-                </div>
-                <div className="consent-category-description">
-                  These cookies help us understand how visitors use the site
-                  (for example, page views and clicks) so we can improve
-                  performance and shopping experience. We use analytics reports
-                  in aggregated form.
-                </div>
-              </div>
-
-              {/* Marketing / Advertising */}
-              <div className="consent-category">
-                <div className="consent-category-header">
-                  <div className="consent-category-label">
-                    Marketing / Advertising
-                  </div>
-                  <button
-                    className={`consent-toggle ${consent.marketing ? "active" : ""}`}
-                    onClick={() => toggleCategory("marketing")}
-                    aria-label="Toggle marketing cookies"
-                  >
-                    <div className="consent-toggle-knob"></div>
-                  </button>
-                </div>
-                <div className="consent-category-description">
-                  These cookies help us measure our ads and show more relevant
-                  offers on other websites and social platforms. They may share
-                  information about your visit and purchases with advertising
-                  partners.
-                </div>
-              </div>
-
-              {/* Small Print */}
-              <div
-                style={{
-                  color: "#64748b",
-                  fontSize: "0.75rem",
-                  marginTop: "1rem",
+              <button
+                className="consent-btn consent-btn-secondary"
+                onClick={handleRejectOptional}
+              >
+                Reject optional
+              </button>
+              <button
+                className="consent-btn consent-btn-tertiary"
+                onClick={handleManageCookies}
+              >
+                Manage cookies
+              </button>
+            </div>
+            <div className="consent-footer">
+              By selecting "Accept all," you agree to our use of optional
+              cookies. See our <a href="/privacy-policy">Privacy Policy</a> and{" "}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleManageCookies();
                 }}
               >
-                If you reject optional cookies, you may still see ads, but they
-                may be less relevant.
-              </div>
-
-              {/* Modal Buttons */}
-              <div className="consent-modal-buttons">
-                <button
-                  className="consent-btn consent-btn-secondary"
-                  onClick={handleModalRejectOptional}
-                >
-                  Reject optional
-                </button>
-                <button
-                  className="consent-btn consent-btn-primary"
-                  onClick={handleModalAcceptAll}
-                >
-                  Accept all
-                </button>
-                <button
-                  className="consent-btn consent-btn-tertiary"
-                  onClick={handleModalSaveChoices}
-                >
-                  Save choices
-                </button>
-              </div>
+                Cookie Settings
+              </a>{" "}
+              for more information.
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Toast Notification */}
-        {isClient && showToast && (
-          <div className="consent-toast">
-            Cookie settings saved. You can change your choices anytime in{" "}
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                handleManageCookies();
-              }}
-              style={{ color: "#D0950F", textDecoration: "none" }}
+      {/* Consent Modal */}
+      {showModal && (
+        <div
+          className="consent-modal-overlay"
+          onClick={handleModalOverlayClick}
+        >
+          <div className="consent-modal">
+            <button
+              className="consent-modal-close"
+              onClick={handleModalClose}
+              aria-label="Close cookie settings"
             >
-              Cookie Settings
-            </a>
-            .
+              ✕
+            </button>
+            <div className="consent-modal-title">Cookie settings</div>
+            <div className="consent-modal-intro">
+              Choose which cookies we can use. Strictly necessary cookies are
+              required for the site to function and can't be switched off. Your
+              choices apply to this browser/device and can be changed at any
+              time.
+            </div>
+
+            {/* Strictly Necessary */}
+            <div className="consent-category">
+              <div className="consent-category-header">
+                <div>
+                  <div className="consent-category-label">
+                    Strictly necessary
+                  </div>
+                  <div className="consent-category-badge">Always on</div>
+                </div>
+              </div>
+              <div className="consent-category-description">
+                These cookies are required to run the website and checkout, keep
+                the site secure, prevent fraud, and remember items in your cart.
+                You can block them in your browser, but parts of the site may
+                not work.
+              </div>
+            </div>
+
+            {/* Preferences / Functional */}
+            <div className="consent-category">
+              <div className="consent-category-header">
+                <div className="consent-category-label">
+                  Preferences / Functional
+                </div>
+                <button
+                  className={`consent-toggle ${consent.preferences ? "active" : ""}`}
+                  onClick={() => toggleCategory("preferences")}
+                  aria-label="Toggle preferences cookies"
+                >
+                  <div className="consent-toggle-knob"></div>
+                </button>
+              </div>
+              <div className="consent-category-description">
+                These cookies remember your choices (such as language or region)
+                and provide enhanced features to improve your experience.
+              </div>
+            </div>
+
+            {/* Analytics */}
+            <div className="consent-category">
+              <div className="consent-category-header">
+                <div className="consent-category-label">Analytics</div>
+                <button
+                  className={`consent-toggle ${consent.analytics ? "active" : ""}`}
+                  onClick={() => toggleCategory("analytics")}
+                  aria-label="Toggle analytics cookies"
+                >
+                  <div className="consent-toggle-knob"></div>
+                </button>
+              </div>
+              <div className="consent-category-description">
+                These cookies help us understand how visitors use the site (for
+                example, page views and clicks) so we can improve performance
+                and shopping experience. We use analytics reports in aggregated
+                form.
+              </div>
+            </div>
+
+            {/* Marketing / Advertising */}
+            <div className="consent-category">
+              <div className="consent-category-header">
+                <div className="consent-category-label">
+                  Marketing / Advertising
+                </div>
+                <button
+                  className={`consent-toggle ${consent.marketing ? "active" : ""}`}
+                  onClick={() => toggleCategory("marketing")}
+                  aria-label="Toggle marketing cookies"
+                >
+                  <div className="consent-toggle-knob"></div>
+                </button>
+              </div>
+              <div className="consent-category-description">
+                These cookies help us measure our ads and show more relevant
+                offers on other websites and social platforms. They may share
+                information about your visit and purchases with advertising
+                partners.
+              </div>
+            </div>
+
+            {/* Small Print */}
+            <div
+              style={{
+                color: "#64748b",
+                fontSize: "0.75rem",
+                marginTop: "1rem",
+              }}
+            >
+              If you reject optional cookies, you may still see ads, but they
+              may be less relevant.
+            </div>
+
+            {/* Modal Buttons */}
+            <div className="consent-modal-buttons">
+              <button
+                className="consent-btn consent-btn-secondary"
+                onClick={handleModalRejectOptional}
+              >
+                Reject optional
+              </button>
+              <button
+                className="consent-btn consent-btn-primary"
+                onClick={handleModalAcceptAll}
+              >
+                Accept all
+              </button>
+              <button
+                className="consent-btn consent-btn-tertiary"
+                onClick={handleModalSaveChoices}
+              >
+                Save choices
+              </button>
+            </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Render children - the actual app content */}
-        {_children}
-      </>
-    </ConsentContext.Provider>
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="consent-toast">
+          Cookie settings saved. You can change your choices anytime in{" "}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handleManageCookies();
+            }}
+            style={{ color: "#D0950F", textDecoration: "none" }}
+          >
+            Cookie Settings
+          </a>
+          .
+        </div>
+      )}
+    </>
   );
-};
-
-// Default export for standalone usage
-const ConsentManager = () => {
-  return <ConsentProvider>{null}</ConsentProvider>;
 };
 
 export default ConsentManager;
