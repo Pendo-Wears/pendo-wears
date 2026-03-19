@@ -27,7 +27,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        
         <style>{`
           * {
             box-sizing: border-box;
@@ -602,15 +601,15 @@ export default function RootLayout({
           <AlertUI />
         </AuthProvider>
         {/* Consent Manager Script */}
-         <Script id="ga-init" strategy="afterInteractive">{`
+        <Script id="ga-init" strategy="afterInteractive">{`
           (function() {
             const CONSENT_KEY = 'portfolio-consent-v1';
-            const COOKIE_SETTINGS_ID = 'cookie-settings-modal';
-              
 
-              // clg('Initializing consent manager with GA Measurement ID:', G-Y8YN12RW15);
-            
-            // Detect region (simplified - in production, use proper geolocation)
+            function safeGet(id) {
+              return document.getElementById(id);
+            }
+
+            // Detect region (basic)
             function getRegion() {
               const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
               if (tzName.includes('Europe/London') || tzName.includes('GB')) return 'UK';
@@ -622,16 +621,17 @@ export default function RootLayout({
             const region = getRegion();
             const defaultOptionalOff = ['UK', 'US', 'AU'].includes(region);
 
-            // Get stored consent or defaults
             function getConsent() {
-              const stored = localStorage.getItem(CONSENT_KEY);
-              if (stored) return JSON.parse(stored);
-              
+              try {
+                const stored = localStorage.getItem(CONSENT_KEY);
+                if (stored) return JSON.parse(stored);
+              } catch (e) {}
+
               return {
                 strictly_necessary: true,
                 preferences: false,
-                analytics: defaultOptionalOff ? false : false,
-                marketing: defaultOptionalOff ? false : false,
+                analytics: false,
+                marketing: false,
                 timestamp: new Date().toISOString()
               };
             }
@@ -644,61 +644,57 @@ export default function RootLayout({
               return localStorage.getItem(CONSENT_KEY) !== null;
             }
 
-            // DOM elements
-            const banner = document.getElementById('consent-banner');
-            const modalOverlay = document.getElementById('consent-modal-overlay');
-            const toast = document.getElementById('consent-toast');
-            const pageBlocker = document.getElementById('consent-page-blocker');
-
-            // Banner buttons
-            const acceptAllBtn = document.getElementById('consent-accept-all');
-            const rejectOptionalBtn = document.getElementById('consent-reject-optional');
-            const manageBtn = document.getElementById('consent-manage');
-
-            // Modal buttons
-            const modalRejectBtn = document.getElementById('modal-reject-optional');
-            const modalAcceptBtn = document.getElementById('modal-accept-all');
-            const modalSaveBtn = document.getElementById('modal-save');
-
-            // Cookie settings links
-            const cookieSettingsFooterLink = document.getElementById('cookie-settings-footer-link');
-            const cookieSettingsToastLink = document.getElementById('cookie-settings-toast-link');
-
-            // Toggles
-            const preferencesToggle = document.getElementById('toggle-preferences');
-            const analyticsToggle = document.getElementById('toggle-analytics');
-            const marketingToggle = document.getElementById('toggle-marketing');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
-
             let currentConsent = getConsent();
-            let initialConsent = JSON.parse(JSON.stringify(currentConsent)); // Deep copy for comparison
+            let initialConsent = JSON.parse(JSON.stringify(currentConsent));
+
+            // DOM (safe)
+            const banner = safeGet('consent-banner');
+            const modalOverlay = safeGet('consent-modal-overlay');
+            const toast = safeGet('consent-toast');
+            const pageBlocker = safeGet('consent-page-blocker');
+
+            const acceptAllBtn = safeGet('consent-accept-all');
+            const rejectOptionalBtn = safeGet('consent-reject-optional');
+            const manageBtn = safeGet('consent-manage');
+
+            const modalRejectBtn = safeGet('modal-reject-optional');
+            const modalAcceptBtn = safeGet('modal-accept-all');
+            const modalSaveBtn = safeGet('modal-save');
+            const modalCloseBtn = safeGet('modal-close-btn');
+
+            const cookieSettingsFooterLink = safeGet('cookie-settings-footer-link');
+            const cookieSettingsToastLink = safeGet('cookie-settings-toast-link');
+
+            const preferencesToggle = safeGet('toggle-preferences');
+            const analyticsToggle = safeGet('toggle-analytics');
+            const marketingToggle = safeGet('toggle-marketing');
 
             function updateToggles() {
-              preferencesToggle.classList.toggle('active', currentConsent.preferences);
-              analyticsToggle.classList.toggle('active', currentConsent.analytics);
-              marketingToggle.classList.toggle('active', currentConsent.marketing);
+              preferencesToggle?.classList.toggle('active', currentConsent.preferences);
+              analyticsToggle?.classList.toggle('active', currentConsent.analytics);
+              marketingToggle?.classList.toggle('active', currentConsent.marketing);
             }
 
             function showBanner() {
               if (!hasConsent()) {
-                banner.classList.add('show');
-                pageBlocker.classList.add('active');
+                banner?.classList.add('show');
+                pageBlocker?.classList.add('active');
               }
             }
 
             function hideBanner() {
-              banner.classList.remove('show');
-              pageBlocker.classList.remove('active');
+              banner?.classList.remove('show');
+              pageBlocker?.classList.remove('active');
             }
 
             function showModal() {
               updateToggles();
-              initialConsent = JSON.parse(JSON.stringify(currentConsent)); // Save state when opening
-              modalOverlay.classList.add('show');
+              initialConsent = JSON.parse(JSON.stringify(currentConsent));
+              modalOverlay?.classList.add('show');
             }
 
             function hideModal() {
-              modalOverlay.classList.remove('show');
+              modalOverlay?.classList.remove('show');
             }
 
             function hasConsentChanged() {
@@ -706,45 +702,48 @@ export default function RootLayout({
             }
 
             function showToast() {
-              toast.classList.add('show');
+              toast?.classList.add('show');
               setTimeout(() => {
-                toast.classList.remove('show');
+                toast?.classList.remove('show');
               }, 4000);
             }
 
-            function loadScripts() {
-              if (currentConsent.preferences) {
-                // console.log('Preferences/Functional consent given');
-                // Example: Load font preferences, theme persistence, or regional settings
-                // const script = document.createElement('script');
-                // script.src = 'https://cdn.example.com/preferences.js';
-                // document.head.appendChild(script);
-              }
-              if (currentConsent.analytics) {
-              if (window.__gaLoaded) return;
+            function fireInitialPageView() {
+              if (!window.gtag) return;
 
-              // console.log('Analytics consent given - loading analytics service');
-
-              window.__gaLoaded = true;
-
-              const gaScript = document.createElement('script');
-              gaScript.async = true;
-              gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y8YN12RW15';
-              document.head.appendChild(gaScript);
-
-              window.dataLayer = window.dataLayer || [];
-              window.gtag = function () {
-                window.dataLayer.push(arguments);
-              };
-
-              window.gtag('js', new Date());
-              window.gtag('config', 'G-Y8YN12RW15', {
-                anonymize_ip: true,
+              window.gtag('event', 'page_view', {
+                page_path: window.location.pathname,
+                page_location: window.location.href,
+                page_title: document.title
               });
             }
+
+            function loadScripts() {
+              if (currentConsent.analytics) {
+                if (window.__gaLoaded) return;
+
+                window.__gaLoaded = true;
+
+                const gaScript = document.createElement('script');
+                gaScript.async = true;
+                gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-Y8YN12RW15';
+                document.head.appendChild(gaScript);
+
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function() {
+                  window.dataLayer.push(arguments);
+                };
+
+                window.gtag('js', new Date());
+                window.gtag('config', 'G-Y8YN12RW15', {
+                  anonymize_ip: true,
+                });
+
+                // ✅ FIX: track first page AFTER GA loads
+                fireInitialPageView();
+              }
+
               if (currentConsent.marketing) {
-                // console.log('Marketing/Advertising consent given - loading marketing pixels');
-                // Example: load Meta Pixel (Facebook)
                 const metaScript = document.createElement('script');
                 metaScript.innerHTML = \`
                   !function(f,b,e,v,n,t,s)
@@ -759,22 +758,11 @@ export default function RootLayout({
                   fbq('track', 'PageView');
                 \`;
                 document.head.appendChild(metaScript);
-                
-                // Example: Google Ads conversion tracking
-                // const gadsScript = document.createElement('script');
-                // gadsScript.async = true;
-                // gadsScript.src = 'https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID';
-                // document.head.appendChild(gadsScript);
-                
-                // Example: LinkedIn Pixel
-                // const liScript = document.createElement('script');
-                // liScript.innerHTML = \`_linkedin_partner_id = "PARTNER_ID"; window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || []; window._linkedin_data_partner_ids.push(_linkedin_partner_id);\`;
-                // document.head.appendChild(liScript);
               }
             }
 
-            // Banner button handlers
-            acceptAllBtn.addEventListener('click', function() {
+            // Button handlers (safe)
+            acceptAllBtn?.addEventListener('click', function() {
               currentConsent = {
                 strictly_necessary: true,
                 preferences: true,
@@ -788,7 +776,7 @@ export default function RootLayout({
               showToast();
             });
 
-            rejectOptionalBtn.addEventListener('click', function() {
+            rejectOptionalBtn?.addEventListener('click', function() {
               currentConsent = {
                 strictly_necessary: true,
                 preferences: false,
@@ -801,44 +789,39 @@ export default function RootLayout({
               showToast();
             });
 
-            manageBtn.addEventListener('click', showModal);
-            cookieSettingsFooterLink.addEventListener('click', function(e) {
-              e.preventDefault();
-              showModal();
-            });
-            cookieSettingsToastLink.addEventListener('click', function(e) {
+            manageBtn?.addEventListener('click', showModal);
+            cookieSettingsFooterLink?.addEventListener('click', (e) => {
               e.preventDefault();
               showModal();
             });
 
-            // Modal close button handler
-            modalCloseBtn.addEventListener('click', function(e) {
+            cookieSettingsToastLink?.addEventListener('click', (e) => {
+              e.preventDefault();
+              showModal();
+            });
+
+            modalCloseBtn?.addEventListener('click', (e) => {
               e.preventDefault();
               hideModal();
-              // If no changes were made, reopen the banner
-              if (!hasConsentChanged()) {
-                showBanner();
-              }
+              if (!hasConsentChanged()) showBanner();
             });
 
-            // Modal toggle handlers
-            preferencesToggle.addEventListener('click', function() {
+            preferencesToggle?.addEventListener('click', () => {
               currentConsent.preferences = !currentConsent.preferences;
               updateToggles();
             });
 
-            analyticsToggle.addEventListener('click', function() {
+            analyticsToggle?.addEventListener('click', () => {
               currentConsent.analytics = !currentConsent.analytics;
               updateToggles();
             });
 
-            marketingToggle.addEventListener('click', function() {
+            marketingToggle?.addEventListener('click', () => {
               currentConsent.marketing = !currentConsent.marketing;
               updateToggles();
             });
 
-            // Modal button handlers
-            modalRejectBtn.addEventListener('click', function() {
+            modalRejectBtn?.addEventListener('click', () => {
               currentConsent = {
                 strictly_necessary: true,
                 preferences: false,
@@ -848,11 +831,11 @@ export default function RootLayout({
               };
               saveConsent(currentConsent);
               hideModal();
-              hideBanner(); // Explicitly hide banner after any choice
+              hideBanner();
               showToast();
             });
 
-            modalAcceptBtn.addEventListener('click', function() {
+            modalAcceptBtn?.addEventListener('click', () => {
               currentConsent = {
                 strictly_necessary: true,
                 preferences: true,
@@ -867,25 +850,26 @@ export default function RootLayout({
               showToast();
             });
 
-            modalSaveBtn.addEventListener('click', function() {
+            modalSaveBtn?.addEventListener('click', () => {
               saveConsent(currentConsent);
+              loadScripts(); // ✅ load if analytics enabled
               hideModal();
-              hideBanner(); // Hide banner after saving choices
+              hideBanner();
               showToast();
             });
 
-            // Close modal on overlay click
-            modalOverlay.addEventListener('click', function(e) {
-              if (e.target === modalOverlay) {
-                hideModal();
-              }
+            modalOverlay?.addEventListener('click', (e) => {
+              if (e.target === modalOverlay) hideModal();
             });
 
-            // Initialize
-            loadScripts();
+            // ✅ IMPORTANT: Only load scripts IF consent already exists
+            if (hasConsent()) {
+              loadScripts();
+            }
+
             showBanner();
           })();
-        `}</Script>
+          `}</Script>
         {/* <ThemeRegistry> */}
         <script src="https://accounts.google.com/gsi/client" async defer />
 
