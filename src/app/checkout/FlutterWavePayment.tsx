@@ -37,7 +37,7 @@ export default function FlutterwavePayButton({ amount, email, name }: Props) {
       onClick={() =>
         handleFlutterPayment({
           callback: async (response) => {
-            console.log("Flutterwave response:", response);
+            // console.log("Flutterwave response:", response);
 
             // Always close modal
             closePaymentModal();
@@ -47,7 +47,7 @@ export default function FlutterwavePayButton({ amount, email, name }: Props) {
                 transaction_id: response.transaction_id,
               });
 
-              console.log("Verification result:", verifyRes.data);
+              // console.log("Verification result:", verifyRes.data);
 
               if (verifyRes.data.status === "success") {
                 // ✅ payment verified
@@ -58,12 +58,12 @@ export default function FlutterwavePayButton({ amount, email, name }: Props) {
             } catch (error: any) {
               console.error(
                 "Verification error:",
-                error.response?.data || error.message
+                error.response?.data || error.message,
               );
             }
           },
           onClose: () => {
-            console.log("Payment closed");
+            // console.log("Payment closed");
           },
         })
       }

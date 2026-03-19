@@ -48,12 +48,23 @@ const Navbar = () => {
   const getCategories = async () => {
     try {
       const result: any = await productsEndpoint.getCategories();
-      console.log(result);
+      // console.log(result);
       if (result.status === 200) {
         setCategories(result.data);
       }
     } catch (e: any) {
       fireAlert(e.message, "error");
+    }
+  };
+
+  const tractLogout = () => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "logout");
+      }
     }
   };
 
@@ -134,6 +145,7 @@ const Navbar = () => {
           action: () => {
             logoutUser();
             getUserAuth();
+            tractLogout();
           },
         },
   ].filter(Boolean);

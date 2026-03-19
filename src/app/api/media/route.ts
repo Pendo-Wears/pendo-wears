@@ -16,12 +16,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await privateApi.post(`/wp/v2/media`, file, {
-        headers: {
-          "Content-Type": 'image/*',
-      }
+      headers: {
+        "Content-Type": "image/*",
+      },
     });
 
-    console.log(response.data);
+    // console.log(response.data);
 
     // return NextResponse.json({
     //   message: "Users fetched successfully",
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     console.error("User API error:", error.response?.data || error.message);
     return NextResponse.json(
       { message: error.response?.data || error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

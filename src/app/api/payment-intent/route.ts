@@ -24,17 +24,17 @@ async function createCustomerForUser(user: {
       appUserId: user.userId,
     },
     address: {
-      country: user.country
-    }
+      country: user.country,
+    },
   });
-  console.log("Stripe Customer:", customer);
+  // console.log("Stripe Customer:", customer);
 
   return customer.id;
 }
 
 export async function POST(req: Request) {
   try {
-    const { amount, user, orderId} = await req.json();
+    const { amount, user, orderId } = await req.json();
 
     const customerId = await createCustomerForUser(user);
 
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     return NextResponse.json(
       { message: "Stripe payment intent failed", error: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

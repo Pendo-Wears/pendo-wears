@@ -36,12 +36,12 @@ export default function GoogleLoginButton() {
             throw new Error("JWT not returned");
           }
 
-          console.log(res.data.data, "ASDFGHJK");
+          // console.log(res.data.data, "ASDFGHJK");
 
           // ✅ Store token
           localStorage.setItem("token", jwt);
 
-          console.log("Login successful");
+          // console.log("Login successful");
         } catch (err: any) {
           console.error("Google login failed:", err);
         }

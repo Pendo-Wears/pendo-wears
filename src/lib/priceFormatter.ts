@@ -32,7 +32,7 @@ export const getCountryData = async (code: string) => {
 //   country = res;
 // });
 
-console.log(country, " COUNTRYYYYYYYYYYYYYYYY");
+// console.log(country, " COUNTRYYYYYYYYYYYYYYYY");
 
 export const formatWoocommercePrice = (
   price: number | string,
@@ -44,9 +44,8 @@ export const formatWoocommercePrice = (
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0,
-  })
-    .format(value)
-    // .slice(2);
+  }).format(value);
+  // .slice(2);
 };
 
 export const formatPrice = (price: number) => {
@@ -54,9 +53,8 @@ export const formatPrice = (price: number) => {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 0, // remove decimals if you want
-  })
-    .format(price)
-    // .slice(2);
+  }).format(price);
+  // .slice(2);
 };
 
 export const getPriceRange = (items: any): string => {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Flutterwave from "flutterwave-node-v3";
+import axios from "axios";
 
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUBLIC_KEY!,
@@ -11,52 +12,71 @@ export async function OPTIONS() {
   return NextResponse.json({}, { status: 200 });
 }
 
-// Handle POST (charge card)
+// Handle POST (initialize payment)
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
     const {
       tx_ref,
       amount,
       currency = "USD",
       email,
-      card,
-      redirect,
-      user,
+      name,
+      redirect_url,
     } = body;
 
     // Validate required fields
-    if (!tx_ref || !amount || !email || !card || !user) {
+    if (!tx_ref || !amount || !email || !name || !redirect_url) {
       return NextResponse.json(
         {
           message: "Missing required fields",
-          required: ["tx_ref", "amount", "email", "card", "user"],
-          received: { tx_ref, amount, email, card, user },
+          required: ["tx_ref", "amount", "email", "name", "redirect_url"],
         },
         { status: 400 },
       );
     }
 
-    // Create payload for SDK
+    // v3 payment payload
     const payload = {
-      card_number: card.number,
-      cvv: card.cvv,
-      expiry_month: card.expiry_month,
-      expiry_year: card.expiry_year,
-      currency,
-      amount,
-      email,
       tx_ref,
-      enckey: process.env.FLW_ENCRYPTION_KEY!,
-      redirect_url: redirect
+      amount,
+      currency,
+      redirect_url,
+      payment_options: "card",
+      customer: {
+        email,
+        name,
+      },
+      customizations: {
+        title: "Your Store",
+        description: "Payment for items",
+        logo: "https://your-logo-url.com/logo.png",
+      },
     };
 
-    // Charge the card using SDK (handles 3DES internally)
-    const response = await flw.Charge.card(payload);
+    // Call Flutterwave v3
+    const response = await axios.post(
+      "https://api.flutterwave.com/v3/payments",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-    console.log("Flutterwave charge response:", response);
+    // console.log("Flutterwave v3 response:", response);
 
-    return NextResponse.json(response, { status: 200 });
+    return NextResponse.json(
+      {
+        status: "success",
+        link: response.data.data.link,
+        data: response.data.data,
+      },
+      { status: 200 },
+    );
   } catch (error: any) {
     console.error("Flutterwave error:", error?.response || error);
 

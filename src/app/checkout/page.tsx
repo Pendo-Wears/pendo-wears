@@ -36,15 +36,29 @@ const Checkout = () => {
     setLoading(true);
     try {
       const response = await payWithFlutterwave();
-      console.log(response, "RESPONSEEEEE");
+      // console.log(response, "RESPONSEEEEE");
     } catch (err: any) {
-      console.log(err);
+      // console.log(err);
       fireAlert(
         err.response.data.error || err.message || "Payment failed",
         "error",
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const tractCheckout = () => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "begin_checkout", {
+          currency: "USD",
+          value: amount,
+        });
+      }
     }
   };
 
@@ -59,7 +73,7 @@ const Checkout = () => {
   //     receipt_email: user.email,
   //   });
 
-  //   console.log(response);
+  // console.log(response);
   // };
 
   // const createOrder = async () => {
@@ -87,7 +101,7 @@ const Checkout = () => {
   //     };
 
   //     const order: any = await productsEndpoint.createOrder(orderPayload);
-  //     console.log("Order created successfully:", order);
+  // console.log("Order created successfully:", order);
   //     if (order.success) {
   //       fireAlert(order.message, "success");
   //       localStorage.removeItem("cart");
@@ -106,61 +120,49 @@ const Checkout = () => {
         ? localStorage.getItem("user") || "null"
         : "null";
     const userData = JSON.parse(profile);
+
     const raw =
       typeof window !== "undefined"
         ? localStorage.getItem("cart") || "[]"
         : "[]";
     const allCart = JSON.parse(raw);
-    // const userCountry = await getCountryData();
 
-    if (!userData.id) return;
+    if (!userData?.id) return;
+
     if (!amount) {
       fireAlert("Cannot perform transaction with 0 amount", "error");
       return;
     }
-    if (!cardNumber || !cvc || !expiryMonth || !expiryYear) {
-      fireAlert("Please fill out card details completely", "error");
-      return;
-    }
 
-    const response = await axios.post("/api/flutterwave/pay", {
-      tx_ref: `${crypto.randomUUID()}`,
-      amount,
-      email: user?.email || "",
-      currency: "USD",
-      card: {
-        number: cardNumber,
-        cvv: cvc,
-        expiry_month: expiryMonth,
-        expiry_year: expiryYear,
-      },
-      redirect:
-        typeof window !== "undefined"
-          ? `${window.location.origin}/order-confirmation`
-          : "",
-      user: {
-        email: user?.email,
-        phone_number: user?.billing?.phone || "",
+    try {
+      const response = await axios.post("/api/flutterwave/pay", {
+        tx_ref: `${crypto.randomUUID()}`,
+        amount: amount,
+        currency: "NGN",
+        email: user?.email || "",
         name: `${user?.first_name || ""} ${user?.last_name || ""}`,
-      },
-    });
+        redirect_url:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/order-confirmation`
+            : "",
+      });
 
-    console.log("Stripe response:", response);
+      // console.log("response:", response);
 
-    if (response.data.data.status === "pending") {
-      const auth = response.data?.meta?.authorization;
+      // ✅ NEW: Redirect user to Flutterwave checkout page
+      const paymentLink = response.data?.link;
 
-      if (auth?.mode === "redirect" && typeof window !== "undefined") {
-        // Redirect to bank-hosted 3DS page
-        window.location.href = auth.redirect;
-      } else if (auth?.mode === "otp") {
-        // Show OTP input form in your app
-        // TODO: HANDLE OTP VERIFICATION
-        handleVerify(response.data.data.flw_ref, response.data.data.otp);
+      if (paymentLink && typeof window !== "undefined") {
+        window.location.href = paymentLink;
+      } else {
+        fireAlert("Unable to initialize payment", "error");
       }
-    } else if (response.data.data?.status === "successful") {
-      // Payment done
-      router.push(`/order-confirmation`);
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      fireAlert(
+        error?.response?.data?.message || "Payment initialization failed",
+        "error",
+      );
     }
   };
 
@@ -210,7 +212,7 @@ const Checkout = () => {
         flw_ref: flwRef,
         otp,
       });
-      console.log("OTP Verification response:", res.data);
+      // console.log("OTP Verification response:", res.data);
     } catch (err: any) {
       console.error(
         "OTP Verification error:",
@@ -290,8 +292,8 @@ const Checkout = () => {
                 country?.country?.region === "Africa" ? "visible" : "hidden"
               }
             > */}
-              <Box display="flex" flexDirection={"column"} gap="20px" mb="45px">
-                {/* <Box width="100%">
+            <Box display="flex" flexDirection={"column"} gap="20px" mb="45px">
+              {/* <Box width="100%">
                   <Typography
                     fontSize={16}
                     fontFamily={"Montserrat"}
@@ -342,82 +344,174 @@ const Checkout = () => {
                     }}
                   />
                 </Box> */}
-                <Box width="100%">
-                  <Typography
-                    fontSize={16}
-                    fontFamily={"Montserrat"}
-                    color="#000"
-                    fontWeight={500}
-                    mb="10px"
-                  >
-                    Card Number
-                  </Typography>
+              <Box width="100%">
+                <Typography
+                  fontSize={16}
+                  fontFamily={"Montserrat"}
+                  color="#000"
+                  fontWeight={500}
+                  mb="10px"
+                >
+                  Card Number
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  type={"text"}
+                  placeholder="Card Number"
+                  value={cardNumber || ""}
+                  onChange={(e) => setCardNumber(e.target.value)}
+                  InputProps={{
+                    endAdornment: (
+                      <Box
+                        display={{ xs: "none", sm: "flex" }}
+                        alignItems={"center"}
+                        gap="12px"
+                        position="relative"
+                      >
+                        <Image
+                          src={icons.visa}
+                          alt="visa"
+                          width="27"
+                          height="24"
+                          style={{
+                            objectFit: "contain",
+                            position: "absolute",
+                            right: "72px",
+                            zIndex: 3,
+                          }}
+                        />
+                        <Image
+                          src={icons.master}
+                          alt="master"
+                          width="27"
+                          height="24"
+                          style={{
+                            objectFit: "contain",
+                            position: "absolute",
+                            right: "48px",
+                            zIndex: 4,
+                          }}
+                        />
+                        <Image
+                          src={icons.express}
+                          alt="express"
+                          width="27"
+                          height="24"
+                          style={{
+                            objectFit: "contain",
+                            position: "absolute",
+                            right: "24px",
+                            zIndex: 5,
+                          }}
+                        />
+                        <Image
+                          src={icons.paypal}
+                          alt="paypal"
+                          width="27"
+                          height="24"
+                          style={{
+                            objectFit: "contain",
+                            position: "absolute",
+                            right: 0,
+                            zIndex: 6,
+                          }}
+                        />
+                      </Box>
+                    ),
+                  }}
+                  sx={{
+                    bgcolor: "transparent",
+                    borderRadius: "100px",
+                    border: "1px solid #00000010",
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderRadius: "8px",
+                        border: "none", // remove border normally
+                      },
+                      "&:hover fieldset": {
+                        borderRadius: "100px",
+                        border: "1px solid transparent", // optional: show on hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderRadius: "100px",
+                        border: "1px solid transparent", // show border on focus
+                      },
+                    },
+                    input: {
+                      fontFamily: "Montserrat",
+                      px: "18px",
+                      py: "18px",
+                      borderRadius: "100px",
+                      "&::placeholder": {
+                        color: "#656565", // placeholder color
+                        fontFamily: "Montserrat",
+                        fontSize: "16px",
+                        alignSelf: "center",
+                        opacity: 1, // show placeholder fully
+                      },
+                    },
+                  }}
+                />
+              </Box>
+              <Box width="100%">
+                <Typography
+                  fontSize={16}
+                  fontFamily={"Montserrat"}
+                  color="#000"
+                  fontWeight={500}
+                  mb="10px"
+                >
+                  Expiry Date
+                </Typography>
+                <Box display="flex" alignItems={"center"} gap="25px">
                   <TextField
                     fullWidth
                     variant="outlined"
                     type={"text"}
-                    placeholder="Card Number"
-                    value={cardNumber || ""}
-                    onChange={(e) => setCardNumber(e.target.value)}
-                    InputProps={{
-                      endAdornment: (
-                        <Box
-                          display={{ xs: "none", sm: "flex" }}
-                          alignItems={"center"}
-                          gap="12px"
-                          position="relative"
-                        >
-                          <Image
-                            src={icons.visa}
-                            alt="visa"
-                            width="27"
-                            height="24"
-                            style={{
-                              objectFit: "contain",
-                              position: "absolute",
-                              right: "72px",
-                              zIndex: 3,
-                            }}
-                          />
-                          <Image
-                            src={icons.master}
-                            alt="master"
-                            width="27"
-                            height="24"
-                            style={{
-                              objectFit: "contain",
-                              position: "absolute",
-                              right: "48px",
-                              zIndex: 4,
-                            }}
-                          />
-                          <Image
-                            src={icons.express}
-                            alt="express"
-                            width="27"
-                            height="24"
-                            style={{
-                              objectFit: "contain",
-                              position: "absolute",
-                              right: "24px",
-                              zIndex: 5,
-                            }}
-                          />
-                          <Image
-                            src={icons.paypal}
-                            alt="paypal"
-                            width="27"
-                            height="24"
-                            style={{
-                              objectFit: "contain",
-                              position: "absolute",
-                              right: 0,
-                              zIndex: 6,
-                            }}
-                          />
-                        </Box>
-                      ),
+                    placeholder="MM"
+                    value={expiryMonth || ""}
+                    onChange={(e) => setExpiryMonth(e.target.value)}
+                    sx={{
+                      bgcolor: "transparent",
+                      borderRadius: "100px",
+                      border: "1px solid #00000010",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderRadius: "8px",
+                          border: "none", // remove border normally
+                        },
+                        "&:hover fieldset": {
+                          borderRadius: "100px",
+                          border: "1px solid transparent", // optional: show on hover
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderRadius: "100px",
+                          border: "1px solid transparent", // show border on focus
+                        },
+                      },
+                      input: {
+                        fontFamily: "Montserrat",
+                        px: "18px",
+                        py: "18px",
+                        borderRadius: "100px",
+                        "&::placeholder": {
+                          color: "#656565", // placeholder color
+                          fontFamily: "Montserrat",
+                          fontSize: "16px",
+                          alignSelf: "center",
+                          opacity: 1, // show placeholder fully
+                        },
+                      },
                     }}
+                  />
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    type={"text"}
+                    placeholder="YY"
+                    value={expiryYear || ""}
+                    onChange={(e) => setExpiryYear(e.target.value)}
                     sx={{
                       bgcolor: "transparent",
                       borderRadius: "100px",
@@ -452,187 +546,95 @@ const Checkout = () => {
                     }}
                   />
                 </Box>
-                <Box width="100%">
-                  <Typography
-                    fontSize={16}
-                    fontFamily={"Montserrat"}
-                    color="#000"
-                    fontWeight={500}
-                    mb="10px"
-                  >
-                    Expiry Date
-                  </Typography>
-                  <Box display="flex" alignItems={"center"} gap="25px">
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      type={"text"}
-                      placeholder="MM"
-                      value={expiryMonth || ""}
-                      onChange={(e) => setExpiryMonth(e.target.value)}
-                      sx={{
-                        bgcolor: "transparent",
-                        borderRadius: "100px",
-                        border: "1px solid #00000010",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "8px",
-                            border: "none", // remove border normally
-                          },
-                          "&:hover fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // optional: show on hover
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // show border on focus
-                          },
-                        },
-                        input: {
-                          fontFamily: "Montserrat",
-                          px: "18px",
-                          py: "18px",
-                          borderRadius: "100px",
-                          "&::placeholder": {
-                            color: "#656565", // placeholder color
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            alignSelf: "center",
-                            opacity: 1, // show placeholder fully
-                          },
-                        },
-                      }}
-                    />
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      type={"text"}
-                      placeholder="YY"
-                      value={expiryYear || ""}
-                      onChange={(e) => setExpiryYear(e.target.value)}
-                      sx={{
-                        bgcolor: "transparent",
-                        borderRadius: "100px",
-                        border: "1px solid #00000010",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "8px",
-                            border: "none", // remove border normally
-                          },
-                          "&:hover fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // optional: show on hover
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // show border on focus
-                          },
-                        },
-                        input: {
-                          fontFamily: "Montserrat",
-                          px: "18px",
-                          py: "18px",
-                          borderRadius: "100px",
-                          "&::placeholder": {
-                            color: "#656565", // placeholder color
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            alignSelf: "center",
-                            opacity: 1, // show placeholder fully
-                          },
-                        },
-                      }}
-                    />
-                  </Box>
-                </Box>
-                <Box width={"50%"}>
-                  <Typography
-                    fontSize={16}
-                    fontFamily={"Montserrat"}
-                    color="#000"
-                    fontWeight={500}
-                    mb="10px"
-                  >
-                    CVV
-                  </Typography>
-                  <Box display="flex" alignItems={"center"} gap="10px">
-                    <TextField
-                      fullWidth
-                      variant="outlined"
-                      type={"text"}
-                      placeholder="CVV"
-                      value={cvc || ""}
-                      onChange={(e) => setCvc(e.target.value)}
-                      sx={{
-                        bgcolor: "transparent",
-                        borderRadius: "100px",
-                        border: "1px solid #00000010",
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderRadius: "8px",
-                            border: "none", // remove border normally
-                          },
-                          "&:hover fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // optional: show on hover
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderRadius: "100px",
-                            border: "1px solid transparent", // show border on focus
-                          },
-                        },
-                        input: {
-                          fontFamily: "Montserrat",
-                          px: "18px",
-                          py: "18px",
-                          borderRadius: "100px",
-                          "&::placeholder": {
-                            color: "#656565", // placeholder color
-                            fontFamily: "Montserrat",
-                            fontSize: "16px",
-                            alignSelf: "center",
-                            opacity: 1, // show placeholder fully
-                          },
-                        },
-                      }}
-                    />
-                    <Image
-                      src={icons.info}
-                      alt="info"
-                      style={{ objectFit: "contain" }}
-                      width="22"
-                      height="22"
-                    />
-                  </Box>
-                </Box>
               </Box>
-              <Box
-                width="100%"
-                maxWidth="300px"
-                height="57px"
-                bgcolor="#000"
-                borderRadius={"100px"}
-                display="flex"
-                alignItems={"center"}
-                justifyContent={"center"}
-                sx={{
-                  cursor: "pointer",
-                  pointerEvents: loading ? "none" : "auto",
-                  opacity: loading ? 0.2 : 1,
-                }}
-                onClick={pay}
-              >
+              <Box width={"50%"}>
                 <Typography
                   fontSize={16}
                   fontFamily={"Montserrat"}
-                  fontWeight={700}
-                  color="#FFFFFF"
-                  width="fit-content"
-                  sx={{ whiteSpace: "noWrap" }}
+                  color="#000"
+                  fontWeight={500}
+                  mb="10px"
                 >
-                  Pay {loading ? "..." : formatPrice(amount)}
+                  CVV
                 </Typography>
+                <Box display="flex" alignItems={"center"} gap="10px">
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    type={"text"}
+                    placeholder="CVV"
+                    value={cvc || ""}
+                    onChange={(e) => setCvc(e.target.value)}
+                    sx={{
+                      bgcolor: "transparent",
+                      borderRadius: "100px",
+                      border: "1px solid #00000010",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderRadius: "8px",
+                          border: "none", // remove border normally
+                        },
+                        "&:hover fieldset": {
+                          borderRadius: "100px",
+                          border: "1px solid transparent", // optional: show on hover
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderRadius: "100px",
+                          border: "1px solid transparent", // show border on focus
+                        },
+                      },
+                      input: {
+                        fontFamily: "Montserrat",
+                        px: "18px",
+                        py: "18px",
+                        borderRadius: "100px",
+                        "&::placeholder": {
+                          color: "#656565", // placeholder color
+                          fontFamily: "Montserrat",
+                          fontSize: "16px",
+                          alignSelf: "center",
+                          opacity: 1, // show placeholder fully
+                        },
+                      },
+                    }}
+                  />
+                  <Image
+                    src={icons.info}
+                    alt="info"
+                    style={{ objectFit: "contain" }}
+                    width="22"
+                    height="22"
+                  />
+                </Box>
               </Box>
+            </Box>
+            <Box
+              width="100%"
+              maxWidth="300px"
+              height="57px"
+              bgcolor="#000"
+              borderRadius={"100px"}
+              display="flex"
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{
+                cursor: "pointer",
+                pointerEvents: loading ? "none" : "auto",
+                opacity: loading ? 0.2 : 1,
+              }}
+              onClick={pay}
+            >
+              <Typography
+                fontSize={16}
+                fontFamily={"Montserrat"}
+                fontWeight={700}
+                color="#FFFFFF"
+                width="fit-content"
+                sx={{ whiteSpace: "noWrap" }}
+              >
+                Pay {loading ? "..." : formatPrice(amount)}
+              </Typography>
+            </Box>
             {/* </Activity> */}
           </Box>
           <Box

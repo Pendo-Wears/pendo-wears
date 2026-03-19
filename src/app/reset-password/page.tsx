@@ -41,7 +41,7 @@ const ResetPassword = () => {
       ? await completeResetUserPassword(email || loginEmail!, password, code!)
       : await resetUserPassword(email || loginEmail!);
 
-    console.log(result, "RESULTTTTT");
+    // console.log(result, "RESULTTTTT");
 
     if (!result.success) {
       fireAlert(result.error, "error");

@@ -3,7 +3,7 @@ import Flutterwave from "flutterwave-node-v3";
 
 const flw = new Flutterwave(
   process.env.FLUTTERWAVE_PUBLIC_KEY!,
-  process.env.FLUTTERWAVE_SECRET_KEY!
+  process.env.FLUTTERWAVE_SECRET_KEY!,
 );
 
 // Handle preflight OPTIONS
@@ -11,42 +11,54 @@ export async function OPTIONS() {
   return NextResponse.json({}, { status: 200 });
 }
 
-// POST endpoint to verify OTP
-export async function POST(req: NextRequest) {
+// Verify payment (v3)
+export async function GET(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { flw_ref, otp } = body;
+    const { searchParams } = new URL(req.url);
 
-    if (!flw_ref || !otp) {
+    const transaction_id = searchParams.get("transaction_id");
+
+    if (!transaction_id) {
       return NextResponse.json(
-        { message: "flw_ref and otp are required", received: body },
-        { status: 400 }
+        { message: "transaction_id is required" },
+        { status: 400 },
       );
     }
 
-    // Call Flutterwave SDK to validate the charge
-    const response = await flw.Charge.validate({ flw_ref, otp });
+    // Verify transaction with Flutterwave
+    const response = await flw.Transaction.verify({ id: transaction_id });
 
-    // Optional: you can verify status here
-    if (response.data.chargeResponseCode === "00") {
+    const data = response.data;
+
+    // 🔐 IMPORTANT: Always validate these
+    if (
+      response.status === "success" &&
+      data.status === "successful" &&
+      data.amount &&
+      data.currency === "NGN" // match your expected currency
+    ) {
       return NextResponse.json({
-        message: "Payment successful",
-        data: response.data,
+        message: "Payment verified successfully",
+        data,
       });
     } else {
-      return NextResponse.json({
-        message: "Payment not successful",
-        data: response.data,
-      });
+      return NextResponse.json(
+        {
+          message: "Payment not successful",
+          data,
+        },
+        { status: 400 },
+      );
     }
   } catch (error: any) {
-    console.error("Flutterwave OTP verify error:", error?.response || error);
+    console.error("Flutterwave verify error:", error?.response || error);
+
     return NextResponse.json(
       {
-        message: "Flutterwave OTP verification failed",
+        message: "Flutterwave verification failed",
         error: error?.response?.data || error.message,
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 }

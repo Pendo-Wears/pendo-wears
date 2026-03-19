@@ -6,7 +6,7 @@ import { Box, CircularProgress, TextField, Typography } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
 import { handleLogin, resetUserPassword } from "@/src/services/authUsage";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/context/AuthContext";
 import { getCountryData } from "@/src/lib/priceFormatter";
 import GoogleLoginButton from "@/src/components/GoogleButton";
@@ -25,8 +25,19 @@ const Login = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
+
+  const tractLogin = () => {
+    const CONSENT_KEY = "portfolio-consent-v1";
+    const stored = localStorage.getItem(CONSENT_KEY);
+    if (stored) {
+      let currentConsent = JSON.parse(stored);
+      if (currentConsent.analytics) {
+        window.gtag("event", "login", {
+          method: "email",
+        });
+      }
+    }
+  };
 
   async function submitForm() {
     setLoading(true);
@@ -35,7 +46,7 @@ const Login = () => {
 
     setLoading(false);
 
-    console.log(result, "RESULTTTTT");
+    // console.log(result, "RESULTTTTT");
 
     if (!result.success) {
       fireAlert(result.error, "error");
@@ -46,6 +57,7 @@ const Login = () => {
     setIsAuthenticated(true);
     getUserAuth();
     getUser();
+    tractLogin();
     if (typeof window !== "undefined") {
       const path = localStorage.getItem("path") || "";
       const parsedPath = path ? JSON.parse(path) : "";
