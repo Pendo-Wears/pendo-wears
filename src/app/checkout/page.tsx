@@ -157,6 +157,7 @@ const Checkout = () => {
       } else {
         fireAlert("Unable to initialize payment", "error");
       }
+      tractCheckout();
     } catch (error: any) {
       console.error("Payment error:", error);
       fireAlert(
@@ -253,7 +254,7 @@ const Checkout = () => {
           flexWrap={"wrap"}
           gap={{ xs: "30px", sm: "65px" }}
         >
-          <Box
+          {/* <Box
             flex={1}
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
@@ -261,7 +262,7 @@ const Checkout = () => {
             px={{ xs: "16px", sm: "30px" }}
             border="1px solid #00000010"
           >
-            {/* {country?.country?.region === "Africa" ? (
+            {country?.country?.region === "Africa" ? (
               <FlutterwavePayButton
                 name={`${user?.first_name || ""} ${user?.last_name || ""}`}
                 email={user?.email || ""}
@@ -269,7 +270,7 @@ const Checkout = () => {
               />
             ) : (
               <StripeWrapper amount={amount} />
-            )} */}
+            )}
             <Typography
               fontSize={{ xs: 18, sm: 24 }}
               fontFamily={"Montserrat"}
@@ -280,20 +281,20 @@ const Checkout = () => {
               Payment Information
             </Typography>
 
-            {/* <Activity
+            <Activity
               mode={
                 country?.country?.region === "Africa" ? "hidden" : "visible"
               }
             >
               <StripeWrapper amount={amount} />
-            </Activity> */}
-            {/* <Activity
+            </Activity>
+            <Activity
               mode={
                 country?.country?.region === "Africa" ? "visible" : "hidden"
               }
-            > */}
+            >
             <Box display="flex" flexDirection={"column"} gap="20px" mb="45px">
-              {/* <Box width="100%">
+              <Box width="100%">
                   <Typography
                     fontSize={16}
                     fontFamily={"Montserrat"}
@@ -343,7 +344,7 @@ const Checkout = () => {
                       },
                     }}
                   />
-                </Box> */}
+                </Box>
               <Box width="100%">
                 <Typography
                   fontSize={16}
@@ -635,10 +636,11 @@ const Checkout = () => {
                 Pay {loading ? "..." : formatPrice(amount)}
               </Typography>
             </Box>
-            {/* </Activity> */}
-          </Box>
+            </Activity>
+          </Box> */}
           <Box
-            width="403px"
+            // width="403px"
+            flex={1}
             bgcolor={"#F9FAFB"}
             borderRadius={"15px"}
             py={{ xs: "25px", sm: "30px" }}
@@ -811,6 +813,33 @@ const Checkout = () => {
                   }, ${country?.country?.name || ""}`}
                 </Typography>
               </Box>
+            </Box>
+            <Box
+              width="100%"
+              maxWidth="300px"
+              height="57px"
+              bgcolor="#000"
+              borderRadius={"100px"}
+              display="flex"
+              alignItems={"center"}
+              justifyContent={"center"}
+              sx={{
+                cursor: "pointer",
+                pointerEvents: loading ? "none" : "auto",
+                opacity: loading ? 0.2 : 1,
+              }}
+              onClick={pay}
+            >
+              <Typography
+                fontSize={16}
+                fontFamily={"Montserrat"}
+                fontWeight={700}
+                color="#FFFFFF"
+                width="fit-content"
+                sx={{ whiteSpace: "noWrap" }}
+              >
+                Pay{loading ? "ing..." : formatPrice(amount)}
+              </Typography>
             </Box>
           </Box>
         </Box>

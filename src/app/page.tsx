@@ -35,7 +35,6 @@ const HomePage = () => {
   const getCategories = async () => {
     try {
       const result: any = await productsEndpoint.getCategories();
-      console.log(result);
       if (result.status === 200) {
         setCategories(result.data);
       }
