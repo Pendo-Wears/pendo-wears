@@ -121,7 +121,7 @@ const OrderConfirmation = () => {
       await axios
         .get(`/api/flutterwave/verify?transaction_id=${transaction_id}`)
         .then((res) => {
-          // console.log("Verification:", res.data);
+          console.log("Verification:", res.data);
 
           if (res.data.message === "Payment verified successfully") {
             // ✅ success
