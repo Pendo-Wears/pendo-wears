@@ -49,9 +49,9 @@ export async function POST(req: NextRequest) {
         name,
       },
       customizations: {
-        title: "Your Store",
+        title: "Pendowears Checkout",
         description: "Payment for items",
-        logo: "https://your-logo-url.com/logo.png",
+        logo: "https://darkgray-heron-136669.hostingersite.com/wp-content/uploads/2026/01/about.png",
       },
     };
 

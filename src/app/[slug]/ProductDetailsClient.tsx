@@ -71,7 +71,6 @@ const ProductDetailsClient = ({
     if (recents.length === 6) recents.pop();
     if (!details?.name) {
       recents = [data, ...recents];
-      console.log(productDetails, "jjjjjjjj");
     }
 
     if (typeof window !== "undefined") {
@@ -152,7 +151,6 @@ const ProductDetailsClient = ({
     setLoading(true);
     try {
       const details: any = await productsEndpoint.getProducts();
-      console.log(details.data);
       if (details.success) {
         const thisProduct = details.data.find(
           (x: SyncVariant) =>
