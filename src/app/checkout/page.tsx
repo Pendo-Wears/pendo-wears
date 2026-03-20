@@ -134,38 +134,36 @@ const Checkout = () => {
       return;
     }
 
-    console.log(`${window.location.origin}/order-confirmation`)
+    try {
+      const response = await axios.post("/api/flutterwave/pay", {
+        tx_ref: `${crypto.randomUUID()}`,
+        amount: amount,
+        currency: "NGN",
+        email: user?.email || "",
+        name: `${user?.first_name || ""} ${user?.last_name || ""}`,
+        redirect_url:
+          typeof window !== "undefined"
+            ? `${window.location.origin}/order-confirmation`
+            : "",
+      });
 
-    // try {
-    //   const response = await axios.post("/api/flutterwave/pay", {
-    //     tx_ref: `${crypto.randomUUID()}`,
-    //     amount: amount,
-    //     currency: "NGN",
-    //     email: user?.email || "",
-    //     name: `${user?.first_name || ""} ${user?.last_name || ""}`,
-    //     redirect_url:
-    //       typeof window !== "undefined"
-    //         ? `${window.location.origin}/order-confirmation`
-    //         : "",
-    //   });
+      // console.log("response:", response);
 
-    //   // console.log("response:", response);
+      // ✅ NEW: Redirect user to Flutterwave checkout page
+      const paymentLink = response.data?.link;
 
-    //   // ✅ NEW: Redirect user to Flutterwave checkout page
-    //   const paymentLink = response.data?.link;
-
-    //   if (paymentLink && typeof window !== "undefined") {
-    //     window.location.href = paymentLink;
-    //   } else {
-    //     fireAlert("Unable to initialize payment", "error");
-    //   }
-    // } catch (error: any) {
-    //   console.error("Payment error:", error);
-    //   fireAlert(
-    //     error?.response?.data?.message || "Payment initialization failed",
-    //     "error",
-    //   );
-    // }
+      if (paymentLink && typeof window !== "undefined") {
+        window.location.href = paymentLink;
+      } else {
+        fireAlert("Unable to initialize payment", "error");
+      }
+    } catch (error: any) {
+      console.error("Payment error:", error);
+      fireAlert(
+        error?.response?.data?.message || "Payment initialization failed",
+        "error",
+      );
+    }
   };
 
   const getAllCart = () => {
