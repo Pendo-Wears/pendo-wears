@@ -37,13 +37,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Get the webhook URL from environment or construct it
+    const webhookUrl = process.env.FLUTTERWAVE_WEBHOOK_URL;
+
     // v3 payment payload
     const payload = {
       tx_ref,
       amount,
       currency,
       redirect_url,
-      payment_options: "card",
+      payment_options: "card,banktransfer,ussd",
+      webhook_url: webhookUrl,
       customer: {
         email,
         name,
