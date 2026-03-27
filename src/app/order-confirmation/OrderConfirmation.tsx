@@ -117,7 +117,7 @@ const OrderConfirmation = () => {
     const txRef = searchParams.get("tx_ref");
     const status = searchParams.get("status");
 
-    if (status && status !== "successful") {
+    if (status && (status === "cancelled" || status === "failed")) {
       fireAlert("Payment was not successful", "error");
       router.replace("/cart");
       return;
